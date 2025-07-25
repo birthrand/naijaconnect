@@ -89,7 +89,7 @@ function TabNavigator() {
       <Tab.Screen
         name="Network"
         component={ForSaleScreen}
-        options={{ tabBarLabel: 'Network' }}
+        options={{ tabBarLabel: 'SideHustle' }}
       />
       <Tab.Screen 
         name="Profile" 

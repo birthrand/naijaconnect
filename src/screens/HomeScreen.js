@@ -703,7 +703,7 @@ export default function HomeScreen({ navigation }) {
         <View style={LAYOUT_PATTERNS.section.container}>
           <View style={LAYOUT_PATTERNS.section.header}>
             <LabelText variant="medium" style={{ color: theme.colors.gray[900], fontWeight: '600' }}>
-              Topics
+              Hot Topics
             </LabelText>
           </View>
           

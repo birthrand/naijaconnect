@@ -375,10 +375,7 @@ export default function CommunityScreen({ navigation }) {
         <Spacer size="xl" />
       </ScrollView>
 
-      {/* Floating Action Button for New Post */}
-      <TouchableOpacity style={styles.fab}>
-        <Ionicons name="add" size={DESIGN_SYSTEM.iconSizes.lg} color={theme.colors.white} />
-      </TouchableOpacity>
+
     </SafeAreaView>
   );
 }
@@ -531,16 +528,5 @@ const styles = StyleSheet.create({
     marginLeft: DESIGN_SYSTEM.layout.elementSpacing / 4,
     fontWeight: '600',
   },
-  fab: {
-    position: 'absolute',
-    bottom: 80,
-    right: DESIGN_SYSTEM.layout.screenPadding,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: theme.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...DESIGN_SYSTEM.shadows.medium,
-  },
+
 }); 

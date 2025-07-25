@@ -191,34 +191,7 @@ const SearchBar = ({ activeFilters, onFilterPress }) => (
   </View>
 );
 
-// Enhanced FAB with tooltip
-const FloatingActionButton = ({ onPress, onLongPress }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
 
-  const handleLongPress = () => {
-    setShowTooltip(true);
-    onLongPress?.();
-    setTimeout(() => setShowTooltip(false), 2000);
-  };
-
-  return (
-    <View style={styles.fabContainer}>
-      {showTooltip && (
-        <View style={styles.tooltip}>
-          <Text style={styles.tooltipText}>Post Item/Service</Text>
-        </View>
-      )}
-      <TouchableOpacity 
-        style={styles.fab}
-        onPress={onPress}
-        onLongPress={handleLongPress}
-        activeOpacity={0.8}
-      >
-        <Ionicons name="add" size={24} color={theme.colors.white} />
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 // Status Badge Component
 const StatusBadge = ({ type, text }) => {
@@ -390,7 +363,7 @@ export default function NetworkScreen({ navigation }) {
   return (
     <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
       <Header
-        title="Network"
+        title="SideHustle"
         rightComponent={
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
@@ -496,11 +469,7 @@ export default function NetworkScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* Floating Action Button */}
-      <FloatingActionButton 
-        onPress={() => navigation.navigate('Post')}
-        onLongPress={() => Alert.alert('Post Item/Service', 'Choose what to post')}
-      />
+
     </SafeAreaView>
   );
 }
@@ -933,34 +902,5 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     marginLeft: theme.spacing.xs,
   },
-  fabContainer: {
-    position: 'absolute',
-    bottom: theme.spacing.lg,
-    right: theme.spacing.lg,
-    zIndex: 10,
-  },
-  fab: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: theme.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...theme.shadows.large,
-  },
-  tooltip: {
-    position: 'absolute',
-    bottom: 50,
-    right: 0,
-    backgroundColor: theme.colors.black,
-    color: theme.colors.white,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.sm,
-    zIndex: 1,
-  },
-  tooltipText: {
-    fontSize: 12,
-    color: theme.colors.white,
-  },
+
 }); 
