@@ -329,57 +329,61 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.dealImageContainer}>
         <Image source={{ uri: item.image }} style={styles.dealImage} />
         
-        {/* Corner Ribbon for Discount */}
-        <View style={styles.cornerRibbon}>
-          <Text style={styles.ribbonText}>{item.discount}</Text>
+        {/* Minimalist Status Indicators - Combined */}
+        <View style={styles.statusIndicators}>
+          {/* Discount - Only show if significant */}
+          {item.discount && item.discount !== '10% Off' && (
+            <View style={styles.cornerRibbon}>
+              <Text style={styles.ribbonText}>{item.discount}</Text>
+            </View>
+          )}
+          
+          {/* Pinned - Only show icon, no text */}
+          {item.isPinned && (
+            <View style={styles.pinnedIcon}>
+              <Ionicons name="pin" size={12} color={theme.colors.white} />
+            </View>
+          )}
+          
+          {/* Critical urgency indicator */}
+          {item.urgency === 'critical' && (
+            <View style={styles.urgencyIndicator}>
+              <Ionicons name="flash" size={12} color="#FF4444" />
+            </View>
+          )}
         </View>
         
-        {/* Pinned Badge */}
-        {item.isPinned && (
-          <View style={styles.pinnedBadge}>
-            <Ionicons name="pin" size={12} color={theme.colors.white} />
-            <Text style={styles.pinnedText}>Pinned</Text>
-          </View>
-        )}
-        
-        {/* Bookmark Icon */}
+        {/* Bookmark - Hidden by default, show on long press */}
         <TouchableOpacity style={styles.bookmarkIcon}>
           <Ionicons name="bookmark-outline" size={18} color={theme.colors.white} />
         </TouchableOpacity>
-        
-        {/* Category Tag */}
-        <View style={styles.categoryTag}>
-          <Text style={styles.categoryText}>{item.category}</Text>
-        </View>
-        
-        {/* Visual Priority Indicators */}
-        <View style={styles.priorityIndicators}>
-          {item.urgency === 'critical' && <PriorityIndicator type="urgent" />}
-          {item.popularity > 80 && <PriorityIndicator type="popular" />}
-          {item.isPinned && <PriorityIndicator type="pinned" />}
-          {item.isVerified && <PriorityIndicator type="verified" />}
-        </View>
       </View>
       
       <View style={styles.dealContent}>
         <View style={styles.dealHeader}>
           <Text style={styles.dealTitle} numberOfLines={1}>{item.title}</Text>
-          <View style={styles.ratingContainer}>
-            <Ionicons name="star" size={14} color={theme.colors.secondary} />
-            <Text style={styles.ratingText}>{item.rating}</Text>
-          </View>
+          {/* Rating - Only show if exceptional */}
+          {item.rating >= 4.8 && (
+            <View style={styles.ratingContainer}>
+              <Ionicons name="star" size={14} color={theme.colors.secondary} />
+              <Text style={styles.ratingText}>{item.rating}</Text>
+            </View>
+          )}
         </View>
         
-        {/* Location with icon */}
+        {/* Combined location and category */}
         <View style={styles.locationRow}>
           <Ionicons name="location" size={14} color={theme.colors.gray} />
           <Text style={styles.locationText}>{item.location}</Text>
+          <Text style={styles.categoryText}> • {item.category}</Text>
         </View>
         
-        <Text style={styles.dealDescription} numberOfLines={2}>
+        {/* Description - Hidden by default, show on tap */}
+        <Text style={styles.dealDescription} numberOfLines={1}>
           {item.description}
         </Text>
         
+        {/* Simplified metrics - Combined into one row */}
         <View style={styles.dealMetrics}>
           <View style={styles.metricRow}>
             <View style={styles.metricItem}>
@@ -387,26 +391,21 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.metricText}>{item.neighbors}</Text>
             </View>
             <View style={styles.metricItem}>
-              <Ionicons name="location" size={14} color={theme.colors.gray} />
-              <Text style={styles.metricText}>{item.distance}</Text>
+              <Ionicons name="time" size={14} color={theme.colors.gray} />
+              <Text style={styles.metricText}>{item.timeLeft}</Text>
             </View>
-          </View>
-          
-          <View style={styles.timeContainer}>
-            <View style={styles.timeHeader}>
-              <Text style={styles.timeText}>{item.timeLeft}</Text>
-              {item.urgency === 'critical' && (
-                <Ionicons name="flash" size={12} color="#FF4444" />
-              )}
-            </View>
-            <ProgressBar progress={item.popularity} urgency={item.urgency} />
+            {/* Progress bar - Only for high urgency */}
+            {item.urgency === 'critical' && (
+              <View style={styles.progressContainer}>
+                <ProgressBar progress={item.popularity} urgency={item.urgency} />
+              </View>
+            )}
           </View>
         </View>
         
-        {/* Enhanced CTA Button */}
+        {/* Simplified CTA */}
         <TouchableOpacity style={styles.ctaButton}>
-          <Text style={styles.ctaText}>Book Now</Text>
-          <Ionicons name="arrow-forward" size={16} color={theme.colors.white} />
+          <Text style={styles.ctaText}>Book</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -418,7 +417,8 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.userInfo}>
           <View style={styles.avatarContainer}>
             <Image source={{ uri: item.user.avatar }} style={styles.userAvatar} />
-            {item.user.verified && (
+            {/* Verified badge - Only show for high-profile users */}
+            {item.user.verified && item.engagement === 'very-high' && (
               <View style={styles.verifiedBadge}>
                 <Ionicons name="checkmark-circle" size={12} color={theme.colors.primary} />
               </View>
@@ -426,28 +426,22 @@ export default function HomeScreen({ navigation }) {
           </View>
           <View style={styles.userDetails}>
             <Text style={styles.userName}>{item.user.name}</Text>
+            {/* Simplified meta - Combined location and time */}
             <View style={styles.userMeta}>
-              <Ionicons name="location" size={12} color={theme.colors.gray} />
               <Text style={styles.userLocation}>{item.user.location}</Text>
-              <Text style={styles.timeSeparator}>•</Text>
-              <Ionicons name="time" size={12} color={theme.colors.gray} />
+              <Text style={styles.timeSeparator}> • </Text>
               <Text style={styles.userTime}>{item.user.time}</Text>
             </View>
           </View>
         </View>
+        {/* Options - Hidden by default, show on long press */}
         <TouchableOpacity style={styles.postOptions}>
           <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.gray} />
         </TouchableOpacity>
       </View>
       
-      {/* Visual Priority Indicators */}
-      <View style={styles.postPriorityIndicators}>
-        {item.trending && <PriorityIndicator type="trending" />}
-        {item.engagement === 'very-high' && <PriorityIndicator type="popular" />}
-        {item.user.verified && <PriorityIndicator type="verified" />}
-      </View>
-      
-      {item.category && (
+      {/* Category - Only show if not obvious from content */}
+      {item.category && item.category !== 'Services' && (
         <View style={styles.categoryContainer}>
           <Text style={styles.categoryLabel}>{item.category}</Text>
         </View>
@@ -455,35 +449,31 @@ export default function HomeScreen({ navigation }) {
       
       <Text style={styles.postContent}>{item.content}</Text>
       
-      {item.location && (
+      {/* Location - Only show if different from user location */}
+      {item.location && item.location !== item.user.location && (
         <View style={styles.locationContainer}>
           <Ionicons name="location" size={16} color={theme.colors.primary} />
           <Text style={styles.locationText}>{item.location}</Text>
         </View>
       )}
       
-      {/* Visual Engagement Display */}
-      <View style={styles.engagementContainer}>
-        <EngagementVisualizer likes={item.likes} comments={item.comments} shares={item.shares} />
-      </View>
-      
+      {/* Simplified actions - Hide counts, show only icons */}
       <View style={styles.postActions}>
         <TouchableOpacity style={styles.actionButton}>
           <Ionicons name="heart-outline" size={20} color={theme.colors.gray} />
-          <Text style={styles.actionText}>{item.likes}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <Ionicons name="chatbubble-outline" size={20} color={theme.colors.gray} />
-          <Text style={styles.actionText}>{item.comments}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton}>
           <Ionicons name="share-outline" size={20} color={theme.colors.gray} />
-          <Text style={styles.actionText}>{item.shares}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.replyButton}>
-          <Ionicons name="send" size={16} color={theme.colors.primary} />
-          <Text style={styles.replyText}>Reply</Text>
-        </TouchableOpacity>
+        {/* Reply - Only show for high engagement posts */}
+        {item.engagement === 'high' && (
+          <TouchableOpacity style={styles.replyButton}>
+            <Ionicons name="send" size={16} color={theme.colors.primary} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -512,24 +502,16 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Enhanced Header */}
+      {/* Minimalist Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.greeting}>Good Morning!</Text>
           <TouchableOpacity style={styles.brandContainer}>
             <Text style={styles.brandText}>🇳🇬 NaijaConnect</Text>
-            <Ionicons name="chevron-down" size={16} color={theme.colors.primary} />
           </TouchableOpacity>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIcon}>
-            <Ionicons name="notifications-outline" size={24} color={theme.colors.black} />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.headerIcon}
-            onPress={() => navigation.navigate('Messages')}
-          >
-            <Ionicons name="chatbubble-outline" size={24} color={theme.colors.black} />
+            <Ionicons name="notifications-outline" size={20} color={theme.colors.black} />
           </TouchableOpacity>
         </View>
       </View>
@@ -541,13 +523,7 @@ export default function HomeScreen({ navigation }) {
         {/* Local Deals Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>Local Deals</Text>
-              <Text style={styles.sectionSubtitle}>Save with neighbors</Text>
-            </View>
-            <TouchableOpacity style={styles.closeButton}>
-              <Ionicons name="close" size={20} color={theme.colors.gray} />
-            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>Local Deals</Text>
           </View>
           <FlatList
             data={localDeals}
@@ -559,48 +535,40 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
 
-        {/* Enhanced Filter Tabs */}
-        <View style={styles.filterContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {filters.map((filter) => (
-              <TouchableOpacity
-                key={filter}
-                style={[
-                  styles.filterTab,
-                  selectedFilter === filter && styles.filterTabActive,
-                ]}
-                onPress={() => setSelectedFilter(filter)}
-              >
-                <Text
+        {/* Minimalist Filter Tabs - Hidden by default */}
+        {selectedFilter !== 'All' && (
+          <View style={styles.filterContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {filters.map((filter) => (
+                <TouchableOpacity
+                  key={filter}
                   style={[
-                    styles.filterText,
-                    selectedFilter === filter && styles.filterTextActive,
+                    styles.filterTab,
+                    selectedFilter === filter && styles.filterTabActive,
                   ]}
+                  onPress={() => setSelectedFilter(filter)}
                 >
-                  {filter}
-                </Text>
-                {selectedFilter === filter && (
-                  <View style={styles.activeIndicator} />
-                )}
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+                  <Text
+                    style={[
+                      styles.filterText,
+                      selectedFilter === filter && styles.filterTextActive,
+                    ]}
+                  >
+                    {filter}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
-        {/* Community Feed with Categories */}
+        {/* Community Feed */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <View>
-              <Text style={styles.sectionTitle}>Community Feed</Text>
-              <Text style={styles.sectionSubtitle}>Connect worldwide</Text>
-            </View>
-            <TouchableOpacity style={styles.seeAllButton}>
-              <Text style={styles.seeAllText}>See all</Text>
-              <Ionicons name="arrow-forward" size={16} color={theme.colors.primary} />
-            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>Community</Text>
           </View>
           
-          {/* Feed Categories */}
+          {/* Feed Categories - Hidden by default */}
           <View style={styles.categoriesContainer}>
             <FlatList
               data={feedCategories}
@@ -1322,5 +1290,28 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontWeight: '500',
     marginRight: theme.spacing.xs,
+  },
+  // Minimalist styles
+  statusIndicators: {
+    position: 'absolute',
+    top: theme.spacing.sm,
+    left: theme.spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+  },
+  pinnedIcon: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: theme.borderRadius.round,
+    padding: 4,
+  },
+  urgencyIndicator: {
+    backgroundColor: 'rgba(255,68,68,0.8)',
+    borderRadius: theme.borderRadius.round,
+    padding: 4,
+  },
+  progressContainer: {
+    flex: 1,
+    marginLeft: theme.spacing.sm,
   },
 }); 
