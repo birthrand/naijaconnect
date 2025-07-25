@@ -20,7 +20,7 @@ const categories = [
   { id: '3', name: 'Businesses', icon: 'briefcase', color: theme.colors.accent },
   { id: '4', name: 'Groups', icon: 'people', color: theme.colors.info },
   { id: '5', name: 'Culture', icon: 'flag', color: theme.colors.warmOrange },
-  { id: '6', name: 'Jobs', icon: 'work', color: theme.colors.success },
+  { id: '6', name: 'Jobs', icon: 'briefcase', color: theme.colors.success },
 ];
 
 const featuredBusinesses = [

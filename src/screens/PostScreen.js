@@ -39,7 +39,7 @@ const postTypes = [
     id: 'job',
     title: 'Job Posting',
     subtitle: 'Hire or find work',
-    icon: 'work',
+    icon: 'briefcase',
     color: theme.colors.info,
   },
   {

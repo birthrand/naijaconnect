@@ -8,9 +8,12 @@ import {
   Image,
   FlatList,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
+
+const { width } = Dimensions.get('window');
 
 // Mock data
 const localDeals = [
@@ -23,6 +26,8 @@ const localDeals = [
     rating: 4.9,
     neighbors: 45,
     distance: '4.9 mi',
+    category: 'Beauty',
+    timeLeft: '2 days left',
   },
   {
     id: '2',
@@ -33,6 +38,8 @@ const localDeals = [
     rating: 4.9,
     neighbors: 32,
     distance: '2.1 mi',
+    category: 'Entertainment',
+    timeLeft: '1 day left',
   },
   {
     id: '3',
@@ -43,6 +50,8 @@ const localDeals = [
     rating: 4.8,
     neighbors: 67,
     distance: '1.5 mi',
+    category: 'Food',
+    timeLeft: '3 days left',
   },
 ];
 
@@ -54,12 +63,14 @@ const communityPosts = [
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
       location: 'The Bronx',
       time: 'Now',
+      verified: true,
     },
     content: 'Hello! Does anyone have a recommendation for a skilled woodworker? I\'m looking to create a minibar for my house. Thanks!',
     location: '910 Grand Concourse, Bronx, NY 10451',
     likes: 12,
     comments: 8,
     shares: 3,
+    category: 'Services',
   },
   {
     id: '2',
@@ -68,11 +79,13 @@ const communityPosts = [
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
       location: 'Lagos',
       time: '2 hours ago',
+      verified: false,
     },
     content: 'Just finished my latest tech project! Building a mobile app for local businesses. Anyone interested in collaboration? #Tech #NaijaTech',
     likes: 24,
     comments: 15,
     shares: 7,
+    category: 'Technology',
   },
   {
     id: '3',
@@ -81,13 +94,35 @@ const communityPosts = [
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
       location: 'Toronto',
       time: '4 hours ago',
+      verified: true,
     },
     content: 'Missing home so much! Made some authentic Nigerian pepper soup today. The aroma brought back so many memories. Who else is cooking traditional dishes this weekend? 🇳🇬',
     likes: 89,
     comments: 23,
     shares: 12,
+    category: 'Culture',
   },
 ];
+
+// Progress Bar Component
+const ProgressBar = ({ progress, color = theme.colors.primary }) => (
+  <View style={styles.progressContainer}>
+    <View style={[styles.progressBar, { backgroundColor: theme.colors.lightGray }]}>
+      <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: color }]} />
+    </View>
+  </View>
+);
+
+// Metric Card Component
+const MetricCard = ({ icon, value, label, color = theme.colors.primary }) => (
+  <View style={styles.metricCard}>
+    <View style={[styles.metricIcon, { backgroundColor: color + '15' }]}>
+      <Ionicons name={icon} size={16} color={color} />
+    </View>
+    <Text style={styles.metricValue}>{value}</Text>
+    <Text style={styles.metricLabel}>{label}</Text>
+  </View>
+);
 
 export default function HomeScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState('All');
@@ -98,30 +133,53 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.dealCard}>
       <View style={styles.dealImageContainer}>
         <Image source={{ uri: item.image }} style={styles.dealImage} />
-        <View style={styles.discountBadge}>
-          <Text style={styles.discountText}>{item.discount}</Text>
+        <View style={styles.dealOverlay}>
+          <View style={styles.discountBadge}>
+            <Text style={styles.discountText}>{item.discount}</Text>
+          </View>
+          <TouchableOpacity style={styles.bookmarkIcon}>
+            <Ionicons name="bookmark-outline" size={18} color={theme.colors.white} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.bookmarkIcon}>
-          <Ionicons name="bookmark-outline" size={20} color={theme.colors.gray} />
-        </TouchableOpacity>
+        <View style={styles.categoryTag}>
+          <Text style={styles.categoryText}>{item.category}</Text>
+        </View>
       </View>
+      
       <View style={styles.dealContent}>
         <View style={styles.dealHeader}>
-          <Text style={styles.dealTitle}>{item.title}</Text>
+          <Text style={styles.dealTitle} numberOfLines={1}>{item.title}</Text>
+          <View style={styles.ratingContainer}>
+            <Ionicons name="star" size={14} color={theme.colors.secondary} />
+            <Text style={styles.ratingText}>{item.rating}</Text>
+          </View>
         </View>
+        
         <Text style={styles.dealDescription} numberOfLines={2}>
           {item.description}
         </Text>
-        <View style={styles.dealStats}>
-          <View style={styles.ratingContainer}>
-            <Ionicons name="star" size={16} color={theme.colors.secondary} />
-            <Text style={styles.ratingText}>{item.rating}</Text>
+        
+        <View style={styles.dealMetrics}>
+          <View style={styles.metricRow}>
+            <View style={styles.metricItem}>
+              <Ionicons name="people" size={14} color={theme.colors.gray} />
+              <Text style={styles.metricText}>{item.neighbors} saved</Text>
+            </View>
+            <View style={styles.metricItem}>
+              <Ionicons name="location" size={14} color={theme.colors.gray} />
+              <Text style={styles.metricText}>{item.distance}</Text>
+            </View>
           </View>
-          <Text style={styles.neighborsText}>{item.neighbors} Neighbors Save</Text>
-          <Text style={styles.distanceText}>{item.distance}</Text>
+          
+          <View style={styles.timeContainer}>
+            <Text style={styles.timeText}>{item.timeLeft}</Text>
+            <ProgressBar progress={70} color={theme.colors.accent} />
+          </View>
         </View>
+        
         <TouchableOpacity style={styles.seeMoreButton}>
-          <Text style={styles.seeMoreText}>See More</Text>
+          <Text style={styles.seeMoreText}>View Deal</Text>
+          <Ionicons name="arrow-forward" size={16} color={theme.colors.primary} />
         </TouchableOpacity>
       </View>
     </View>
@@ -131,16 +189,33 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
         <View style={styles.userInfo}>
-          <Image source={{ uri: item.user.avatar }} style={styles.userAvatar} />
+          <View style={styles.avatarContainer}>
+            <Image source={{ uri: item.user.avatar }} style={styles.userAvatar} />
+            {item.user.verified && (
+              <View style={styles.verifiedBadge}>
+                <Ionicons name="checkmark-circle" size={12} color={theme.colors.primary} />
+              </View>
+            )}
+          </View>
           <View style={styles.userDetails}>
             <Text style={styles.userName}>{item.user.name}</Text>
-            <Text style={styles.userLocation}>{item.user.location} • {item.user.time}</Text>
+            <View style={styles.userMeta}>
+              <Text style={styles.userLocation}>{item.user.location}</Text>
+              <Text style={styles.timeSeparator}>•</Text>
+              <Text style={styles.userTime}>{item.user.time}</Text>
+            </View>
           </View>
         </View>
         <TouchableOpacity style={styles.postOptions}>
-          <Ionicons name="ellipsis-vertical" size={20} color={theme.colors.gray} />
+          <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.gray} />
         </TouchableOpacity>
       </View>
+      
+      {item.category && (
+        <View style={styles.categoryContainer}>
+          <Text style={styles.categoryLabel}>{item.category}</Text>
+        </View>
+      )}
       
       <Text style={styles.postContent}>{item.content}</Text>
       
@@ -174,7 +249,7 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.greeting}>Good Morning!</Text>
-          <Text style={styles.userName}>🇳🇬 Welcome to NaijaConnect</Text>
+          <Text style={styles.welcomeText}>🇳🇬 Welcome to NaijaConnect</Text>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIcon}>
@@ -193,7 +268,10 @@ export default function HomeScreen({ navigation }) {
         {/* Local Deals Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Local Deals</Text>
+            <View>
+              <Text style={styles.sectionTitle}>Local Deals</Text>
+              <Text style={styles.sectionSubtitle}>Save money with your neighbors</Text>
+            </View>
             <TouchableOpacity style={styles.closeButton}>
               <Ionicons name="close" size={20} color={theme.colors.gray} />
             </TouchableOpacity>
@@ -235,21 +313,43 @@ export default function HomeScreen({ navigation }) {
 
         {/* Community Posts */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Community Feed</Text>
+          <View style={styles.sectionHeader}>
+            <View>
+              <Text style={styles.sectionTitle}>Community Feed</Text>
+              <Text style={styles.sectionSubtitle}>Connect with Nigerians worldwide</Text>
+            </View>
+          </View>
           {communityPosts.map((post) => (
             <View key={post.id} style={styles.postCard}>
               <View style={styles.postHeader}>
                 <View style={styles.userInfo}>
-                  <Image source={{ uri: post.user.avatar }} style={styles.userAvatar} />
+                  <View style={styles.avatarContainer}>
+                    <Image source={{ uri: post.user.avatar }} style={styles.userAvatar} />
+                    {post.user.verified && (
+                      <View style={styles.verifiedBadge}>
+                        <Ionicons name="checkmark-circle" size={12} color={theme.colors.primary} />
+                      </View>
+                    )}
+                  </View>
                   <View style={styles.userDetails}>
                     <Text style={styles.userName}>{post.user.name}</Text>
-                    <Text style={styles.userLocation}>{post.user.location} • {post.user.time}</Text>
+                    <View style={styles.userMeta}>
+                      <Text style={styles.userLocation}>{post.user.location}</Text>
+                      <Text style={styles.timeSeparator}>•</Text>
+                      <Text style={styles.userTime}>{post.user.time}</Text>
+                    </View>
                   </View>
                 </View>
                 <TouchableOpacity style={styles.postOptions}>
-                  <Ionicons name="ellipsis-vertical" size={20} color={theme.colors.gray} />
+                  <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.gray} />
                 </TouchableOpacity>
               </View>
+              
+              {post.category && (
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryLabel}>{post.category}</Text>
+                </View>
+              )}
               
               <Text style={styles.postContent}>{post.content}</Text>
               
@@ -304,7 +404,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors.gray,
   },
-  userName: {
+  welcomeText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.black,
@@ -335,6 +435,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.black,
   },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: theme.colors.gray,
+    marginTop: theme.spacing.xs,
+  },
   closeButton: {
     padding: theme.spacing.sm,
   },
@@ -342,7 +447,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
   },
   dealCard: {
-    width: 280,
+    width: width * 0.8, // Adjust width for horizontal scroll
     backgroundColor: theme.colors.white,
     borderRadius: theme.borderRadius.lg,
     marginRight: theme.spacing.md,
@@ -350,17 +455,29 @@ const styles = StyleSheet.create({
   },
   dealImageContainer: {
     position: 'relative',
+    height: 180, // Fixed height for image container
   },
   dealImage: {
     width: '100%',
-    height: 160,
+    height: '100%',
     borderTopLeftRadius: theme.borderRadius.lg,
     borderTopRightRadius: theme.borderRadius.lg,
   },
-  discountBadge: {
+  dealOverlay: {
     position: 'absolute',
-    top: theme.spacing.sm,
-    right: theme.spacing.sm,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderTopLeftRadius: theme.borderRadius.lg,
+    borderTopRightRadius: theme.borderRadius.lg,
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    padding: theme.spacing.md,
+  },
+  discountBadge: {
     backgroundColor: theme.colors.accent,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xs,
@@ -372,12 +489,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   bookmarkIcon: {
-    position: 'absolute',
-    top: theme.spacing.sm,
-    left: theme.spacing.sm,
     backgroundColor: theme.colors.white,
     borderRadius: theme.borderRadius.round,
     padding: theme.spacing.xs,
+  },
+  categoryTag: {
+    position: 'absolute',
+    top: theme.spacing.sm,
+    left: theme.spacing.sm,
+    backgroundColor: theme.colors.primary + '80',
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+  },
+  categoryText: {
+    color: theme.colors.white,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   dealContent: {
     padding: theme.spacing.md,
@@ -389,26 +517,18 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
   dealTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.black,
     flex: 1,
   },
-  dealDescription: {
-    fontSize: 14,
-    color: theme.colors.gray,
-    marginBottom: theme.spacing.sm,
-    lineHeight: 20,
-  },
-  dealStats: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
-  },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: theme.spacing.sm,
+    backgroundColor: theme.colors.lightGray,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.round,
   },
   ratingText: {
     fontSize: 14,
@@ -416,20 +536,45 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     marginLeft: 2,
   },
-  neighborsText: {
-    fontSize: 12,
+  dealDescription: {
+    fontSize: 14,
     color: theme.colors.gray,
-    marginRight: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+    lineHeight: 20,
   },
-  distanceText: {
+  dealMetrics: {
+    marginBottom: theme.spacing.md,
+  },
+  metricRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.sm,
+  },
+  metricItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  metricText: {
     fontSize: 12,
     color: theme.colors.gray,
+    marginLeft: theme.spacing.xs,
+  },
+  timeContainer: {
+    marginTop: theme.spacing.sm,
+  },
+  timeText: {
+    fontSize: 12,
+    color: theme.colors.gray,
+    marginBottom: theme.spacing.xs,
   },
   seeMoreButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: theme.colors.lightGray,
     paddingVertical: theme.spacing.sm,
     borderRadius: theme.borderRadius.md,
-    alignItems: 'center',
+    paddingHorizontal: theme.spacing.md,
   },
   seeMoreText: {
     color: theme.colors.black,
@@ -477,11 +622,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
+  avatarContainer: {
+    position: 'relative',
+  },
   userAvatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
     marginRight: theme.spacing.sm,
+  },
+  verifiedBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: theme.colors.white,
+    borderRadius: theme.borderRadius.round,
+    padding: theme.spacing.xs,
   },
   userDetails: {
     flex: 1,
@@ -491,12 +647,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.black,
   },
+  userMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   userLocation: {
+    fontSize: 14,
+    color: theme.colors.gray,
+  },
+  timeSeparator: {
+    marginHorizontal: theme.spacing.xs,
+  },
+  userTime: {
     fontSize: 14,
     color: theme.colors.gray,
   },
   postOptions: {
     padding: theme.spacing.sm,
+  },
+  categoryContainer: {
+    backgroundColor: theme.colors.lightGray,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    marginBottom: theme.spacing.md,
+  },
+  categoryLabel: {
+    fontSize: 12,
+    color: theme.colors.primary,
+    fontWeight: '500',
   },
   postContent: {
     fontSize: 16,
@@ -530,5 +709,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.gray,
     marginLeft: theme.spacing.xs,
+  },
+  progressContainer: {
+    width: '100%',
+    height: 8,
+    backgroundColor: theme.colors.lightGray,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  metricCard: {
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+  },
+  metricIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing.xs,
+  },
+  metricValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: theme.colors.black,
+  },
+  metricLabel: {
+    fontSize: 12,
+    color: theme.colors.gray,
   },
 }); 
