@@ -38,33 +38,39 @@ export const SupabaseProvider = ({ children }) => {
 
   const signUp = async (email, password, userData = {}) => {
     try {
+      // Sign up with email confirmation disabled
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: userData,
+          emailRedirectTo: undefined, // Disable email confirmation
         },
       });
 
       if (error) throw error;
 
-      // Create user profile in users table
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: data.user.id,
-              email: data.user.email,
-              full_name: userData.full_name || '',
-              username: userData.username || '',
-            },
-          ]);
+      // The database trigger will automatically create the user profile
+      // No need to manually insert into users table
 
-        if (profileError) {
-          console.error('Error creating user profile:', profileError);
-        }
+      // Automatically sign in the user after successful signup
+      // Wait a moment for the trigger to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        console.error('Error auto-signing in after registration:', signInError);
+        // Return success anyway as the user was created
+        return { data, error: null };
       }
+
+      // Update user state with the signed-in user
+      setUser(signInData.user);
+      setSession(signInData.session);
 
       return { data, error: null };
     } catch (error) {
@@ -90,6 +96,11 @@ export const SupabaseProvider = ({ children }) => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      
+      // Clear local state
+      setUser(null);
+      setSession(null);
+      
       return { error: null };
     } catch (error) {
       return { error };
@@ -98,7 +109,9 @@ export const SupabaseProvider = ({ children }) => {
 
   const resetPassword = async (email) => {
     try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: undefined, // Disable redirect for now
+      });
       if (error) throw error;
       return { data, error: null };
     } catch (error) {
@@ -122,7 +135,10 @@ export const SupabaseProvider = ({ children }) => {
     try {
       const { data, error } = await supabase
         .from('users')
-        .update(updates)
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', user.id)
         .select()
         .single();

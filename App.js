@@ -17,6 +17,7 @@ import DiscoverScreen from './src/screens/DiscoverScreen';
 import PostScreen from './src/screens/PostScreen';
 import ForSaleScreen from './src/screens/ForSaleScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
 import ChatScreen from './src/screens/ChatScreen';
 import MessagesScreen from './src/screens/MessagesScreen';
 import EventsScreen from './src/screens/EventsScreen';
@@ -137,6 +138,7 @@ function AppContent() {
           <>
             <Stack.Screen name="MainApp" component={TabNavigator} />
             <Stack.Screen name="Post" component={PostScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Messages" component={MessagesScreen} />
             <Stack.Screen name="Events" component={EventsScreen} />

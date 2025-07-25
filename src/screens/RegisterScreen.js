@@ -55,10 +55,12 @@ export default function RegisterScreen({ navigation }) {
       if (error) {
         Alert.alert('Registration Error', error.message);
       } else {
+        // Registration successful - user is automatically signed in
+        // The SupabaseContext will handle navigation to MainApp
         Alert.alert(
-          'Registration Successful', 
-          'Please check your email to verify your account before signing in.',
-          [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
+          'Welcome to Jappa!', 
+          'Your account has been created successfully.',
+          [{ text: 'Get Started', onPress: () => {} }]
         );
       }
     } catch (error) {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,25 +8,16 @@ import {
   SafeAreaView,
   ScrollView,
   Dimensions,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
+import { useSupabase } from '../contexts/SupabaseContext';
+import { supabase } from '../lib/supabase';
 
 const { width } = Dimensions.get('window');
-
-const mockProfile = {
-  name: 'Veronica Margareth',
-  username: '@veromarge',
-  avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face',
-  bio: 'Product Designer. Building for Africa. Lagos, Nigeria.',
-  followers: 1200,
-  following: 340,
-  posts: 56,
-  verified: true,
-  location: 'Lagos, Nigeria',
-  website: 'veromarge.com',
-};
 
 const menuItems = [
   { icon: 'person', label: 'Edit Profile' },
@@ -37,6 +28,160 @@ const menuItems = [
 ];
 
 export default function ProfileScreen({ navigation }) {
+  const { user, signOut } = useSupabase();
+  const [profile, setProfile] = useState(null);
+  const [stats, setStats] = useState({
+    posts: 0,
+    followers: 0,
+    following: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadUserProfile();
+      loadUserStats();
+    }
+  }, [user]);
+
+  const loadUserProfile = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
+      setProfile(data);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUserStats = async () => {
+    try {
+      // Get posts count
+      const { count: postsCount } = await supabase
+        .from('posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      // Get followers count
+      const { count: followersCount } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('followed_id', user.id);
+
+      // Get following count
+      const { count: followingCount } = await supabase
+        .from('followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('follower_id', user.id);
+
+      setStats({
+        posts: postsCount || 0,
+        followers: followersCount || 0,
+        following: followingCount || 0,
+      });
+    } catch (error) {
+      console.error('Error loading stats:', error);
+    }
+  };
+
+  const handleMenuPress = async (item) => {
+    switch (item.label) {
+      case 'Edit Profile':
+        navigation.navigate('EditProfile', { profile });
+        break;
+      case 'Settings':
+        navigation.navigate('Settings');
+        break;
+      case 'Privacy':
+        navigation.navigate('Privacy');
+        break;
+      case 'Help & Support':
+        navigation.navigate('HelpSupport');
+        break;
+      case 'Log Out':
+        Alert.alert(
+          'Log Out',
+          'Are you sure you want to log out?',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Log Out',
+              style: 'destructive',
+              onPress: async () => {
+                const { error } = await signOut();
+                if (error) {
+                  Alert.alert('Error', 'Failed to log out. Please try again.');
+                }
+              },
+            },
+          ]
+        );
+        break;
+    }
+  };
+
+  const getDefaultAvatar = () => {
+    // Generate a default avatar based on user's name
+    const name = profile?.full_name || user?.email?.split('@')[0] || 'User';
+    const initials = name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+    
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=667eea&color=ffffff&size=200&bold=true&font-size=0.4`;
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <LinearGradient
+          colors={['#121212', '#1E1E1E']}
+          style={styles.background}
+        >
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#667eea" />
+            <Text style={styles.loadingText}>Loading profile...</Text>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
+
+  if (!user || !profile) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <LinearGradient
+          colors={['#121212', '#1E1E1E']}
+          style={styles.background}
+        >
+          <View style={styles.errorContainer}>
+            <Ionicons name="person-circle-outline" size={64} color="#666666" />
+            <Text style={styles.errorText}>Profile not found</Text>
+            <TouchableOpacity 
+              style={styles.retryButton}
+              onPress={loadUserProfile}
+            >
+              <Text style={styles.retryButtonText}>Retry</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -55,31 +200,38 @@ export default function ProfileScreen({ navigation }) {
           {/* Profile Card */}
           <View style={styles.profileCard}>
             <View style={styles.avatarContainer}>
-              <Image source={{ uri: mockProfile.avatar }} style={styles.avatar} />
-              {mockProfile.verified && (
+              <Image 
+                source={{ uri: profile.avatar_url || getDefaultAvatar() }} 
+                style={styles.avatar}
+                defaultSource={{ uri: getDefaultAvatar() }}
+              />
+              {profile.is_verified && (
                 <View style={styles.verifiedBadge}>
                   <Ionicons name="checkmark-circle" size={20} color="#43e97b" />
                 </View>
               )}
             </View>
-            <Text style={styles.name}>{mockProfile.name}</Text>
-            <Text style={styles.username}>{mockProfile.username}</Text>
-            <Text style={styles.bio}>{mockProfile.bio}</Text>
+            <Text style={styles.name}>{profile.full_name || 'User'}</Text>
+            <Text style={styles.username}>@{profile.username || user.email?.split('@')[0] || 'user'}</Text>
+            <Text style={styles.bio}>{profile.bio || 'No bio yet. Tap Edit Profile to add one!'}</Text>
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{mockProfile.posts}</Text>
+                <Text style={styles.statValue}>{stats.posts}</Text>
                 <Text style={styles.statLabel}>Posts</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{mockProfile.followers}</Text>
+                <Text style={styles.statValue}>{stats.followers}</Text>
                 <Text style={styles.statLabel}>Followers</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{mockProfile.following}</Text>
+                <Text style={styles.statValue}>{stats.following}</Text>
                 <Text style={styles.statLabel}>Following</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.primaryButton}>
+            <TouchableOpacity 
+              style={styles.primaryButton}
+              onPress={() => navigation.navigate('EditProfile', { profile })}
+            >
               <Text style={styles.primaryButtonText}>Edit Profile</Text>
             </TouchableOpacity>
           </View>
@@ -87,9 +239,26 @@ export default function ProfileScreen({ navigation }) {
           {/* Menu */}
           <View style={styles.menuContainer}>
             {menuItems.map((item, idx) => (
-              <TouchableOpacity key={item.label} style={styles.menuItem}>
-                <Ionicons name={item.icon} size={20} color="#667eea" style={styles.menuIcon} />
-                <Text style={styles.menuLabel}>{item.label}</Text>
+              <TouchableOpacity 
+                key={item.label} 
+                style={[
+                  styles.menuItem,
+                  idx === menuItems.length - 1 && styles.lastMenuItem
+                ]}
+                onPress={() => handleMenuPress(item)}
+              >
+                <Ionicons 
+                  name={item.icon} 
+                  size={20} 
+                  color={item.label === 'Log Out' ? '#ff6b6b' : '#667eea'} 
+                  style={styles.menuIcon} 
+                />
+                <Text style={[
+                  styles.menuLabel,
+                  item.label === 'Log Out' && styles.logoutLabel
+                ]}>
+                  {item.label}
+                </Text>
                 <Ionicons name="chevron-forward" size={20} color="#666666" style={styles.menuChevron} />
               </TouchableOpacity>
             ))}
@@ -110,6 +279,39 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 48,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#ffffff',
+    fontSize: 16,
+    marginTop: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  errorText: {
+    color: '#666666',
+    fontSize: 18,
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: '#667eea',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+  },
+  retryButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',
@@ -243,6 +445,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#1E1E1E',
   },
+  lastMenuItem: {
+    borderBottomWidth: 0,
+  },
   menuIcon: {
     marginRight: 16,
   },
@@ -250,6 +455,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#ffffff',
     flex: 1,
+  },
+  logoutLabel: {
+    color: '#ff6b6b',
   },
   menuChevron: {
     marginLeft: 8,

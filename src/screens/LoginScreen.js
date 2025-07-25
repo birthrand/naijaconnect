@@ -39,9 +39,11 @@ export default function LoginScreen({ navigation }) {
       
       if (error) {
         Alert.alert('Login Error', error.message);
+      } else {
+        // Login successful - the SupabaseContext will automatically update the user state
+        // and the app will navigate to MainApp
+        console.log('Login successful:', data);
       }
-      // If successful, the SupabaseContext will automatically update the user state
-      // and the app will navigate to MainApp
     } catch (error) {
       Alert.alert('Login Error', 'An unexpected error occurred. Please try again.');
     } finally {
