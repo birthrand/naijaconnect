@@ -153,6 +153,66 @@ const feedCategories = [
   { id: '5', name: 'Jobs', icon: 'briefcase', color: theme.colors.info },
 ];
 
+// Spaces data similar to Twitter Spaces
+const spaces = [
+  {
+    id: '1',
+    title: 'Nigerian Tech Startups',
+    host: {
+      name: 'Adaora Nwodo',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
+      verified: true,
+    },
+    participants: 127,
+    listeners: 892,
+    isLive: true,
+    duration: '45m',
+    category: 'Technology',
+    topic: 'Building the next big thing in Lagos',
+    speakers: [
+      { name: 'Kemi Adebayo', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face' },
+      { name: 'David Okonkwo', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face' },
+    ],
+  },
+  {
+    id: '2',
+    title: 'Jollof Rice Wars',
+    host: {
+      name: 'Chioma Eze',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
+      verified: false,
+    },
+    participants: 23,
+    listeners: 156,
+    isLive: true,
+    duration: '32m',
+    category: 'Food & Culture',
+    topic: 'Which state makes the best jollof?',
+    speakers: [
+      { name: 'Aisha Bello', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=50&h=50&fit=crop&crop=face' },
+    ],
+  },
+  {
+    id: '3',
+    title: 'Nollywood Behind the Scenes',
+    host: {
+      name: 'Genevieve Nnaji',
+      avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop&crop=face',
+      verified: true,
+    },
+    participants: 89,
+    listeners: 1247,
+    isLive: false,
+    duration: '1h 15m',
+    category: 'Entertainment',
+    topic: 'The future of Nigerian cinema',
+    speakers: [
+      { name: 'Omotola Jalade', avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=50&h=50&fit=crop&crop=face' },
+      { name: 'Ramsey Nouah', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face' },
+    ],
+  },
+];
+
 // Enhanced Progress Bar with animation
 const ProgressBar = ({ progress, color = theme.colors.primary, urgency = 'normal' }) => {
   const animatedWidth = useRef(new Animated.Value(0)).current;
@@ -289,34 +349,7 @@ const SearchBar = ({ activeFilters, onFilterPress }) => (
   </View>
 );
 
-// Enhanced FAB with tooltip
-const FloatingActionButton = ({ onPress, onLongPress }) => {
-  const [showTooltip, setShowTooltip] = useState(false);
 
-  const handleLongPress = () => {
-    setShowTooltip(true);
-    onLongPress?.();
-    setTimeout(() => setShowTooltip(false), 2000);
-  };
-
-  return (
-    <View style={styles.fabContainer}>
-      {showTooltip && (
-        <View style={styles.tooltip}>
-          <Text style={styles.tooltipText}>Create Post</Text>
-        </View>
-      )}
-      <TouchableOpacity 
-        style={styles.fab}
-        onPress={onPress}
-        onLongPress={handleLongPress}
-        activeOpacity={0.8}
-      >
-        <Ionicons name="add" size={24} color={theme.colors.white} />
-      </TouchableOpacity>
-    </View>
-  );
-};
 
 export default function HomeScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState('All');
@@ -356,7 +389,7 @@ export default function HomeScreen({ navigation }) {
         {/* Urgency indicator - Only for critical items */}
         {item.urgency === 'critical' && (
           <View style={styles.urgencyIndicator}>
-            <Ionicons name="flash" size={12} color="#FF4444" />
+            <Ionicons name="flash" size={DESIGN_SYSTEM.iconSizes.xs} color="#FF4444" />
           </View>
         )}
       </View>
@@ -367,28 +400,28 @@ export default function HomeScreen({ navigation }) {
         
         {/* Combined location and category - Single line */}
         <View style={styles.locationRow}>
-          <Ionicons name="location" size={12} color={theme.colors.gray} />
-          <Text style={styles.locationText}>{item.location}</Text>
-          <Text style={styles.categoryText}> • {item.category}</Text>
+          <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
+          <LabelText variant="small" style={styles.locationText}>{item.location}</LabelText>
+          <LabelText variant="small" style={styles.categoryText}> • {item.category}</LabelText>
         </View>
         
         {/* Essential metrics only */}
         <View style={styles.dealMetrics}>
           <View style={styles.metricRow}>
             <View style={styles.metricItem}>
-              <Ionicons name="people" size={12} color={theme.colors.gray} />
-              <Text style={styles.metricText}>{item.neighbors}</Text>
+              <Ionicons name="people" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
+              <LabelText variant="small" style={styles.metricText}>{item.neighbors}</LabelText>
             </View>
             <View style={styles.metricItem}>
-              <Ionicons name="time" size={12} color={theme.colors.gray} />
-              <Text style={styles.metricText}>{item.timeLeft}</Text>
+              <Ionicons name="time" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
+              <LabelText variant="small" style={styles.metricText}>{item.timeLeft}</LabelText>
             </View>
           </View>
         </View>
         
         {/* Minimal CTA */}
         <TouchableOpacity style={styles.ctaButton}>
-          <Text style={styles.ctaText}>Book</Text>
+          <LabelText variant="small" style={styles.ctaText}>Book</LabelText>
         </TouchableOpacity>
       </View>
     </View>
@@ -403,7 +436,7 @@ export default function HomeScreen({ navigation }) {
             {/* Verified badge - Only show for high-profile users */}
             {item.user.verified && item.engagement === 'very-high' && (
               <View style={styles.verifiedBadge}>
-                <Ionicons name="checkmark-circle" size={12} color={theme.colors.primary} />
+                <Ionicons name="checkmark-circle" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
               </View>
             )}
           </View>
@@ -411,15 +444,15 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.userName}>{item.user.name}</Text>
             {/* Simplified meta - Combined location and time */}
             <View style={styles.userMeta}>
-              <Text style={styles.userLocation}>{item.user.location}</Text>
-              <Text style={styles.timeSeparator}> • </Text>
-              <Text style={styles.userTime}>{item.user.time}</Text>
+              <LabelText variant="small" style={styles.userLocation}>{item.user.location}</LabelText>
+              <LabelText variant="small" style={styles.timeSeparator}> • </LabelText>
+              <LabelText variant="small" style={styles.userTime}>{item.user.time}</LabelText>
             </View>
           </View>
         </View>
         {/* Options - Hidden by default, show on long press */}
         <TouchableOpacity style={styles.postOptions}>
-          <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.gray} />
+          <Ionicons name="ellipsis-horizontal" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
         </TouchableOpacity>
       </View>
       
@@ -435,8 +468,8 @@ export default function HomeScreen({ navigation }) {
       {/* Location - Only show if different from user location */}
       {item.location && item.location !== item.user.location && (
         <View style={styles.locationContainer}>
-          <Ionicons name="location" size={16} color={theme.colors.primary} />
-          <Text style={styles.locationText}>{item.location}</Text>
+          <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.primary} />
+          <LabelText variant="small" style={styles.locationText}>{item.location}</LabelText>
         </View>
       )}
       
@@ -471,15 +504,90 @@ export default function HomeScreen({ navigation }) {
     >
       <Ionicons 
         name={item.icon} 
-        size={20} 
+        size={DESIGN_SYSTEM.iconSizes.sm} 
         color={selectedCategory === item.name ? theme.colors.white : item.color} 
       />
-      <Text style={[
-        styles.categoryItemText,
-        selectedCategory === item.name && styles.categoryItemTextActive,
-      ]}>
+      <LabelText 
+        variant="small"
+        style={[
+          styles.categoryItemText,
+          selectedCategory === item.name && styles.categoryItemTextActive,
+        ]}
+      >
         {item.name}
-      </Text>
+      </LabelText>
+    </TouchableOpacity>
+  );
+
+  const renderSpaceCard = ({ item }) => (
+    <TouchableOpacity style={styles.spaceCard}>
+      <View style={styles.spaceHeader}>
+        <View style={styles.spaceHostInfo}>
+          <View style={styles.spaceAvatarContainer}>
+            <Image source={{ uri: item.host.avatar }} style={styles.spaceHostAvatar} />
+            {item.host.verified && (
+              <View style={styles.spaceVerifiedBadge}>
+                <Ionicons name="checkmark-circle" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
+              </View>
+            )}
+          </View>
+          <View style={styles.spaceHostDetails}>
+            <LabelText variant="small" style={styles.spaceHostName}>{item.host.name}</LabelText>
+            <LabelText variant="small" style={styles.spaceCategory}>{item.category}</LabelText>
+          </View>
+        </View>
+        
+        {/* Live indicator */}
+        <View style={styles.spaceLiveIndicator}>
+          {item.isLive ? (
+            <View style={styles.liveIndicator}>
+              <View style={styles.liveDot} />
+              <LabelText variant="small" style={styles.liveText}>LIVE</LabelText>
+            </View>
+          ) : (
+            <LabelText variant="small" style={styles.spaceDuration}>{item.duration}</LabelText>
+          )}
+        </View>
+      </View>
+
+      <View style={styles.spaceContent}>
+        <TitleText variant="small" style={styles.spaceTitle}>{item.title}</TitleText>
+        <BodyText variant="small" style={styles.spaceTopic}>{item.topic}</BodyText>
+      </View>
+
+      <View style={styles.spaceFooter}>
+        <View style={styles.spaceStats}>
+          <View style={styles.spaceStat}>
+            <Ionicons name="mic" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray[600]} />
+            <LabelText variant="small" style={styles.spaceStatText}>{item.participants}</LabelText>
+          </View>
+          <View style={styles.spaceStat}>
+            <Ionicons name="ear" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray[600]} />
+            <LabelText variant="small" style={styles.spaceStatText}>{item.listeners}</LabelText>
+          </View>
+        </View>
+
+        {/* Speaker avatars */}
+        <View style={styles.spaceSpeakers}>
+          {item.speakers.slice(0, 3).map((speaker, index) => (
+            <Image 
+              key={index}
+              source={{ uri: speaker.avatar }} 
+              style={[
+                styles.spaceSpeakerAvatar,
+                { marginLeft: index > 0 ? -8 : 0 }
+              ]} 
+            />
+          ))}
+          {item.speakers.length > 3 && (
+            <View style={[styles.spaceSpeakerAvatar, styles.spaceSpeakerMore]}>
+              <LabelText variant="small" style={styles.spaceSpeakerMoreText}>
+                +{item.speakers.length - 3}
+              </LabelText>
+            </View>
+          )}
+        </View>
+      </View>
     </TouchableOpacity>
   );
 
@@ -487,9 +595,19 @@ export default function HomeScreen({ navigation }) {
     <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
       {/* Header */}
       <Header
-        title="🇳🇬 NaijaConnect"
+        title="Jappa"
         rightComponent={
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Post')}
+              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+            >
+              <Ionicons 
+                name="add-circle" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setIsSearchExpanded(true)}
               style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
@@ -520,7 +638,11 @@ export default function HomeScreen({ navigation }) {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Local Deals Section */}
         <View style={LAYOUT_PATTERNS.section.container}>
-          <SectionHeader title="Local Deals" />
+          <View style={LAYOUT_PATTERNS.section.header}>
+            <LabelText variant="medium" style={{ color: theme.colors.gray[900], fontWeight: '600' }}>
+              Local Deals
+            </LabelText>
+          </View>
           <FlatList
             data={localDeals}
             renderItem={renderDealCard}
@@ -544,120 +666,124 @@ export default function HomeScreen({ navigation }) {
                   ]}
                   onPress={() => setSelectedFilter(filter)}
                 >
-                  <Text
+                  <LabelText
+                    variant="small"
                     style={[
                       styles.filterText,
                       selectedFilter === filter && styles.filterTextActive,
                     ]}
                   >
                     {filter}
-                  </Text>
+                  </LabelText>
                 </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
         )}
 
-        {/* Community Feed */}
+        {/* Trending Spaces Section */}
         <View style={LAYOUT_PATTERNS.section.container}>
-          <SectionHeader title="Community" />
-          
-          {/* Feed Categories - Hidden by default */}
-          <View style={styles.categoriesContainer}>
-            <FlatList
-              data={feedCategories}
-              renderItem={renderCategoryItem}
-              keyExtractor={(item) => item.id}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.categoriesList}
-            />
+          <View style={LAYOUT_PATTERNS.section.header}>
+            <LabelText variant="medium" style={{ color: theme.colors.gray[900], fontWeight: '600' }}>
+              Trending Spaces
+            </LabelText>
           </View>
           
-          {/* Preview Posts */}
-          {communityPosts.slice(0, 2).map((post) => (
-            <View key={post.id} style={styles.postCard}>
-              <View style={styles.postHeader}>
-                <View style={styles.userInfo}>
-                  <View style={styles.avatarContainer}>
-                    <Image source={{ uri: post.user.avatar }} style={styles.userAvatar} />
+          <FlatList
+            data={spaces}
+            renderItem={renderSpaceCard}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={LAYOUT_PATTERNS.list.container}
+          />
+        </View>
+
+        {/* Topics Section */}
+        <View style={LAYOUT_PATTERNS.section.container}>
+          <View style={LAYOUT_PATTERNS.section.header}>
+            <LabelText variant="medium" style={{ color: theme.colors.gray[900], fontWeight: '600' }}>
+              Topics
+            </LabelText>
+          </View>
+          
+          {communityPosts.slice(0, 3).map((post) => (
+            <View key={post.id} style={styles.topicCard}>
+              <View style={styles.topicHeader}>
+                <View style={styles.topicUserInfo}>
+                  <View style={styles.topicAvatarContainer}>
+                    <Image source={{ uri: post.user.avatar }} style={styles.topicUserAvatar} />
                     {post.user.verified && (
-                      <View style={styles.verifiedBadge}>
-                        <Ionicons name="checkmark-circle" size={12} color={theme.colors.primary} />
+                      <View style={styles.topicVerifiedBadge}>
+                        <Ionicons name="checkmark-circle" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
                       </View>
                     )}
                   </View>
-                  <View style={styles.userDetails}>
-                    <Text style={styles.userName}>{post.user.name}</Text>
-                    <View style={styles.userMeta}>
-                      <Ionicons name="location" size={12} color={theme.colors.gray} />
-                      <Text style={styles.userLocation}>{post.user.location}</Text>
-                      <Text style={styles.timeSeparator}>•</Text>
-                      <Ionicons name="time" size={12} color={theme.colors.gray} />
-                      <Text style={styles.userTime}>{post.user.time}</Text>
+                  <View style={styles.topicUserDetails}>
+                    <LabelText variant="small" style={styles.topicUserName}>{post.user.name}</LabelText>
+                    <View style={styles.topicUserMeta}>
+                      <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
+                      <LabelText variant="small" style={styles.topicUserLocation}>{post.user.location}</LabelText>
+                      <LabelText variant="small" style={styles.topicTimeSeparator}>•</LabelText>
+                      <Ionicons name="time" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
+                      <LabelText variant="small" style={styles.topicUserTime}>{post.user.time}</LabelText>
                     </View>
                   </View>
                 </View>
-                <TouchableOpacity style={styles.postOptions}>
-                  <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.gray} />
+                <TouchableOpacity style={styles.topicOptions}>
+                  <Ionicons name="ellipsis-horizontal" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
                 </TouchableOpacity>
               </View>
               
               {/* Visual Priority Indicators */}
-              <View style={styles.postPriorityIndicators}>
+              <View style={styles.topicPriorityIndicators}>
                 {post.trending && <PriorityIndicator type="trending" />}
                 {post.engagement === 'very-high' && <PriorityIndicator type="popular" />}
                 {post.user.verified && <PriorityIndicator type="verified" />}
               </View>
               
               {post.category && (
-                <View style={styles.categoryContainer}>
-                  <Text style={styles.categoryLabel}>{post.category}</Text>
+                <View style={styles.topicCategoryContainer}>
+                  <LabelText variant="small" style={styles.topicCategoryLabel}>{post.category}</LabelText>
                 </View>
               )}
               
-              <Text style={styles.postContent}>{post.content}</Text>
+              <BodyText variant="small" style={styles.topicContent}>{post.content}</BodyText>
               
               {post.location && (
-                <View style={styles.locationContainer}>
-                  <Ionicons name="location" size={16} color={theme.colors.primary} />
-                  <Text style={styles.locationText}>{post.location}</Text>
+                <View style={styles.topicLocationContainer}>
+                  <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.primary} />
+                  <LabelText variant="small" style={styles.topicLocationText}>{post.location}</LabelText>
                 </View>
               )}
               
               {/* Visual Engagement Display */}
-              <View style={styles.engagementContainer}>
+              <View style={styles.topicEngagementContainer}>
                 <EngagementVisualizer likes={post.likes} comments={post.comments} shares={post.shares} />
               </View>
               
-              <View style={styles.postActions}>
-                <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="heart-outline" size={20} color={theme.colors.gray} />
-                  <Text style={styles.actionText}>{post.likes}</Text>
+              <View style={styles.topicActions}>
+                <TouchableOpacity style={styles.topicActionButton}>
+                  <Ionicons name="heart-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
+                  <LabelText variant="small" style={styles.topicActionText}>{post.likes}</LabelText>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="chatbubble-outline" size={20} color={theme.colors.gray} />
-                  <Text style={styles.actionText}>{post.comments}</Text>
+                <TouchableOpacity style={styles.topicActionButton}>
+                  <Ionicons name="chatbubble-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
+                  <LabelText variant="small" style={styles.topicActionText}>{post.comments}</LabelText>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton}>
-                  <Ionicons name="share-outline" size={20} color={theme.colors.gray} />
-                  <Text style={styles.actionText}>{post.shares}</Text>
+                <TouchableOpacity style={styles.topicActionButton}>
+                  <Ionicons name="share-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
+                  <LabelText variant="small" style={styles.topicActionText}>{post.shares}</LabelText>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.replyButton}>
-                  <Ionicons name="send" size={16} color={theme.colors.primary} />
-                  <Text style={styles.replyText}>Reply</Text>
+                <TouchableOpacity style={styles.topicReplyButton}>
+                  <Ionicons name="send" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
+                  <LabelText variant="small" style={styles.topicReplyText}>Reply</LabelText>
                 </TouchableOpacity>
               </View>
             </View>
           ))}
         </View>
       </ScrollView>
-
-      {/* Enhanced Floating Action Button */}
-      <FloatingActionButton 
-        onPress={() => navigation.navigate('Post')}
-        onLongPress={() => Alert.alert('Create Post', 'Choose what to create')}
-      />
     </SafeAreaView>
   );
 }
@@ -1210,23 +1336,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: theme.spacing.xs,
   },
-  fabContainer: {
-    position: 'relative',
-  },
-  tooltip: {
-    position: 'absolute',
-    bottom: 60, // Adjust as needed
-    right: 10, // Adjust as needed
-    backgroundColor: theme.colors.black,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.md,
-    zIndex: 10,
-  },
-  tooltipText: {
-    color: theme.colors.white,
-    fontSize: 12,
-  },
+
   categoriesContainer: {
     paddingHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.md,
@@ -1310,5 +1420,248 @@ const styles = StyleSheet.create({
   progressContainer: {
     flex: 1,
     marginLeft: theme.spacing.sm,
+  },
+
+  // Spaces Styles
+  spaceCard: {
+    backgroundColor: theme.colors.white,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    marginRight: theme.spacing.md,
+    width: 280,
+    ...DESIGN_SYSTEM.shadows.small,
+  },
+  spaceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: theme.spacing.sm,
+  },
+  spaceHostInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  spaceAvatarContainer: {
+    position: 'relative',
+    marginRight: theme.spacing.sm,
+  },
+  spaceHostAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  spaceVerifiedBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: theme.colors.white,
+    borderRadius: 10,
+    padding: 1,
+  },
+  spaceHostDetails: {
+    flex: 1,
+  },
+  spaceHostName: {
+    color: theme.colors.gray[900],
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  spaceCategory: {
+    color: theme.colors.gray[600],
+  },
+  spaceLiveIndicator: {
+    alignItems: 'flex-end',
+  },
+  liveIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.error,
+    paddingHorizontal: theme.spacing.xs,
+    paddingVertical: 2,
+    borderRadius: theme.borderRadius.sm,
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: theme.colors.white,
+    marginRight: 4,
+  },
+  liveText: {
+    color: theme.colors.white,
+    fontWeight: '600',
+  },
+  spaceDuration: {
+    color: theme.colors.gray[600],
+  },
+  spaceContent: {
+    marginBottom: theme.spacing.sm,
+  },
+  spaceTitle: {
+    color: theme.colors.gray[900],
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  spaceTopic: {
+    color: theme.colors.gray[700],
+    lineHeight: 18,
+  },
+  spaceFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  spaceStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+  },
+  spaceStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  spaceStatText: {
+    color: theme.colors.gray[600],
+  },
+  spaceSpeakers: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  spaceSpeakerAvatar: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: theme.colors.white,
+  },
+  spaceSpeakerMore: {
+    backgroundColor: theme.colors.gray[300],
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  spaceSpeakerMoreText: {
+    color: theme.colors.gray[700],
+    fontWeight: '600',
+  },
+
+  // Topics Styles
+  topicCard: {
+    backgroundColor: theme.colors.white,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    ...DESIGN_SYSTEM.shadows.small,
+  },
+  topicHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: theme.spacing.sm,
+  },
+  topicUserInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  topicAvatarContainer: {
+    position: 'relative',
+    marginRight: theme.spacing.sm,
+  },
+  topicUserAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  topicVerifiedBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: theme.colors.white,
+    borderRadius: 10,
+    padding: 1,
+  },
+  topicUserDetails: {
+    flex: 1,
+  },
+  topicUserName: {
+    color: theme.colors.gray[900],
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  topicUserMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  topicUserLocation: {
+    color: theme.colors.gray[600],
+  },
+  topicTimeSeparator: {
+    color: theme.colors.gray[600],
+  },
+  topicUserTime: {
+    color: theme.colors.gray[600],
+  },
+  topicOptions: {
+    padding: theme.spacing.xs,
+  },
+  topicPriorityIndicators: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.xs,
+    marginBottom: theme.spacing.xs,
+  },
+  topicCategoryContainer: {
+    marginBottom: theme.spacing.sm,
+  },
+  topicCategoryLabel: {
+    color: theme.colors.primary,
+    fontWeight: '600',
+  },
+  topicContent: {
+    color: theme.colors.gray[900],
+    lineHeight: 20,
+    marginBottom: theme.spacing.sm,
+  },
+  topicLocationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.sm,
+    gap: 4,
+  },
+  topicLocationText: {
+    color: theme.colors.primary,
+  },
+  topicEngagementContainer: {
+    marginBottom: theme.spacing.sm,
+  },
+  topicActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  topicActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    padding: theme.spacing.xs,
+  },
+  topicActionText: {
+    color: theme.colors.gray[600],
+  },
+  topicReplyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.lightGray,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.round,
+    gap: 4,
+  },
+  topicReplyText: {
+    color: theme.colors.primary,
+    fontWeight: '500',
   },
 }); 

@@ -86,8 +86,42 @@ const profileMenuItems = [
 export default function ProfileScreen({ navigation }) {
   return (
     <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
+      <Header
+        title="Profile"
+        subtitle="Manage your account"
+        rightComponent={
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Post')}
+              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+            >
+              <Ionicons 
+                name="add-circle" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+            >
+              <Ionicons 
+                name="search" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons 
+                name="notifications-outline" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+          </View>
+        }
+      />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Profile Header */}
+        {/* Profile Content */}
         <View style={styles.profileHeader}>
           <View style={styles.profileImageContainer}>
             <Image

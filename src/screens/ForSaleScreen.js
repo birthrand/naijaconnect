@@ -394,6 +394,16 @@ export default function NetworkScreen({ navigation }) {
         rightComponent={
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TouchableOpacity
+              onPress={() => navigation.navigate('Post')}
+              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+            >
+              <Ionicons 
+                name="add-circle" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setIsSearchVisible(true)}
               style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
             >

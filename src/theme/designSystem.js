@@ -32,6 +32,13 @@ export const DESIGN_SYSTEM = {
     xxl: 48,
   },
 
+  // Shadows
+  shadows: {
+    small: theme.shadows.small,
+    medium: theme.shadows.medium,
+    large: theme.shadows.large,
+  },
+
   // Card Dimensions
   cards: {
     standard: {

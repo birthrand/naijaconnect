@@ -12,6 +12,7 @@ import OnboardingScreen from './src/screens/OnboardingScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import CommunityScreen from './src/screens/CommunityScreen';
 import DiscoverScreen from './src/screens/DiscoverScreen';
 import PostScreen from './src/screens/PostScreen';
 import ForSaleScreen from './src/screens/ForSaleScreen';
@@ -40,12 +41,12 @@ function TabNavigator() {
 
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Community') {
+            iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Discover') {
             iconName = focused ? 'compass' : 'compass-outline';
-          } else if (route.name === 'Post') {
-            iconName = focused ? 'add-circle' : 'add-circle-outline';
-                  } else if (route.name === 'Network') {
-          iconName = focused ? 'bag' : 'bag-outline';
+          } else if (route.name === 'Network') {
+            iconName = focused ? 'bag' : 'bag-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           }
@@ -76,20 +77,20 @@ function TabNavigator() {
         options={{ tabBarLabel: 'Home' }}
       />
       <Tab.Screen 
+        name="Community" 
+        component={CommunityScreen}
+        options={{ tabBarLabel: 'Community' }}
+      />
+      <Tab.Screen 
         name="Discover" 
         component={DiscoverScreen}
         options={{ tabBarLabel: 'Discover' }}
       />
-      <Tab.Screen 
-        name="Post" 
-        component={PostScreen}
-        options={{ tabBarLabel: 'Post' }}
+      <Tab.Screen
+        name="Network"
+        component={ForSaleScreen}
+        options={{ tabBarLabel: 'Network' }}
       />
-              <Tab.Screen
-          name="Network"
-          component={ForSaleScreen}
-          options={{ tabBarLabel: 'Network' }}
-        />
       <Tab.Screen 
         name="Profile" 
         component={ProfileScreen}
@@ -120,6 +121,7 @@ export default function App() {
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="MainApp" component={TabNavigator} />
+            <Stack.Screen name="Post" component={PostScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Messages" component={MessagesScreen} />
             <Stack.Screen name="Events" component={EventsScreen} />

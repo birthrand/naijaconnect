@@ -22,6 +22,7 @@ export const theme = {
     surface: '#FFFFFF', // White surface
     white: '#FFFFFF',
     black: '#000000',
+    lightGray: '#F5F5F5', // Light gray for borders and backgrounds
     
     // Improved gray scale for better typography hierarchy
     gray: {
@@ -36,6 +37,7 @@ export const theme = {
       800: '#424242',
       900: '#212121',
     },
+
     
     // Semantic colors with better contrast
     success: '#4CAF50',
