@@ -215,15 +215,15 @@ export default function CommunityScreen({ navigation }) {
           <View style={styles.headerActions}>
             <TouchableOpacity
               style={styles.headerAction}
-              onPress={() => navigation.navigate('Post')}
+              onPress={() => Alert.alert('Search', 'Search coming soon')}
             >
-              <Ionicons name="add-circle" size={24} color="#ffffff" />
+              <Ionicons name="search" size={20} color="#ffffff" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.headerAction}
-              onPress={() => Alert.alert('Search', 'Search coming soon')}
+              onPress={() => navigation.navigate('Post')}
             >
-              <Ionicons name="search" size={24} color="#ffffff" />
+              <Ionicons name="add-circle" size={24} color="#ffffff" />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.headerAction}

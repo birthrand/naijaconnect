@@ -6,29 +6,26 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Import screens
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import TrendingScreen from './src/screens/TrendingScreen';
 import CommunityScreen from './src/screens/CommunityScreen';
 import DiscoverScreen from './src/screens/DiscoverScreen';
 import PostScreen from './src/screens/PostScreen';
 import ForSaleScreen from './src/screens/ForSaleScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
-import ChatScreen from './src/screens/ChatScreen';
-import MessagesScreen from './src/screens/MessagesScreen';
-import EventsScreen from './src/screens/EventsScreen';
-import GroupsScreen from './src/screens/GroupsScreen';
-import JobBoardScreen from './src/screens/JobBoardScreen';
-import BusinessDirectoryScreen from './src/screens/BusinessDirectoryScreen';
-import SettingsScreen from './src/screens/SettingsScreen';
+import HelpSupportScreen from './src/screens/HelpSupportScreen';
+import UserProfileScreen from './src/screens/UserProfileScreen';
+import SideHustleScreen from './src/screens/SideHustleScreen';
 
 // Import theme and context
 import { theme } from './src/theme/theme';
-import { DESIGN_SYSTEM } from './src/theme/designSystem';
 import { SupabaseProvider, useSupabase } from './src/contexts/SupabaseContext';
 
 const Stack = createStackNavigator();
@@ -43,33 +40,28 @@ function TabNavigator() {
 
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Trending') {
+            iconName = focused ? 'trending-up' : 'trending-up-outline';
           } else if (route.name === 'Community') {
             iconName = focused ? 'people' : 'people-outline';
-          } else if (route.name === 'Discover') {
-            iconName = focused ? 'compass' : 'compass-outline';
-          } else if (route.name === 'Network') {
-            iconName = focused ? 'bag' : 'bag-outline';
-          } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'SideHustle') {
+            iconName = focused ? 'briefcase' : 'briefcase-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#667eea', // Vibrant accent color from onboarding
-        tabBarInactiveTintColor: '#666666', // Muted gray for inactive
+        tabBarActiveTintColor: '#667eea',
+        tabBarInactiveTintColor: '#666666',
         tabBarStyle: {
-          backgroundColor: '#1E1E1E', // Dark background matching onboarding
-          borderTopWidth: 0, // Remove border
+          backgroundColor: '#1E1E1E',
+          borderTopWidth: 0,
           paddingBottom: 8,
           paddingTop: 8,
           height: 80,
-          borderTopLeftRadius: 20, // Rounded top corners
+          borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           shadowColor: '#000000',
-          shadowOffset: {
-            width: 0,
-            height: -4,
-          },
+          shadowOffset: { width: 0, height: -4 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
           elevation: 8,
@@ -82,30 +74,25 @@ function TabNavigator() {
         headerShown: false,
       })}
     >
-      <Tab.Screen 
-        name="Home" 
+      <Tab.Screen
+        name="Home"
         component={HomeScreen}
         options={{ tabBarLabel: 'Home' }}
       />
-      <Tab.Screen 
-        name="Community" 
+      <Tab.Screen
+        name="Trending"
+        component={TrendingScreen}
+        options={{ tabBarLabel: 'Trending' }}
+      />
+      <Tab.Screen
+        name="Community"
         component={CommunityScreen}
         options={{ tabBarLabel: 'Community' }}
       />
-      <Tab.Screen 
-        name="Discover" 
-        component={DiscoverScreen}
-        options={{ tabBarLabel: 'Discover' }}
-      />
       <Tab.Screen
-        name="Network"
-        component={ForSaleScreen}
+        name="SideHustle"
+        component={SideHustleScreen}
         options={{ tabBarLabel: 'SideHustle' }}
-      />
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileScreen}
-        options={{ tabBarLabel: 'Profile' }}
       />
     </Tab.Navigator>
   );
@@ -113,42 +100,27 @@ function TabNavigator() {
 
 function AppContent() {
   const { user, loading } = useSupabase();
-
+  
   if (loading) {
-    // You can create a loading screen here
-    return null;
+    return null; // Loading screen
   }
 
   return (
     <NavigationContainer>
-      <StatusBar 
-        style="light" 
-        backgroundColor="transparent" 
-        translucent={true}
-        barStyle="light-content"
-      />
-      <Stack.Navigator
-        initialRouteName={user ? "MainApp" : "Onboarding"}
-        screenOptions={{
-          headerShown: false,
-        }}
+      <StatusBar style="light" backgroundColor="transparent" translucent={true} barStyle="light-content" />
+      <Stack.Navigator 
+        initialRouteName={user ? "MainApp" : "Onboarding"} 
+        screenOptions={{ headerShown: false }}
       >
         {user ? (
-          // Authenticated user routes
           <>
             <Stack.Screen name="MainApp" component={TabNavigator} />
             <Stack.Screen name="Post" component={PostScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-            <Stack.Screen name="Chat" component={ChatScreen} />
-            <Stack.Screen name="Messages" component={MessagesScreen} />
-            <Stack.Screen name="Events" component={EventsScreen} />
-            <Stack.Screen name="Groups" component={GroupsScreen} />
-            <Stack.Screen name="JobBoard" component={JobBoardScreen} />
-            <Stack.Screen name="BusinessDirectory" component={BusinessDirectoryScreen} />
-            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+            <Stack.Screen name="UserProfile" component={UserProfileScreen} />
           </>
         ) : (
-          // Non-authenticated user routes
           <>
             <Stack.Screen name="Onboarding" component={OnboardingScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />
@@ -162,12 +134,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={theme}>
-        <SupabaseProvider>
-          <AppContent />
-        </SupabaseProvider>
-      </PaperProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <PaperProvider theme={theme}>
+          <SupabaseProvider>
+            <AppContent />
+          </SupabaseProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 } 

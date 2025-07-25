@@ -12,6 +12,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -103,7 +104,7 @@ export default function PostScreen({ navigation }) {
   const handleImagePick = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.MediaType.Images,
         allowsMultipleSelection: true,
         aspect: [4, 3],
         quality: 0.8,
@@ -129,13 +130,20 @@ export default function PostScreen({ navigation }) {
     const uploadedUrls = [];
     for (const imageUri of images) {
       try {
-        const fileName = `posts/${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`;
+        // Get file extension from URI
+        const fileExtension = imageUri.split('.').pop().toLowerCase();
+        const mimeType = `image/${fileExtension === 'jpg' ? 'jpeg' : fileExtension}`;
+        
+        const fileName = `posts/${user.id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
+        
+        // Create a proper file object
+        const response = await fetch(imageUri);
+        const blob = await response.blob();
+        
         const { data, error } = await supabase.storage
           .from('post-images')
-          .upload(fileName, {
-            uri: imageUri,
-            type: 'image/jpeg',
-            name: fileName,
+          .upload(fileName, blob, {
+            contentType: mimeType,
           });
 
         if (error) throw error;
@@ -169,19 +177,26 @@ export default function PostScreen({ navigation }) {
       // Upload images first
       const imageUrls = await uploadImages(formData.images);
 
-      // Create post data
+      // Create post data - only include fields that exist in the database
       const postData = {
         user_id: user.id,
         type: selectedType,
-        title: formData.title,
+        title: formData.title || null,
         content: formData.content,
-        location: formData.location,
+        location: formData.location || null,
         price: formData.price ? parseFloat(formData.price) : null,
         event_date: formData.date && formData.time ? `${formData.date} ${formData.time}` : null,
-        category: formData.category,
-        images: imageUrls,
+        category: formData.category || null,
+        images: imageUrls.length > 0 ? imageUrls : null,
         created_at: new Date().toISOString(),
       };
+
+      // Remove null values to avoid database errors
+      Object.keys(postData).forEach(key => {
+        if (postData[key] === null) {
+          delete postData[key];
+        }
+      });
 
       // Insert into database
       const { data, error } = await supabase
@@ -264,7 +279,7 @@ export default function PostScreen({ navigation }) {
     switch (selectedType) {
       case 'business':
         fields.push(
-          <View key="location" style={styles.inputContainer}>
+          <View key="business-location" style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Location</Text>
             <TextInput
               style={styles.input}
@@ -278,8 +293,8 @@ export default function PostScreen({ navigation }) {
         break;
       case 'event':
         fields.push(
-          <>
-            <View key="location" style={styles.inputContainer}>
+          <React.Fragment key="event-fields">
+            <View key="event-location" style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Event Location</Text>
               <TextInput
                 style={styles.input}
@@ -289,7 +304,7 @@ export default function PostScreen({ navigation }) {
                 onChangeText={(text) => updateFormData('location', text)}
               />
             </View>
-            <View key="datetime" style={styles.row}>
+            <View key="event-datetime" style={styles.row}>
               <View style={[styles.inputContainer, styles.halfWidth]}>
                 <Text style={styles.inputLabel}>Date</Text>
                 <TextInput
@@ -311,13 +326,13 @@ export default function PostScreen({ navigation }) {
                 />
               </View>
             </View>
-          </>
+          </React.Fragment>
         );
         break;
       case 'listing':
         fields.push(
-          <>
-            <View key="price" style={styles.inputContainer}>
+          <React.Fragment key="listing-fields">
+            <View key="listing-price" style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Price</Text>
               <TextInput
                 style={styles.input}
@@ -328,7 +343,7 @@ export default function PostScreen({ navigation }) {
                 keyboardType="numeric"
               />
             </View>
-            <View key="location" style={styles.inputContainer}>
+            <View key="listing-location" style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Location</Text>
               <TextInput
                 style={styles.input}
@@ -338,13 +353,25 @@ export default function PostScreen({ navigation }) {
                 onChangeText={(text) => updateFormData('location', text)}
               />
             </View>
-          </>
+          </React.Fragment>
         );
         break;
     }
 
     return fields;
   };
+
+  const renderImageItem = ({ item, index }) => (
+    <View key={`image-${index}`} style={styles.imagePreview}>
+      <Image source={{ uri: item }} style={styles.previewImage} />
+      <TouchableOpacity
+        style={styles.removeImageButton}
+        onPress={() => removeImage(index)}
+      >
+        <Ionicons name="close-circle" size={20} color="#ffffff" />
+      </TouchableOpacity>
+    </View>
+  );
 
   const renderStep1 = () => (
     <View style={styles.stepContainer}>
@@ -394,19 +421,16 @@ export default function PostScreen({ navigation }) {
           </TouchableOpacity>
           
           {formData.images.length > 0 && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagePreviewContainer}>
-              {formData.images.map((image, index) => (
-                <View key={index} style={styles.imagePreview}>
-                  <Image source={{ uri: image }} style={styles.previewImage} />
-                  <TouchableOpacity
-                    style={styles.removeImageButton}
-                    onPress={() => removeImage(index)}
-                  >
-                    <Ionicons name="close-circle" size={20} color="#ffffff" />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </ScrollView>
+            <View style={styles.imagePreviewContainer}>
+              <FlatList
+                data={formData.images}
+                renderItem={renderImageItem}
+                keyExtractor={(item, index) => index.toString()}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.imageListContainer}
+              />
+            </View>
           )}
         </View>
       </View>
@@ -654,6 +678,9 @@ const styles = StyleSheet.create({
   },
   imagePreviewContainer: {
     marginTop: 16,
+  },
+  imageListContainer: {
+    paddingRight: 12,
   },
   imagePreview: {
     marginRight: 12,

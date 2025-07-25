@@ -271,4 +271,237 @@ export const useSeedData = () => {
     clearUserData: () => clearUserData(user),
     sampleData,
   };
+};
+
+// Sample posts with media
+const samplePosts = [
+  {
+    type: 'community',
+    title: null,
+    content: 'Just discovered this amazing new restaurant in Victoria Island! The jollof rice is absolutely 🔥. Anyone else tried it?',
+    location: 'Victoria Island, Lagos',
+    price: null,
+    event_date: null,
+    category: 'Food & Dining',
+    images: [
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'business',
+    title: 'Tech Solutions Nigeria',
+    content: 'We\'re excited to announce our new office opening in Lagos! We\'re hiring talented developers to join our growing team. Check out our new workspace!',
+    location: 'Lagos, Nigeria',
+    price: null,
+    event_date: null,
+    category: 'Technology',
+    images: [
+      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'event',
+    title: 'Nigerian Tech Meetup 2024',
+    content: 'Join us for the biggest tech meetup in Nigeria! Network with industry leaders, learn about the latest trends, and discover amazing opportunities.',
+    location: 'Eko Hotel, Lagos',
+    price: null,
+    event_date: '2024-02-15 18:00:00',
+    category: 'Technology',
+    images: [
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'listing',
+    title: 'iPhone 14 Pro Max - Like New',
+    content: 'Selling my iPhone 14 Pro Max in perfect condition. Only used for 6 months, comes with original box and accessories.',
+    location: 'Abuja, Nigeria',
+    price: 850000,
+    event_date: null,
+    category: 'Electronics',
+    images: [
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'job',
+    title: 'Senior React Developer',
+    content: 'We\'re looking for a talented React developer to join our remote team. Must have 3+ years experience and be passionate about building great products.',
+    location: 'Remote',
+    price: null,
+    event_date: null,
+    category: 'Technology',
+    images: [
+      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'community',
+    title: null,
+    content: 'Beautiful sunset in Kano today! The weather has been perfect for evening walks. #KanoLife #Nigeria',
+    location: 'Kano, Nigeria',
+    price: null,
+    event_date: null,
+    category: 'Lifestyle',
+    images: [
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'business',
+    title: 'Fashion Boutique Opening',
+    content: 'Excited to announce the opening of our new fashion boutique! We\'ll be featuring the latest trends from local and international designers.',
+    location: 'Port Harcourt, Nigeria',
+    price: null,
+    event_date: null,
+    category: 'Fashion',
+    images: [
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'community',
+    title: null,
+    content: 'Looking for a reliable web developer for a startup project. Must be based in Abuja or willing to relocate. DM me if interested!',
+    location: 'Abuja, Nigeria',
+    price: null,
+    event_date: null,
+    category: 'Professional',
+    images: null, // No images for this post
+  },
+];
+
+// Sample users for the posts
+const sampleUsers = [
+  {
+    id: 'sample-user-1',
+    full_name: 'Veronica Margareth',
+    username: 'veronica_m',
+    email: 'veronica@example.com',
+    bio: 'Food lover and travel enthusiast. Always exploring new restaurants and sharing amazing finds!',
+    location: 'Lagos, Nigeria',
+    avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face',
+  },
+  {
+    id: 'sample-user-2',
+    full_name: 'David Okonkwo',
+    username: 'david_okonkwo',
+    email: 'david@example.com',
+    bio: 'Tech entrepreneur and startup founder. Passionate about building solutions that make a difference.',
+    location: 'Abuja, Nigeria',
+    avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face',
+  },
+  {
+    id: 'sample-user-3',
+    full_name: 'Aisha Bello',
+    username: 'aisha_bello',
+    email: 'aisha@example.com',
+    bio: 'Photographer and content creator. Capturing life\'s beautiful moments one frame at a time.',
+    location: 'Kano, Nigeria',
+    avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face',
+  },
+  {
+    id: 'sample-user-4',
+    full_name: 'Michael Eze',
+    username: 'michael_eze',
+    email: 'michael@example.com',
+    bio: 'Software engineer and tech enthusiast. Always learning and building something new.',
+    location: 'Port Harcourt, Nigeria',
+    avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face',
+  },
+];
+
+export const seedSampleData = async () => {
+  try {
+    console.log('🌱 Seeding sample data...');
+
+    // First, create sample users
+    for (const user of sampleUsers) {
+      const { error: userError } = await supabase
+        .from('users')
+        .upsert([user], { onConflict: 'id' });
+      
+      if (userError) {
+        console.error('Error creating user:', userError);
+      }
+    }
+
+    // Then create sample posts
+    for (let i = 0; i < samplePosts.length; i++) {
+      const post = samplePosts[i];
+      const user = sampleUsers[i % sampleUsers.length]; // Cycle through users
+      
+      const postData = {
+        user_id: user.id,
+        type: post.type,
+        title: post.title,
+        content: post.content,
+        location: post.location,
+        price: post.price,
+        event_date: post.event_date,
+        category: post.category,
+        images: post.images,
+        created_at: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)).toISOString(), // Spread posts over time
+      };
+
+      const { error: postError } = await supabase
+        .from('posts')
+        .insert([postData]);
+
+      if (postError) {
+        console.error('Error creating post:', postError);
+      }
+    }
+
+    console.log('✅ Sample data seeded successfully!');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error seeding sample data:', error);
+    return { success: false, error };
+  }
+};
+
+export const clearSampleData = async () => {
+  try {
+    console.log('🧹 Clearing sample data...');
+
+    // Clear posts
+    const { error: postsError } = await supabase
+      .from('posts')
+      .delete()
+      .in('user_id', sampleUsers.map(u => u.id));
+
+    if (postsError) {
+      console.error('Error clearing posts:', postsError);
+    }
+
+    // Clear users
+    const { error: usersError } = await supabase
+      .from('users')
+      .delete()
+      .in('id', sampleUsers.map(u => u.id));
+
+    if (usersError) {
+      console.error('Error clearing users:', usersError);
+    }
+
+    console.log('✅ Sample data cleared successfully!');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error clearing sample data:', error);
+    return { success: false, error };
+  }
 }; 
