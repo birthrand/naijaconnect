@@ -18,10 +18,8 @@ export default function MediaViewerScreen({ navigation, route }) {
   const [allPosts, setAllPosts] = useState(posts || []);
   const [loading, setLoading] = useState(false);
   const [userProfiles, setUserProfiles] = useState({});
-  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   
   const flatListRef = useRef(null);
-  const mediaFlatListRef = useRef(null);
   const translateY = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -50,33 +48,28 @@ export default function MediaViewerScreen({ navigation, route }) {
   };
 
   const handleSwipeUp = () => {
-    // Go to next post
-    if (currentIndex < allPosts.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setCurrentMediaIndex(0); // Reset media index for new post
-      flatListRef.current?.scrollToIndex({
-        index: currentIndex + 1,
-        animated: true,
-      });
-    } else {
-      // Reached end - close viewer
+    const currentPost = allPosts[currentIndex];
+    
+    if (currentPost.images && currentPost.images.length > 1) {
+      // Multiple images - close viewer
       navigation.goBack();
+    } else {
+      // Single image - go to next post
+      if (currentIndex < allPosts.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+        flatListRef.current?.scrollToIndex({
+          index: currentIndex + 1,
+          animated: true,
+        });
+      } else {
+        // Reached end - close viewer
+        navigation.goBack();
+      }
     }
   };
 
   const handleSwipeDown = () => {
-    // Go to previous post
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setCurrentMediaIndex(0); // Reset media index for new post
-      flatListRef.current?.scrollToIndex({
-        index: currentIndex - 1,
-        animated: true,
-      });
-    } else {
-      // Reached beginning - close viewer
-      navigation.goBack();
-    }
+    navigation.goBack();
   };
 
   const onGestureEvent = Animated.event(
@@ -89,10 +82,10 @@ export default function MediaViewerScreen({ navigation, route }) {
       const { translationY } = event.nativeEvent;
       
       if (translationY < -100) {
-        // Swipe up - next post
+        // Swipe up
         handleSwipeUp();
       } else if (translationY > 100) {
-        // Swipe down - previous post
+        // Swipe down
         handleSwipeDown();
       }
       
@@ -104,8 +97,8 @@ export default function MediaViewerScreen({ navigation, route }) {
     }
   };
 
-  const renderMediaItem = ({ item, index }) => {
-    const post = allPosts[currentIndex];
+  const renderPost = ({ item, index }) => {
+    const post = item;
     const user = userProfiles[post.user_id];
     const hasMultipleImages = post.images && post.images.length > 1;
     const isCurrentPost = index === currentIndex;
@@ -132,41 +125,12 @@ export default function MediaViewerScreen({ navigation, route }) {
               },
             ]}
           >
-            {/* Media FlatList for horizontal scrolling */}
-            <FlatList
-              ref={mediaFlatListRef}
-              data={post.images}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item: imageUrl, index: mediaIndex }) => (
-                <Image
-                  source={{ uri: imageUrl }}
-                  style={styles.mediaImage}
-                  resizeMode="cover"
-                />
-              )}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onMomentumScrollEnd={(event) => {
-                const newIndex = Math.round(event.nativeEvent.contentOffset.x / width);
-                setCurrentMediaIndex(newIndex);
-              }}
+            {/* Media */}
+            <Image
+              source={{ uri: post.images[0] }}
+              style={styles.mediaImage}
+              resizeMode="cover"
             />
-
-            {/* Media Indicators */}
-            {hasMultipleImages && (
-              <View style={styles.mediaIndicators}>
-                {post.images.map((_, index) => (
-                  <View
-                    key={index}
-                    style={[
-                      styles.mediaIndicator,
-                      currentMediaIndex === index && styles.activeMediaIndicator,
-                    ]}
-                  />
-                ))}
-              </View>
-            )}
 
             {/* Gradient Overlay */}
             <LinearGradient
@@ -243,22 +207,17 @@ export default function MediaViewerScreen({ navigation, route }) {
               <Ionicons name="close" size={24} color="#ffffff" />
             </TouchableOpacity>
 
-            {/* Navigation Indicators */}
-            <View style={styles.navigationIndicators}>
-              <View style={styles.navIndicator}>
-                <Ionicons name="arrow-up" size={16} color="#ffffff" />
-                <Text style={styles.navText}>Next post</Text>
-              </View>
-              <View style={styles.navIndicator}>
-                <Ionicons name="arrow-down" size={16} color="#ffffff" />
-                <Text style={styles.navText}>Previous post</Text>
-              </View>
-              {hasMultipleImages && (
-                <View style={styles.navIndicator}>
-                  <Ionicons name="arrow-back" size={16} color="#ffffff" />
-                  <Text style={styles.navText}>Swipe for more</Text>
-                </View>
-              )}
+            {/* Swipe Indicator */}
+            <View style={styles.swipeIndicator}>
+              <Text style={styles.swipeText}>
+                {hasMultipleImages ? 'Swipe up to close' : 'Swipe up for next'}
+              </Text>
+              <Ionicons
+                name={hasMultipleImages ? "arrow-up" : "arrow-up"}
+                size={16}
+                color="#ffffff"
+                style={styles.swipeIcon}
+              />
             </View>
           </Animated.View>
         </PanGestureHandler>
@@ -269,7 +228,6 @@ export default function MediaViewerScreen({ navigation, route }) {
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
       setCurrentIndex(viewableItems[0].index);
-      setCurrentMediaIndex(0); // Reset media index when changing posts
     }
   }).current;
 
@@ -284,7 +242,7 @@ export default function MediaViewerScreen({ navigation, route }) {
         ref={flatListRef}
         data={allPosts.filter(post => post.images && post.images.length > 0)}
         keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-        renderItem={renderMediaItem}
+        renderItem={renderPost}
         pagingEnabled
         showsVerticalScrollIndicator={false}
         onViewableItemsChanged={onViewableItemsChanged}
@@ -417,46 +375,5 @@ const styles = StyleSheet.create({
   },
   swipeIcon: {
     marginTop: 2,
-  },
-  mediaIndicators: {
-    position: 'absolute',
-    top: 100,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    zIndex: 10,
-  },
-  mediaIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    marginHorizontal: 4,
-  },
-  activeMediaIndicator: {
-    backgroundColor: '#ffffff',
-  },
-  navigationIndicators: {
-    position: 'absolute',
-    bottom: 40,
-    left: 20,
-    right: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  navIndicator: {
-    alignItems: 'center',
-  },
-  navText: {
-    fontSize: 10,
-    color: '#ffffff',
-    marginTop: 2,
-    textAlign: 'center',
   },
 }); 
