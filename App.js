@@ -25,9 +25,10 @@ import JobBoardScreen from './src/screens/JobBoardScreen';
 import BusinessDirectoryScreen from './src/screens/BusinessDirectoryScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 
-// Import theme
+// Import theme and context
 import { theme } from './src/theme/theme';
 import { DESIGN_SYSTEM } from './src/theme/designSystem';
+import { SupabaseProvider, useSupabase } from './src/contexts/SupabaseContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -53,20 +54,29 @@ function TabNavigator() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: DESIGN_SYSTEM.navigation.tabBar.activeColor,
-        tabBarInactiveTintColor: DESIGN_SYSTEM.navigation.tabBar.inactiveColor,
+        tabBarActiveTintColor: '#667eea', // Vibrant accent color from onboarding
+        tabBarInactiveTintColor: '#666666', // Muted gray for inactive
         tabBarStyle: {
-          backgroundColor: DESIGN_SYSTEM.navigation.tabBar.backgroundColor,
-          borderTopWidth: DESIGN_SYSTEM.navigation.tabBar.borderTopWidth,
-          borderTopColor: DESIGN_SYSTEM.navigation.tabBar.borderTopColor,
-          paddingBottom: DESIGN_SYSTEM.navigation.tabBar.paddingBottom,
-          paddingTop: DESIGN_SYSTEM.navigation.tabBar.paddingTop,
-          height: DESIGN_SYSTEM.navigation.tabBar.height,
+          backgroundColor: '#1E1E1E', // Dark background matching onboarding
+          borderTopWidth: 0, // Remove border
+          paddingBottom: 8,
+          paddingTop: 8,
+          height: 80,
+          borderTopLeftRadius: 20, // Rounded top corners
+          borderTopRightRadius: 20,
+          shadowColor: '#000000',
+          shadowOffset: {
+            width: 0,
+            height: -4,
+          },
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          elevation: 8,
         },
         tabBarLabelStyle: {
-          fontSize: DESIGN_SYSTEM.navigation.tabBar.labelFontSize,
-          fontWeight: DESIGN_SYSTEM.navigation.tabBar.labelFontWeight,
-          marginTop: 2,
+          fontSize: 12,
+          fontWeight: '600',
+          marginTop: 4,
         },
         headerShown: false,
       })}
@@ -100,26 +110,31 @@ function TabNavigator() {
   );
 }
 
-export default function App() {
+function AppContent() {
+  const { user, loading } = useSupabase();
+
+  if (loading) {
+    // You can create a loading screen here
+    return null;
+  }
+
   return (
-    <SafeAreaProvider>
-      <PaperProvider theme={theme}>
-        <NavigationContainer>
-          <StatusBar 
-            style="dark" 
-            backgroundColor="transparent" 
-            translucent={true}
-            barStyle="dark-content"
-          />
-          <Stack.Navigator
-            initialRouteName="Onboarding"
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
+    <NavigationContainer>
+      <StatusBar 
+        style="light" 
+        backgroundColor="transparent" 
+        translucent={true}
+        barStyle="light-content"
+      />
+      <Stack.Navigator
+        initialRouteName={user ? "MainApp" : "Onboarding"}
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        {user ? (
+          // Authenticated user routes
+          <>
             <Stack.Screen name="MainApp" component={TabNavigator} />
             <Stack.Screen name="Post" component={PostScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />
@@ -129,8 +144,27 @@ export default function App() {
             <Stack.Screen name="JobBoard" component={JobBoardScreen} />
             <Stack.Screen name="BusinessDirectory" component={BusinessDirectoryScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
+          </>
+        ) : (
+          // Non-authenticated user routes
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <PaperProvider theme={theme}>
+        <SupabaseProvider>
+          <AppContent />
+        </SupabaseProvider>
       </PaperProvider>
     </SafeAreaProvider>
   );

@@ -14,6 +14,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme/theme';
 import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
 import {
@@ -99,397 +100,315 @@ const communityPosts = [
       time: 'Now',
       verified: true,
     },
-    content: 'Looking for a skilled woodworker to build a minibar. Any recommendations?',
-    location: 'Victoria Island, Lagos',
-    likes: 12,
-    comments: 8,
-    shares: 3,
-    category: 'Services',
-    engagement: 'high',
-    trending: true,
+    content: 'Just discovered this amazing new restaurant in Victoria Island! The jollof rice is absolutely 🔥. Anyone else tried it?',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop',
+    likes: 124,
+    comments: 23,
+    shares: 8,
+    category: 'Food & Dining',
+    isHot: true,
+    isPinned: false,
   },
   {
     id: '2',
     user: {
-      name: 'Adebayo Johnson',
+      name: 'David Okonkwo',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
       location: 'Abuja',
-      time: '2h',
+      time: '2h ago',
       verified: false,
     },
-    content: 'Just finished my mobile app for local businesses. Anyone interested in collaboration? #Tech #NaijaTech',
-    likes: 24,
-    comments: 15,
-    shares: 7,
-    category: 'Technology',
-    engagement: 'very-high',
-    trending: true,
+    content: 'Looking for a reliable web developer for a startup project. Must be based in Abuja or willing to relocate. DM me if interested!',
+    likes: 89,
+    comments: 45,
+    shares: 12,
+    category: 'Professional',
+    isHot: false,
+    isPinned: true,
   },
   {
     id: '3',
     user: {
-      name: 'Chioma Okechukwu',
+      name: 'Aisha Bello',
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
-      location: 'Enugu',
-      time: '4h',
+      location: 'Kano',
+      time: '4h ago',
       verified: true,
     },
-    content: 'Made Nigerian pepper soup today. Missing home! Who else is cooking traditional dishes this weekend? 🇳🇬',
-    likes: 89,
-    comments: 23,
-    shares: 12,
-    category: 'Culture',
-    engagement: 'medium',
-    trending: false,
+    content: 'Beautiful sunset in Kano today! The weather has been perfect for evening walks. #KanoLife #Nigeria',
+    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+    likes: 256,
+    comments: 34,
+    shares: 67,
+    category: 'Lifestyle',
+    isHot: true,
+    isPinned: false,
   },
 ];
 
-// Feed categories for horizontal scroll
-const feedCategories = [
-  { id: '1', name: 'Services', icon: 'construct', color: theme.colors.primary },
-  { id: '2', name: 'Requests', icon: 'help-circle', color: theme.colors.secondary },
-  { id: '3', name: 'For Sale', icon: 'bag', color: theme.colors.success },
-  { id: '4', name: 'Events', icon: 'calendar', color: theme.colors.warmOrange },
-  { id: '5', name: 'Jobs', icon: 'briefcase', color: theme.colors.info },
-];
-
-// Spaces data similar to Twitter Spaces
 const spaces = [
   {
     id: '1',
-    title: 'Nigerian Tech Startups',
-    host: {
-      name: 'Adaora Nwodo',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
-      verified: true,
-    },
-    participants: 127,
-    listeners: 892,
+    title: 'Tech Talk Nigeria',
+    host: 'Sarah Johnson',
+    participants: 156,
+    listeners: 89,
     isLive: true,
     duration: '45m',
     category: 'Technology',
-    topic: 'Building the next big thing in Lagos',
-    speakers: [
-      { name: 'Kemi Adebayo', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face' },
-      { name: 'David Okonkwo', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face' },
-    ],
+    topic: 'AI in Nigerian Startups',
+    speakers: ['Sarah Johnson', 'Emeka Okafor', 'Fatima Hassan'],
   },
   {
     id: '2',
-    title: 'Jollof Rice Wars',
-    host: {
-      name: 'Chioma Eze',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face',
-      verified: false,
-    },
-    participants: 23,
-    listeners: 156,
+    title: 'Nigerian Fashion Forward',
+    host: 'Chioma Adebayo',
+    participants: 234,
+    listeners: 167,
     isLive: true,
-    duration: '32m',
-    category: 'Food & Culture',
-    topic: 'Which state makes the best jollof?',
-    speakers: [
-      { name: 'Aisha Bello', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=50&h=50&fit=crop&crop=face' },
-    ],
+    duration: '1h 20m',
+    category: 'Fashion',
+    topic: 'Sustainable Fashion in Africa',
+    speakers: ['Chioma Adebayo', 'Kemi Ogunlesi'],
   },
   {
     id: '3',
-    title: 'Nollywood Behind the Scenes',
-    host: {
-      name: 'Genevieve Nnaji',
-      avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&h=100&fit=crop&crop=face',
-      verified: true,
-    },
+    title: 'Business Insights',
+    host: 'Michael Eze',
     participants: 89,
-    listeners: 1247,
+    listeners: 45,
     isLive: false,
-    duration: '1h 15m',
-    category: 'Entertainment',
-    topic: 'The future of Nigerian cinema',
-    speakers: [
-      { name: 'Omotola Jalade', avatar: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=50&h=50&fit=crop&crop=face' },
-      { name: 'Ramsey Nouah', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face' },
-    ],
+    duration: '30m',
+    category: 'Business',
+    topic: 'Digital Marketing Strategies',
+    speakers: ['Michael Eze'],
   },
 ];
 
-// Enhanced Progress Bar with animation
-const ProgressBar = ({ progress, color = theme.colors.primary, urgency = 'normal' }) => {
-  const animatedWidth = useRef(new Animated.Value(0)).current;
+const categories = [
+  { id: '1', name: 'All', icon: 'grid' },
+  { id: '2', name: 'Food', icon: 'restaurant' },
+  { id: '3', name: 'Beauty', icon: 'cut' },
+  { id: '4', name: 'Entertainment', icon: 'musical-notes' },
+  { id: '5', name: 'Health', icon: 'fitness' },
+  { id: '6', name: 'Shopping', icon: 'bag' },
+];
 
-  React.useEffect(() => {
-    Animated.timing(animatedWidth, {
-      toValue: progress,
-      duration: 1000,
-      useNativeDriver: false,
-    }).start();
-  }, [progress]);
-
+const ProgressBar = ({ progress, color = '#667eea', urgency = 'normal' }) => {
   const getUrgencyColor = () => {
     switch (urgency) {
-      case 'critical': return '#FF4444';
-      case 'high': return '#FF8800';
-      case 'medium': return '#FFAA00';
+      case 'critical': return '#ff4757';
+      case 'high': return '#ffa502';
+      case 'medium': return '#2ed573';
       default: return color;
     }
   };
 
   return (
     <View style={styles.progressContainer}>
-      <View style={[styles.progressBar, { backgroundColor: theme.colors.lightGray }]}>
-        <Animated.View 
+      <View style={styles.progressBar}>
+        <Animated.View
           style={[
-            styles.progressFill, 
-            { 
-              width: animatedWidth.interpolate({
-                inputRange: [0, 100],
-                outputRange: ['0%', '100%'],
-              }),
-              backgroundColor: getUrgencyColor() 
-            }
-          ]} 
+            styles.progressFill,
+            {
+              width: `${progress}%`,
+              backgroundColor: getUrgencyColor(),
+            },
+          ]}
         />
       </View>
+      <Text style={styles.progressText}>{progress}% claimed</Text>
     </View>
   );
 };
 
-// Enhanced Metric Card with visual indicators
-const MetricCard = ({ icon, value, label, color = theme.colors.primary, priority = 'normal' }) => {
+const MetricCard = ({ icon, value, label, color = '#667eea', priority = 'normal' }) => {
   const getPriorityStyle = () => {
     switch (priority) {
-      case 'high': return { backgroundColor: color + '20', borderColor: color, borderWidth: 2 };
-      case 'critical': return { backgroundColor: '#FF444420', borderColor: '#FF4444', borderWidth: 2 };
-      default: return { backgroundColor: color + '15' };
+      case 'high': return { backgroundColor: '#ff4757', color: '#ffffff' };
+      case 'medium': return { backgroundColor: '#ffa502', color: '#ffffff' };
+      default: return { backgroundColor: '#2A2A2A', color: '#ffffff' };
     }
   };
 
   return (
-    <View style={styles.metricCard}>
-      <View style={[styles.metricIcon, getPriorityStyle()]}>
-        <Ionicons name={icon} size={16} color={color} />
-      </View>
-      <Text style={styles.metricValue}>{value}</Text>
-      <Text style={styles.metricLabel}>{label}</Text>
+    <View style={[styles.metricCard, getPriorityStyle()]}>
+      <Ionicons name={icon} size={16} color={getPriorityStyle().color} />
+      <Text style={[styles.metricValue, { color: getPriorityStyle().color }]}>{value}</Text>
+      <Text style={[styles.metricLabel, { color: getPriorityStyle().color }]}>{label}</Text>
     </View>
   );
 };
 
-// Visual Priority Indicator Component
 const PriorityIndicator = ({ type, size = 'small' }) => {
   const getIndicatorStyle = () => {
-    const baseStyle = {
-      width: size === 'small' ? 8 : 12,
-      height: size === 'small' ? 8 : 12,
-      borderRadius: size === 'small' ? 4 : 6,
-    };
-
     switch (type) {
-      case 'trending':
-        return { ...baseStyle, backgroundColor: '#FF6B35' };
-      case 'urgent':
-        return { ...baseStyle, backgroundColor: '#FF4444' };
-      case 'popular':
-        return { ...baseStyle, backgroundColor: '#4CAF50' };
-      case 'verified':
-        return { ...baseStyle, backgroundColor: '#2196F3' };
-      case 'pinned':
-        return { ...baseStyle, backgroundColor: '#FFD700' };
-      default:
-        return { ...baseStyle, backgroundColor: theme.colors.gray };
+      case 'hot': return { backgroundColor: '#ff4757', icon: 'flame' };
+      case 'new': return { backgroundColor: '#2ed573', icon: 'star' };
+      case 'verified': return { backgroundColor: '#667eea', icon: 'checkmark-circle' };
+      case 'pinned': return { backgroundColor: '#ffa502', icon: 'pin' };
+      default: return { backgroundColor: '#2A2A2A', icon: 'information-circle' };
     }
   };
 
-  return <View style={getIndicatorStyle()} />;
-};
-
-// Engagement Visualizer Component
-const EngagementVisualizer = ({ likes, comments, shares }) => {
-  const total = likes + comments + shares;
-  const likePercentage = (likes / total) * 100;
-  const commentPercentage = (comments / total) * 100;
-  const sharePercentage = (shares / total) * 100;
+  const style = getIndicatorStyle();
+  const iconSize = size === 'large' ? 16 : 12;
 
   return (
-    <View style={styles.engagementVisualizer}>
-      <View style={[styles.engagementBar, { width: `${likePercentage}%`, backgroundColor: '#FF6B6B' }]} />
-      <View style={[styles.engagementBar, { width: `${commentPercentage}%`, backgroundColor: '#4ECDC4' }]} />
-      <View style={[styles.engagementBar, { width: `${sharePercentage}%`, backgroundColor: '#45B7D1' }]} />
+    <View style={[styles.priorityIndicator, { backgroundColor: style.backgroundColor }]}>
+      <Ionicons name={style.icon} size={iconSize} color="#ffffff" />
     </View>
   );
 };
 
-// Enhanced Search Bar Component
+const EngagementVisualizer = ({ likes, comments, shares }) => {
+  const total = likes + comments + shares;
+  const likePercentage = total > 0 ? (likes / total) * 100 : 0;
+  const commentPercentage = total > 0 ? (comments / total) * 100 : 0;
+  const sharePercentage = total > 0 ? (shares / total) * 100 : 0;
+
+  return (
+    <View style={styles.engagementContainer}>
+      <View style={styles.engagementBar}>
+        <View style={[styles.engagementSegment, { width: `${likePercentage}%`, backgroundColor: '#ff4757' }]} />
+        <View style={[styles.engagementSegment, { width: `${commentPercentage}%`, backgroundColor: '#667eea' }]} />
+        <View style={[styles.engagementSegment, { width: `${sharePercentage}%`, backgroundColor: '#2ed573' }]} />
+      </View>
+      <View style={styles.engagementStats}>
+        <Text style={styles.engagementText}>{likes} likes</Text>
+        <Text style={styles.engagementText}>{comments} comments</Text>
+        <Text style={styles.engagementText}>{shares} shares</Text>
+      </View>
+    </View>
+  );
+};
+
 const SearchBar = ({ activeFilters, onFilterPress }) => (
   <View style={styles.searchContainer}>
     <View style={styles.searchBar}>
-      <Ionicons name="search" size={20} color={theme.colors.gray} />
+      <Ionicons name="search" size={20} color="#666666" style={styles.searchIcon} />
       <TextInput
         style={styles.searchInput}
-        placeholder="Search deals, posts, people..."
-        placeholderTextColor={theme.colors.gray}
+        placeholder="Search posts, people, topics..."
+        placeholderTextColor="#666666"
       />
-      <TouchableOpacity style={styles.micButton}>
-        <Ionicons name="mic" size={20} color={theme.colors.primary} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.filterButton} onPress={onFilterPress}>
-        <Ionicons name="options" size={20} color={theme.colors.primary} />
+      <TouchableOpacity onPress={onFilterPress} style={styles.filterButton}>
+        <Ionicons name="options" size={20} color="#666666" />
       </TouchableOpacity>
     </View>
     {activeFilters.length > 0 && (
       <View style={styles.filterSummary}>
-        <Text style={styles.filterSummaryText}>
-          {activeFilters.join(' · ')}
-        </Text>
+        <Text style={styles.filterText}>Active filters: {activeFilters.join(', ')}</Text>
         <TouchableOpacity>
-          <Ionicons name="close-circle" size={16} color={theme.colors.gray} />
+          <Text style={styles.clearFiltersText}>Clear</Text>
         </TouchableOpacity>
       </View>
     )}
   </View>
 );
 
-
-
 export default function HomeScreen({ navigation }) {
-  const [selectedFilter, setSelectedFilter] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilters, setActiveFilters] = useState([]);
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
-
-  const filters = ['All', 'Lagos', 'Abuja', 'Enugu', 'Port Harcourt', 'Kano', 'Ibadan'];
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [activeFilters, setActiveFilters] = useState([]);
 
   const handleFilterPress = () => {
     Alert.alert(
       'Filter Options',
-      'Choose your filters',
+      'Choose your filter:',
       [
-        { text: 'Lagos', onPress: () => setActiveFilters(['Deals in Lagos']) },
-        { text: 'Beauty', onPress: () => setActiveFilters(['Beauty']) },
-        { text: 'Food', onPress: () => setActiveFilters(['Food']) },
-        { text: 'Clear All', onPress: () => setActiveFilters([]), style: 'destructive' },
+        { text: 'Most Recent', onPress: () => setActiveFilters(['Most Recent']) },
+        { text: 'Most Popular', onPress: () => setActiveFilters(['Most Popular']) },
+        { text: 'Nearby', onPress: () => setActiveFilters(['Nearby']) },
         { text: 'Cancel', style: 'cancel' },
       ]
     );
   };
 
   const renderDealCard = ({ item }) => (
-    <View style={styles.dealCard}>
+    <TouchableOpacity style={styles.dealCard}>
       <View style={styles.dealImageContainer}>
         <Image source={{ uri: item.image }} style={styles.dealImage} />
-        
-        {/* Discount Ribbon - Only show significant discounts */}
-        {item.discount && item.discount !== '10% Off' && (
-          <View style={styles.cornerRibbon}>
-            <Text style={styles.ribbonText}>{item.discount}</Text>
-          </View>
-        )}
-        
-        {/* Urgency indicator - Only for critical items */}
-        {item.urgency === 'critical' && (
-          <View style={styles.urgencyIndicator}>
-            <Ionicons name="flash" size={DESIGN_SYSTEM.iconSizes.xs} color="#FF4444" />
-          </View>
-        )}
+        {item.isPinned && <PriorityIndicator type="pinned" />}
+        <View style={styles.discountRibbon}>
+          <Text style={styles.discountText}>{item.discount}</Text>
+        </View>
       </View>
-      
       <View style={styles.dealContent}>
-        {/* Simplified header - Title only */}
-        <Text style={styles.dealTitle} numberOfLines={1}>{item.title}</Text>
-        
-        {/* Combined location and category - Single line */}
-        <View style={styles.locationRow}>
-          <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
-          <LabelText variant="small" style={styles.locationText}>{item.location}</LabelText>
-          <LabelText variant="small" style={styles.categoryText}> • {item.category}</LabelText>
+        <View style={styles.dealHeader}>
+          <Text style={styles.dealTitle}>{item.title}</Text>
+          {item.isVerified && <PriorityIndicator type="verified" />}
         </View>
-        
-        {/* Essential metrics only */}
-        <View style={styles.dealMetrics}>
-          <View style={styles.metricRow}>
-            <View style={styles.metricItem}>
-              <Ionicons name="people" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
-              <LabelText variant="small" style={styles.metricText}>{item.neighbors}</LabelText>
-            </View>
-            <View style={styles.metricItem}>
-              <Ionicons name="time" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
-              <LabelText variant="small" style={styles.metricText}>{item.timeLeft}</LabelText>
-            </View>
+        <Text style={styles.dealDescription}>{item.description}</Text>
+        <View style={styles.dealStats}>
+          <View style={styles.dealStat}>
+            <Ionicons name="star" size={14} color="#ffa502" />
+            <Text style={styles.dealStatText}>{item.rating}</Text>
+          </View>
+          <View style={styles.dealStat}>
+            <Ionicons name="people" size={14} color="#667eea" />
+            <Text style={styles.dealStatText}>{item.neighbors} neighbors</Text>
+          </View>
+          <View style={styles.dealStat}>
+            <Ionicons name="location" size={14} color="#2ed573" />
+            <Text style={styles.dealStatText}>{item.distance}</Text>
           </View>
         </View>
-        
-        {/* Minimal CTA */}
-        <TouchableOpacity style={styles.ctaButton}>
-          <LabelText variant="small" style={styles.ctaText}>Book</LabelText>
-        </TouchableOpacity>
+        <ProgressBar progress={item.popularity} urgency={item.urgency} />
+        <View style={styles.dealFooter}>
+          <Text style={styles.timeLeft}>{item.timeLeft} left</Text>
+          <TouchableOpacity style={styles.claimButton}>
+            <Text style={styles.claimButtonText}>Claim Deal</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   const renderPost = ({ item }) => (
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
-        <View style={styles.userInfo}>
-          <View style={styles.avatarContainer}>
-            <Image source={{ uri: item.user.avatar }} style={styles.userAvatar} />
-            {/* Verified badge - Only show for high-profile users */}
-            {item.user.verified && item.engagement === 'very-high' && (
-              <View style={styles.verifiedBadge}>
-                <Ionicons name="checkmark-circle" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
-              </View>
-            )}
-          </View>
-          <View style={styles.userDetails}>
-            <Text style={styles.userName}>{item.user.name}</Text>
-            {/* Simplified meta - Combined location and time */}
-            <View style={styles.userMeta}>
-              <LabelText variant="small" style={styles.userLocation}>{item.user.location}</LabelText>
-              <LabelText variant="small" style={styles.timeSeparator}> • </LabelText>
-              <LabelText variant="small" style={styles.userTime}>{item.user.time}</LabelText>
+        <View style={styles.postUserInfo}>
+          <Image source={{ uri: item.user.avatar }} style={styles.postAvatar} />
+          <View style={styles.postUserDetails}>
+            <View style={styles.postUserName}>
+              <Text style={styles.postUserNameText}>{item.user.name}</Text>
+              {item.user.verified && <PriorityIndicator type="verified" />}
             </View>
+            <Text style={styles.postLocation}>{item.user.location} • {item.user.time}</Text>
           </View>
         </View>
-        {/* Options - Hidden by default, show on long press */}
-        <TouchableOpacity style={styles.postOptions}>
-          <Ionicons name="ellipsis-horizontal" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
-        </TouchableOpacity>
-      </View>
-      
-      {/* Category - Only show if not obvious from content */}
-      {item.category && item.category !== 'Services' && (
-        <View style={styles.categoryContainer}>
-          <Text style={styles.categoryLabel}>{item.category}</Text>
+        <View style={styles.postActions}>
+          {item.isHot && <PriorityIndicator type="hot" />}
+          {item.isPinned && <PriorityIndicator type="pinned" />}
         </View>
-      )}
+      </View>
       
       <Text style={styles.postContent}>{item.content}</Text>
       
-      {/* Location - Only show if different from user location */}
-      {item.location && item.location !== item.user.location && (
-        <View style={styles.locationContainer}>
-          <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.primary} />
-          <LabelText variant="small" style={styles.locationText}>{item.location}</LabelText>
-        </View>
+      {item.image && (
+        <Image source={{ uri: item.image }} style={styles.postImage} />
       )}
       
-      {/* Simplified actions - Hide counts, show only icons */}
+      <View style={styles.postCategory}>
+        <Text style={styles.postCategoryText}>{item.category}</Text>
+      </View>
+      
+      <EngagementVisualizer likes={item.likes} comments={item.comments} shares={item.shares} />
+      
       <View style={styles.postActions}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="heart-outline" size={20} color={theme.colors.gray} />
+        <TouchableOpacity style={styles.postAction}>
+          <Ionicons name="heart-outline" size={20} color="#666666" />
+          <Text style={styles.postActionText}>Like</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="chatbubble-outline" size={20} color={theme.colors.gray} />
+        <TouchableOpacity style={styles.postAction}>
+          <Ionicons name="chatbubble-outline" size={20} color="#666666" />
+          <Text style={styles.postActionText}>Comment</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="share-outline" size={20} color={theme.colors.gray} />
+        <TouchableOpacity style={styles.postAction}>
+          <Ionicons name="share-outline" size={20} color="#666666" />
+          <Text style={styles.postActionText}>Share</Text>
         </TouchableOpacity>
-        {/* Reply - Only show for high engagement posts */}
-        {item.engagement === 'high' && (
-          <TouchableOpacity style={styles.replyButton}>
-            <Ionicons name="send" size={16} color={theme.colors.primary} />
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
@@ -504,286 +423,133 @@ export default function HomeScreen({ navigation }) {
     >
       <Ionicons 
         name={item.icon} 
-        size={DESIGN_SYSTEM.iconSizes.sm} 
-        color={selectedCategory === item.name ? theme.colors.white : item.color} 
+        size={16} 
+        color={selectedCategory === item.name ? '#ffffff' : '#666666'} 
       />
-      <LabelText 
-        variant="small"
-        style={[
-          styles.categoryItemText,
-          selectedCategory === item.name && styles.categoryItemTextActive,
-        ]}
-      >
+      <Text style={[
+        styles.categoryText,
+        selectedCategory === item.name && styles.categoryTextActive,
+      ]}>
         {item.name}
-      </LabelText>
+      </Text>
     </TouchableOpacity>
   );
 
   const renderSpaceCard = ({ item }) => (
     <TouchableOpacity style={styles.spaceCard}>
       <View style={styles.spaceHeader}>
-        <View style={styles.spaceHostInfo}>
-          <View style={styles.spaceAvatarContainer}>
-            <Image source={{ uri: item.host.avatar }} style={styles.spaceHostAvatar} />
-            {item.host.verified && (
-              <View style={styles.spaceVerifiedBadge}>
-                <Ionicons name="checkmark-circle" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
-              </View>
-            )}
-          </View>
-          <View style={styles.spaceHostDetails}>
-            <LabelText variant="small" style={styles.spaceHostName}>{item.host.name}</LabelText>
-            <LabelText variant="small" style={styles.spaceCategory}>{item.category}</LabelText>
-          </View>
+        <View style={styles.spaceInfo}>
+          <Text style={styles.spaceTitle}>{item.title}</Text>
+          <Text style={styles.spaceHost}>Hosted by {item.host}</Text>
         </View>
-        
-        {/* Live indicator */}
-        <View style={styles.spaceLiveIndicator}>
-          {item.isLive ? (
-            <View style={styles.liveIndicator}>
-              <View style={styles.liveDot} />
-              <LabelText variant="small" style={styles.liveText}>LIVE</LabelText>
-            </View>
-          ) : (
-            <LabelText variant="small" style={styles.spaceDuration}>{item.duration}</LabelText>
-          )}
-        </View>
+        {item.isLive && (
+          <View style={styles.liveIndicator}>
+            <View style={styles.liveDot} />
+            <Text style={styles.liveText}>LIVE</Text>
+          </View>
+        )}
       </View>
-
-      <View style={styles.spaceContent}>
-        <TitleText variant="small" style={styles.spaceTitle}>{item.title}</TitleText>
-        <BodyText variant="small" style={styles.spaceTopic}>{item.topic}</BodyText>
-      </View>
-
-      <View style={styles.spaceFooter}>
-        <View style={styles.spaceStats}>
-          <View style={styles.spaceStat}>
-            <Ionicons name="mic" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray[600]} />
-            <LabelText variant="small" style={styles.spaceStatText}>{item.participants}</LabelText>
-          </View>
-          <View style={styles.spaceStat}>
-            <Ionicons name="ear" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray[600]} />
-            <LabelText variant="small" style={styles.spaceStatText}>{item.listeners}</LabelText>
-          </View>
+      <Text style={styles.spaceTopic}>{item.topic}</Text>
+      <View style={styles.spaceStats}>
+        <View style={styles.spaceStat}>
+          <Ionicons name="people" size={14} color="#667eea" />
+          <Text style={styles.spaceStatText}>{item.participants} participants</Text>
         </View>
-
-        {/* Speaker avatars */}
-        <View style={styles.spaceSpeakers}>
-          {item.speakers.slice(0, 3).map((speaker, index) => (
-            <Image 
-              key={index}
-              source={{ uri: speaker.avatar }} 
-              style={[
-                styles.spaceSpeakerAvatar,
-                { marginLeft: index > 0 ? -8 : 0 }
-              ]} 
-            />
-          ))}
-          {item.speakers.length > 3 && (
-            <View style={[styles.spaceSpeakerAvatar, styles.spaceSpeakerMore]}>
-              <LabelText variant="small" style={styles.spaceSpeakerMoreText}>
-                +{item.speakers.length - 3}
-              </LabelText>
-            </View>
-          )}
+        <View style={styles.spaceStat}>
+          <Ionicons name="time" size={14} color="#ffa502" />
+          <Text style={styles.spaceStatText}>{item.duration}</Text>
         </View>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
-      {/* Header */}
-      <Header
-        title="Jappa"
-        rightComponent={
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['#121212', '#1E1E1E']}
+        style={styles.background}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Jappa</Text>
+          <View style={styles.headerActions}>
             <TouchableOpacity
+              style={styles.headerAction}
               onPress={() => navigation.navigate('Post')}
-              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
             >
-              <Ionicons 
-                name="add-circle" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+              <Ionicons name="add-circle" size={24} color="#ffffff" />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setIsSearchExpanded(true)}
-              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+              style={styles.headerAction}
+              onPress={() => setIsSearchExpanded(!isSearchExpanded)}
             >
-              <Ionicons 
-                name="search" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+              <Ionicons name="search" size={24} color="#ffffff" />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons 
-                name="notifications-outline" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+            <TouchableOpacity
+              style={styles.headerAction}
+              onPress={() => Alert.alert('Notifications', 'Notifications coming soon')}
+            >
+              <Ionicons name="notifications" size={24} color="#ffffff" />
             </TouchableOpacity>
           </View>
-        }
-      />
-
-      {/* Expanded Search */}
-      <ExpandedSearch
-        visible={isSearchExpanded}
-        onClose={() => setIsSearchExpanded(false)}
-      />
-
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Local Deals Section */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <View style={LAYOUT_PATTERNS.section.header}>
-            <LabelText variant="medium" style={{ color: theme.colors.gray[900], fontWeight: '600' }}>
-              Local Deals
-            </LabelText>
-          </View>
-          <FlatList
-            data={localDeals}
-            renderItem={renderDealCard}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={LAYOUT_PATTERNS.list.container}
-          />
         </View>
 
-        {/* Minimalist Filter Tabs - Hidden by default */}
-        {selectedFilter !== 'All' && (
-          <View style={styles.filterContainer}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {filters.map((filter) => (
-                <TouchableOpacity
-                  key={filter}
-                  style={[
-                    styles.filterTab,
-                    selectedFilter === filter && styles.filterTabActive,
-                  ]}
-                  onPress={() => setSelectedFilter(filter)}
-                >
-                  <LabelText
-                    variant="small"
-                    style={[
-                      styles.filterText,
-                      selectedFilter === filter && styles.filterTextActive,
-                    ]}
-                  >
-                    {filter}
-                  </LabelText>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+        {/* Search Bar */}
+        {isSearchExpanded && (
+          <SearchBar activeFilters={activeFilters} onFilterPress={handleFilterPress} />
         )}
 
-        {/* Trending Spaces Section */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <View style={LAYOUT_PATTERNS.section.header}>
-            <LabelText variant="medium" style={{ color: theme.colors.gray[900], fontWeight: '600' }}>
-              Trending Spaces
-            </LabelText>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Categories */}
+          <View style={styles.categoriesContainer}>
+            <FlatList
+              data={categories}
+              renderItem={renderCategoryItem}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesList}
+            />
           </View>
-          
-          <FlatList
-            data={spaces}
-            renderItem={renderSpaceCard}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={LAYOUT_PATTERNS.list.container}
-          />
-        </View>
 
-        {/* Topics Section */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <View style={LAYOUT_PATTERNS.section.header}>
-            <LabelText variant="medium" style={{ color: theme.colors.gray[900], fontWeight: '600' }}>
-              Hot Topics
-            </LabelText>
+          {/* Trending Spaces */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Trending Spaces</Text>
+            <FlatList
+              data={spaces}
+              renderItem={renderSpaceCard}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.spacesList}
+            />
           </View>
-          
-          {communityPosts.slice(0, 3).map((post) => (
-            <View key={post.id} style={styles.topicCard}>
-              <View style={styles.topicHeader}>
-                <View style={styles.topicUserInfo}>
-                  <View style={styles.topicAvatarContainer}>
-                    <Image source={{ uri: post.user.avatar }} style={styles.topicUserAvatar} />
-                    {post.user.verified && (
-                      <View style={styles.topicVerifiedBadge}>
-                        <Ionicons name="checkmark-circle" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.topicUserDetails}>
-                    <LabelText variant="small" style={styles.topicUserName}>{post.user.name}</LabelText>
-                    <View style={styles.topicUserMeta}>
-                      <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
-                      <LabelText variant="small" style={styles.topicUserLocation}>{post.user.location}</LabelText>
-                      <LabelText variant="small" style={styles.topicTimeSeparator}>•</LabelText>
-                      <Ionicons name="time" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.gray} />
-                      <LabelText variant="small" style={styles.topicUserTime}>{post.user.time}</LabelText>
-                    </View>
-                  </View>
-                </View>
-                <TouchableOpacity style={styles.topicOptions}>
-                  <Ionicons name="ellipsis-horizontal" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
-                </TouchableOpacity>
-              </View>
-              
-              {/* Visual Priority Indicators */}
-              <View style={styles.topicPriorityIndicators}>
-                {post.trending && <PriorityIndicator type="trending" />}
-                {post.engagement === 'very-high' && <PriorityIndicator type="popular" />}
-                {post.user.verified && <PriorityIndicator type="verified" />}
-              </View>
-              
-              {post.category && (
-                <View style={styles.topicCategoryContainer}>
-                  <LabelText variant="small" style={styles.topicCategoryLabel}>{post.category}</LabelText>
-                </View>
-              )}
-              
-              <BodyText variant="small" style={styles.topicContent}>{post.content}</BodyText>
-              
-              {post.location && (
-                <View style={styles.topicLocationContainer}>
-                  <Ionicons name="location" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.primary} />
-                  <LabelText variant="small" style={styles.topicLocationText}>{post.location}</LabelText>
-                </View>
-              )}
-              
-              {/* Visual Engagement Display */}
-              <View style={styles.topicEngagementContainer}>
-                <EngagementVisualizer likes={post.likes} comments={post.comments} shares={post.shares} />
-              </View>
-              
-              <View style={styles.topicActions}>
-                <TouchableOpacity style={styles.topicActionButton}>
-                  <Ionicons name="heart-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
-                  <LabelText variant="small" style={styles.topicActionText}>{post.likes}</LabelText>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.topicActionButton}>
-                  <Ionicons name="chatbubble-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
-                  <LabelText variant="small" style={styles.topicActionText}>{post.comments}</LabelText>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.topicActionButton}>
-                  <Ionicons name="share-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray} />
-                  <LabelText variant="small" style={styles.topicActionText}>{post.shares}</LabelText>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.topicReplyButton}>
-                  <Ionicons name="send" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
-                  <LabelText variant="small" style={styles.topicReplyText}>Reply</LabelText>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
+
+          {/* Topics */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Topics</Text>
+            <FlatList
+              data={communityPosts}
+              renderItem={renderPost}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+
+          {/* Local Deals */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Local Deals</Text>
+            <FlatList
+              data={localDeals}
+              renderItem={renderDealCard}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.dealsList}
+            />
+          </View>
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
@@ -791,877 +557,406 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: '#121212',
+  },
+  background: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg, // 24pt
-    paddingVertical: theme.spacing.md, // 16pt
-    backgroundColor: theme.colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.lightGray,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    paddingTop: 16,
   },
-  headerLeft: {
-    flex: 1,
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#ffffff',
+    letterSpacing: -0.5,
   },
-  greeting: {
-    fontSize: 16,
-    color: theme.colors.gray,
-  },
-  welcomeText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: theme.colors.black,
-  },
-  headerRight: {
+  headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  headerIcon: {
-    padding: theme.spacing.sm, // 8pt
-    marginLeft: theme.spacing.sm, // 8pt
-  },
-  scrollView: {
-    flex: 1,
-  },
-  section: {
-    marginBottom: theme.spacing.lg, // 24pt - Sufficient vertical spacing between sections
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg, // 24pt
-    marginBottom: theme.spacing.md, // 16pt - Adequate spacing before content
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: theme.colors.black,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: theme.colors.gray,
-    marginTop: theme.spacing.xs, // 4pt
-  },
-  closeButton: {
-    padding: theme.spacing.sm, // 8pt
-  },
-  dealsList: {
-    paddingHorizontal: theme.spacing.lg, // 24pt
-  },
-  dealCard: {
-    width: width * 0.8, // Adjust width for horizontal scroll
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.lg,
-    marginRight: theme.spacing.md, // 16pt - Consistent margins between cards
-    ...theme.shadows.medium,
-  },
-  dealImageContainer: {
-    position: 'relative',
-    height: 180, // Fixed height for image container
-  },
-  dealImage: {
-    width: '100%',
-    height: '100%',
-    borderTopLeftRadius: theme.borderRadius.lg,
-    borderTopRightRadius: theme.borderRadius.lg,
-  },
-  dealOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderTopLeftRadius: theme.borderRadius.lg,
-    borderTopRightRadius: theme.borderRadius.lg,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-    padding: theme.spacing.md, // 16pt - Adequate padding within components
-  },
-  discountBadge: {
-    backgroundColor: theme.colors.accent,
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
-    borderRadius: theme.borderRadius.sm,
-  },
-  discountText: {
-    color: theme.colors.white,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  bookmarkIcon: {
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.round,
-    padding: theme.spacing.xs, // 4pt
-  },
-  categoryTag: {
-    position: 'absolute',
-    top: theme.spacing.sm, // 8pt
-    left: theme.spacing.sm, // 8pt
-    backgroundColor: theme.colors.primary + '80',
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
-    borderRadius: theme.borderRadius.sm,
-  },
-  categoryText: {
-    color: theme.colors.white,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  dealContent: {
-    padding: theme.spacing.md, // 16pt - Adequate padding within components
-  },
-  dealHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm, // 8pt - Consistent margins between text elements
-  },
-  dealTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: theme.colors.black,
-    marginBottom: theme.spacing.xs, // 4pt - Consistent margins between text elements
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
-    borderRadius: theme.borderRadius.round,
-  },
-  ratingText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.black,
-    marginLeft: 2,
-  },
-  dealDescription: {
-    fontSize: 14,
-    color: theme.colors.gray,
-    marginBottom: theme.spacing.sm,
-    lineHeight: 20,
-  },
-  dealMetrics: {
-    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
-  },
-  metricRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.sm, // 8pt - Consistent margins between elements
-  },
-  metricItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  metricText: {
-    fontSize: 11,
-    color: theme.colors.gray,
-    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
-  },
-  timeContainer: {
-    marginTop: theme.spacing.sm, // 8pt - Consistent margins between elements
-  },
-  timeText: {
-    fontSize: 12,
-    color: theme.colors.gray,
-    marginBottom: theme.spacing.xs, // 4pt - Consistent margins between text elements
-  },
-  seeMoreButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: theme.colors.lightGray,
-    paddingVertical: theme.spacing.sm, // 8pt
-    borderRadius: theme.borderRadius.md,
-    paddingHorizontal: theme.spacing.md, // 16pt - Adequate padding within components
-  },
-  seeMoreText: {
-    color: theme.colors.black,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  filterContainer: {
-    paddingHorizontal: theme.spacing.lg, // 24pt
-    marginBottom: theme.spacing.lg, // 24pt - Sufficient vertical spacing between sections
-  },
-  filterTab: {
-    paddingHorizontal: theme.spacing.lg, // 24pt
-    paddingVertical: theme.spacing.sm, // 8pt
-    marginRight: theme.spacing.sm, // 8pt - Consistent margins between filter tabs
-    borderRadius: theme.borderRadius.round,
-    backgroundColor: theme.colors.lightGray,
-  },
-  filterTabActive: {
-    backgroundColor: theme.colors.primary,
-  },
-  filterText: {
-    fontSize: 14,
-    color: theme.colors.gray,
-    fontWeight: '500',
-  },
-  filterTextActive: {
-    color: theme.colors.white,
-  },
-  postCard: {
-    backgroundColor: theme.colors.white,
-    marginHorizontal: theme.spacing.lg, // 24pt
-    marginBottom: theme.spacing.md, // 16pt - Consistent margins between cards
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md, // 16pt - Adequate padding within components
-    ...theme.shadows.small,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  avatarContainer: {
-    position: 'relative',
-  },
-  userAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: theme.spacing.sm, // 8pt - Consistent margins between elements
-  },
-  verifiedBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.round,
-    padding: theme.spacing.xs, // 4pt
-  },
-  userDetails: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: theme.colors.black,
-  },
-  userMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  userLocation: {
-    fontSize: 14,
-    color: theme.colors.gray,
-  },
-  timeSeparator: {
-    marginHorizontal: theme.spacing.xs, // 4pt - Consistent margins between text elements
-  },
-  userTime: {
-    fontSize: 14,
-    color: theme.colors.gray,
-  },
-  postOptions: {
-    padding: theme.spacing.sm, // 8pt
-  },
-  categoryContainer: {
-    backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
-    borderRadius: theme.borderRadius.sm,
-    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
-  },
-  categoryLabel: {
-    fontSize: 12,
-    color: theme.colors.primary,
-    fontWeight: '500',
-  },
-  postContent: {
-    fontSize: 16,
-    color: theme.colors.black,
-    lineHeight: 24,
-    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
-  },
-  locationContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
-  },
-  locationText: {
-    fontSize: 12,
-    color: theme.colors.gray,
-    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
-  },
-  postActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.lightGray,
-    paddingTop: theme.spacing.md, // 16pt - Adequate padding within components
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: theme.spacing.sm, // 8pt
-  },
-  actionText: {
-    fontSize: 14,
-    color: theme.colors.gray,
-    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
-  },
-  progressContainer: {
-    width: '100%',
-    height: 8,
-    backgroundColor: theme.colors.lightGray,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressBar: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  metricCard: {
-    alignItems: 'center',
-    marginRight: theme.spacing.md,
-  },
-  metricIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme.spacing.xs,
-  },
-  metricValue: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: theme.colors.black,
-  },
-  metricLabel: {
-    fontSize: 12,
-    color: theme.colors.gray,
-  },
-  priorityIndicators: {
-    position: 'absolute',
-    top: theme.spacing.sm,
-    right: theme.spacing.sm,
-    flexDirection: 'row',
-  },
-  postPriorityIndicators: {
-    position: 'absolute',
-    top: theme.spacing.sm,
-    right: theme.spacing.sm,
-    flexDirection: 'row',
-  },
-  engagementVisualizer: {
-    flexDirection: 'row',
-    height: 8,
-    backgroundColor: theme.colors.lightGray,
-    borderRadius: 4,
-    marginTop: theme.spacing.sm,
-    overflow: 'hidden',
-  },
-  engagementBar: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  timeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: theme.spacing.xs,
-  },
-  engagementContainer: {
-    marginBottom: theme.spacing.md,
-  },
-  priorityIndicators: {
-    position: 'absolute',
-    top: theme.spacing.sm,
-    right: theme.spacing.sm,
-    flexDirection: 'row',
-    gap: theme.spacing.xs,
-  },
-  postPriorityIndicators: {
-    flexDirection: 'row',
-    gap: theme.spacing.xs,
-    marginBottom: theme.spacing.sm,
-  },
-  engagementVisualizer: {
-    flexDirection: 'row',
-    height: 8,
-    backgroundColor: theme.colors.lightGray,
-    borderRadius: 4,
-    marginTop: theme.spacing.sm,
-    overflow: 'hidden',
-  },
-  engagementBar: {
-    height: '100%',
-    borderRadius: 4,
+    gap: 12,
+  },
+  headerAction: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   searchContainer: {
-    paddingHorizontal: theme.spacing.lg, // 24pt
-    paddingVertical: theme.spacing.md, // 16pt - Adequate padding within components
-    backgroundColor: theme.colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.lightGray,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.lightGray,
-    borderRadius: theme.borderRadius.md,
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  searchIcon: {
+    marginRight: 12,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: theme.colors.black,
-    marginLeft: theme.spacing.sm, // 8pt - Consistent margins between elements
-    paddingVertical: 0,
+    color: '#ffffff',
   },
   filterButton: {
-    padding: theme.spacing.xs, // 4pt
+    marginLeft: 12,
   },
-  ctaButton: {
+  filterSummary: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: theme.colors.primary,
-    paddingVertical: theme.spacing.sm, // 8pt
-    borderRadius: theme.borderRadius.md,
-    marginTop: theme.spacing.md, // 16pt - Sufficient vertical spacing
+    marginTop: 8,
+    paddingHorizontal: 8,
   },
-  ctaText: {
-    color: theme.colors.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginRight: theme.spacing.xs, // 4pt - Consistent margins between text and icons
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm, // 8pt - Consistent margins between elements
-  },
-  activeIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 2,
-    backgroundColor: theme.colors.white,
-    borderRadius: 1,
-  },
-  fab: {
-    position: 'absolute',
-    bottom: theme.spacing.lg, // 24pt - Sufficient spacing from bottom
-    right: theme.spacing.lg, // 24pt - Sufficient spacing from right edge
-    backgroundColor: theme.colors.primary,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...theme.shadows.large,
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
-    borderRadius: theme.borderRadius.md,
-  },
-  brandText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-    marginRight: theme.spacing.xs, // 4pt - Consistent margins between text and icons
-  },
-  replyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
-    borderRadius: theme.borderRadius.round,
-    marginLeft: 'auto',
-  },
-  replyText: {
+  filterText: {
     fontSize: 14,
-    color: theme.colors.primary,
-    fontWeight: '500',
-    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
+    color: '#666666',
   },
-  cornerRibbon: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: theme.colors.accent,
-    paddingHorizontal: theme.spacing.sm, // 8pt
-    paddingVertical: theme.spacing.xs, // 4pt
-    borderTopLeftRadius: theme.borderRadius.md,
-    borderBottomRightRadius: theme.borderRadius.md,
+  clearFiltersText: {
+    fontSize: 14,
+    color: '#667eea',
+    fontWeight: '600',
   },
-  ribbonText: {
-    color: theme.colors.white,
-    fontSize: 12,
-    fontWeight: 'bold',
+  scrollView: {
+    flex: 1,
   },
-  pinnedBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderTopRightRadius: theme.borderRadius.md,
-    borderBottomLeftRadius: theme.borderRadius.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  pinnedText: {
-    color: theme.colors.white,
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginLeft: theme.spacing.xs,
-  },
-
   categoriesContainer: {
-    paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
+    marginBottom: 24,
   },
   categoriesList: {
-    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: 24,
   },
   categoryItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.round,
-    marginRight: theme.spacing.sm,
+    backgroundColor: '#2A2A2A',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 12,
   },
   categoryItemActive: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#667eea',
   },
-  categoryItemText: {
+  categoryText: {
     fontSize: 14,
     fontWeight: '500',
-    marginLeft: theme.spacing.sm,
+    color: '#666666',
+    marginLeft: 8,
   },
-  categoryItemTextActive: {
-    color: theme.colors.white,
+  categoryTextActive: {
+    color: '#ffffff',
   },
-  micButton: {
-    padding: theme.spacing.xs,
+  section: {
+    marginBottom: 32,
   },
-  filterSummary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.sm,
-    marginTop: theme.spacing.xs,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 16,
+    paddingHorizontal: 24,
   },
-  filterSummaryText: {
-    fontSize: 12,
-    color: theme.colors.gray,
-    flex: 1,
+  spacesList: {
+    paddingHorizontal: 24,
   },
-  seeAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.sm,
-    backgroundColor: theme.colors.lightGray,
-  },
-  seeAllText: {
-    fontSize: 14,
-    color: theme.colors.primary,
-    fontWeight: '500',
-    marginRight: theme.spacing.xs,
-  },
-  // Minimalist styles
-  statusIndicators: {
-    position: 'absolute',
-    top: theme.spacing.sm,
-    left: theme.spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.xs,
-  },
-  pinnedIcon: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: theme.borderRadius.round,
-    padding: 4,
-  },
-  urgencyIndicator: {
-    position: 'absolute',
-    top: theme.spacing.sm,
-    right: theme.spacing.sm,
-    backgroundColor: 'rgba(255,68,68,0.8)',
-    borderRadius: theme.borderRadius.round,
-    padding: 4,
-  },
-  progressContainer: {
-    flex: 1,
-    marginLeft: theme.spacing.sm,
-  },
-
-  // Spaces Styles
   spaceCard: {
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginRight: theme.spacing.md,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    padding: 16,
+    marginRight: 16,
     width: 280,
-    ...DESIGN_SYSTEM.shadows.small,
   },
   spaceHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: theme.spacing.sm,
+    marginBottom: 8,
   },
-  spaceHostInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  spaceInfo: {
     flex: 1,
   },
-  spaceAvatarContainer: {
-    position: 'relative',
-    marginRight: theme.spacing.sm,
-  },
-  spaceHostAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-  },
-  spaceVerifiedBadge: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    backgroundColor: theme.colors.white,
-    borderRadius: 10,
-    padding: 1,
-  },
-  spaceHostDetails: {
-    flex: 1,
-  },
-  spaceHostName: {
-    color: theme.colors.gray[900],
+  spaceTitle: {
+    fontSize: 16,
     fontWeight: '600',
-    marginBottom: 2,
+    color: '#ffffff',
+    marginBottom: 4,
   },
-  spaceCategory: {
-    color: theme.colors.gray[600],
-  },
-  spaceLiveIndicator: {
-    alignItems: 'flex-end',
+  spaceHost: {
+    fontSize: 14,
+    color: '#666666',
   },
   liveIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.error,
-    paddingHorizontal: theme.spacing.xs,
-    paddingVertical: 2,
-    borderRadius: theme.borderRadius.sm,
+    backgroundColor: '#ff4757',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
   liveDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: theme.colors.white,
+    backgroundColor: '#ffffff',
     marginRight: 4,
   },
   liveText: {
-    color: theme.colors.white,
+    fontSize: 12,
     fontWeight: '600',
-  },
-  spaceDuration: {
-    color: theme.colors.gray[600],
-  },
-  spaceContent: {
-    marginBottom: theme.spacing.sm,
-  },
-  spaceTitle: {
-    color: theme.colors.gray[900],
-    fontWeight: '600',
-    marginBottom: 4,
+    color: '#ffffff',
   },
   spaceTopic: {
-    color: theme.colors.gray[700],
-    lineHeight: 18,
-  },
-  spaceFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    fontSize: 14,
+    color: '#ffffff',
+    marginBottom: 12,
   },
   spaceStats: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
+    justifyContent: 'space-between',
   },
   spaceStat: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
   spaceStatText: {
-    color: theme.colors.gray[600],
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
   },
-  spaceSpeakers: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  spaceSpeakerAvatar: {
-    width: 24,
-    height: 24,
+  postCard: {
+    backgroundColor: '#2A2A2A',
     borderRadius: 12,
-    borderWidth: 2,
-    borderColor: theme.colors.white,
+    padding: 16,
+    marginHorizontal: 24,
+    marginBottom: 16,
   },
-  spaceSpeakerMore: {
-    backgroundColor: theme.colors.gray[300],
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  spaceSpeakerMoreText: {
-    color: theme.colors.gray[700],
-    fontWeight: '600',
-  },
-
-  // Topics Styles
-  topicCard: {
-    backgroundColor: theme.colors.white,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    ...DESIGN_SYSTEM.shadows.small,
-  },
-  topicHeader: {
+  postHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: theme.spacing.sm,
+    marginBottom: 12,
   },
-  topicUserInfo: {
+  postUserInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
-  topicAvatarContainer: {
-    position: 'relative',
-    marginRight: theme.spacing.sm,
-  },
-  topicUserAvatar: {
+  postAvatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
+    marginRight: 12,
   },
-  topicVerifiedBadge: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    backgroundColor: theme.colors.white,
-    borderRadius: 10,
-    padding: 1,
-  },
-  topicUserDetails: {
+  postUserDetails: {
     flex: 1,
   },
-  topicUserName: {
-    color: theme.colors.gray[900],
-    fontWeight: '600',
+  postUserName: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 2,
   },
-  topicUserMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  topicUserLocation: {
-    color: theme.colors.gray[600],
-  },
-  topicTimeSeparator: {
-    color: theme.colors.gray[600],
-  },
-  topicUserTime: {
-    color: theme.colors.gray[600],
-  },
-  topicOptions: {
-    padding: theme.spacing.xs,
-  },
-  topicPriorityIndicators: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.xs,
-    marginBottom: theme.spacing.xs,
-  },
-  topicCategoryContainer: {
-    marginBottom: theme.spacing.sm,
-  },
-  topicCategoryLabel: {
-    color: theme.colors.primary,
+  postUserNameText: {
+    fontSize: 16,
     fontWeight: '600',
+    color: '#ffffff',
+    marginRight: 8,
   },
-  topicContent: {
-    color: theme.colors.gray[900],
-    lineHeight: 20,
-    marginBottom: theme.spacing.sm,
+  postLocation: {
+    fontSize: 14,
+    color: '#666666',
   },
-  topicLocationContainer: {
+  postActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-    gap: 4,
   },
-  topicLocationText: {
-    color: theme.colors.primary,
+  postContent: {
+    fontSize: 16,
+    color: '#ffffff',
+    lineHeight: 24,
+    marginBottom: 12,
   },
-  topicEngagementContainer: {
-    marginBottom: theme.spacing.sm,
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 12,
   },
-  topicActions: {
+  postCategory: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#667eea',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  postCategoryText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#ffffff',
+  },
+  engagementContainer: {
+    marginBottom: 12,
+  },
+  engagementBar: {
+    height: 4,
+    backgroundColor: '#404040',
+    borderRadius: 2,
+    marginBottom: 8,
     flexDirection: 'row',
-    alignItems: 'center',
+  },
+  engagementSegment: {
+    height: '100%',
+  },
+  engagementStats: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  topicActionButton: {
+  engagementText: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  postAction: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    padding: theme.spacing.xs,
+    marginRight: 24,
   },
-  topicActionText: {
-    color: theme.colors.gray[600],
+  postActionText: {
+    fontSize: 14,
+    color: '#666666',
+    marginLeft: 6,
   },
-  topicReplyButton: {
+  dealsList: {
+    paddingHorizontal: 24,
+  },
+  dealCard: {
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    marginRight: 16,
+    width: 280,
+    overflow: 'hidden',
+  },
+  dealImageContainer: {
+    position: 'relative',
+  },
+  dealImage: {
+    width: '100%',
+    height: 160,
+  },
+  discountRibbon: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    backgroundColor: '#ff4757',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  discountText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  dealContent: {
+    padding: 16,
+  },
+  dealHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  dealTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+    flex: 1,
+  },
+  dealDescription: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 12,
+  },
+  dealStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  dealStat: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
-    borderRadius: theme.borderRadius.round,
-    gap: 4,
   },
-  topicReplyText: {
-    color: theme.colors.primary,
+  dealStatText: {
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
+  },
+  progressContainer: {
+    marginBottom: 12,
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: '#404040',
+    borderRadius: 2,
+    marginBottom: 4,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  dealFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  timeLeft: {
+    fontSize: 12,
+    color: '#ffa502',
+    fontWeight: '500',
+  },
+  claimButton: {
+    backgroundColor: '#667eea',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  claimButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  priorityIndicator: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  metricCard: {
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    marginHorizontal: 4,
+  },
+  metricValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginVertical: 4,
+  },
+  metricLabel: {
+    fontSize: 12,
     fontWeight: '500',
   },
 }); 

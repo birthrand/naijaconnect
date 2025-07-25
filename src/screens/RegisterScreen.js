@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
 import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
+import { useSupabase } from '../contexts/SupabaseContext';
 
 export default function RegisterScreen({ navigation }) {
   const [fullName, setFullName] = useState('');
@@ -23,8 +24,11 @@ export default function RegisterScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const { signUp } = useSupabase();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!fullName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
@@ -36,12 +40,32 @@ export default function RegisterScreen({ navigation }) {
     }
 
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      Alert.alert('Error', 'Password must be at least 6 characters long');
       return;
     }
 
-    // Navigate to main app
-    navigation.navigate('MainApp');
+    setLoading(true);
+    
+    try {
+      const { data, error } = await signUp(email.trim(), password, {
+        full_name: fullName.trim(),
+        username: email.split('@')[0], // Generate username from email
+      });
+      
+      if (error) {
+        Alert.alert('Registration Error', error.message);
+      } else {
+        Alert.alert(
+          'Registration Successful', 
+          'Please check your email to verify your account before signing in.',
+          [{ text: 'OK', onPress: () => navigation.navigate('Login') }]
+        );
+      }
+    } catch (error) {
+      Alert.alert('Registration Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSocialRegister = (provider) => {
@@ -65,10 +89,10 @@ export default function RegisterScreen({ navigation }) {
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}
               >
-                <Ionicons 
-                  name="arrow-back" 
-                  size={24} 
-                  color="#ffffff" 
+                <Ionicons
+                  name="arrow-back"
+                  size={24}
+                  color="#ffffff"
                 />
               </TouchableOpacity>
             </View>
@@ -80,13 +104,13 @@ export default function RegisterScreen({ navigation }) {
 
             {/* Welcome Text */}
             <View style={styles.welcomeContainer}>
-              <Text style={styles.welcomeTitle}>Create Account</Text>
+              <Text style={styles.welcomeTitle}>Join Jappa</Text>
               <Text style={styles.welcomeSubtitle}>
-                Join our community today
+                Create your account to get started
               </Text>
             </View>
 
-            {/* Register Form */}
+            {/* Registration Form */}
             <View style={styles.formContainer}>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Full Name</Text>
@@ -97,6 +121,7 @@ export default function RegisterScreen({ navigation }) {
                   value={fullName}
                   onChangeText={setFullName}
                   autoCapitalize="words"
+                  editable={!loading}
                 />
               </View>
 
@@ -110,6 +135,7 @@ export default function RegisterScreen({ navigation }) {
                   onChangeText={setEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  editable={!loading}
                 />
               </View>
 
@@ -118,15 +144,17 @@ export default function RegisterScreen({ navigation }) {
                 <View style={styles.passwordContainer}>
                   <TextInput
                     style={styles.passwordInput}
-                    placeholder="Create a password"
+                    placeholder="Enter your password"
                     placeholderTextColor="#666666"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={!showPassword}
+                    editable={!loading}
                   />
                   <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
                     style={styles.eyeButton}
+                    disabled={loading}
                   >
                     <Ionicons
                       name={showPassword ? 'eye-off' : 'eye'}
@@ -147,10 +175,12 @@ export default function RegisterScreen({ navigation }) {
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
                     secureTextEntry={!showConfirmPassword}
+                    editable={!loading}
                   />
                   <TouchableOpacity
                     onPress={() => setShowConfirmPassword(!showConfirmPassword)}
                     style={styles.eyeButton}
+                    disabled={loading}
                   >
                     <Ionicons
                       name={showConfirmPassword ? 'eye-off' : 'eye'}
@@ -164,12 +194,14 @@ export default function RegisterScreen({ navigation }) {
               <TouchableOpacity
                 style={[
                   styles.registerButton,
-                  (!fullName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) && styles.registerButtonDisabled
+                  (!fullName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim() || loading) && styles.registerButtonDisabled
                 ]}
                 onPress={handleRegister}
-                disabled={!fullName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()}
+                disabled={!fullName.trim() || !email.trim() || !password.trim() || !confirmPassword.trim() || loading}
               >
-                <Text style={styles.registerButtonText}>Create Account</Text>
+                <Text style={styles.registerButtonText}>
+                  {loading ? 'Creating Account...' : 'Create Account'}
+                </Text>
               </TouchableOpacity>
 
               <View style={styles.divider}>
@@ -182,6 +214,7 @@ export default function RegisterScreen({ navigation }) {
                 <TouchableOpacity
                   style={styles.socialButton}
                   onPress={() => handleSocialRegister('Google')}
+                  disabled={loading}
                 >
                   <Ionicons name="logo-google" size={20} color="#ffffff" />
                   <Text style={styles.socialButtonText}>Google</Text>
@@ -190,6 +223,7 @@ export default function RegisterScreen({ navigation }) {
                 <TouchableOpacity
                   style={styles.socialButton}
                   onPress={() => handleSocialRegister('Apple')}
+                  disabled={loading}
                 >
                   <Ionicons name="logo-apple" size={20} color="#ffffff" />
                   <Text style={styles.socialButtonText}>Apple</Text>
@@ -200,7 +234,7 @@ export default function RegisterScreen({ navigation }) {
             {/* Login Link */}
             <View style={styles.loginContainer}>
               <Text style={styles.loginText}>Already have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')} disabled={loading}>
                 <Text style={styles.loginLink}>Sign In</Text>
               </TouchableOpacity>
             </View>

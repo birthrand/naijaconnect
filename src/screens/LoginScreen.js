@@ -15,23 +15,56 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
 import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
+import { useSupabase } from '../contexts/SupabaseContext';
+import { supabase } from '../lib/supabase';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const { signIn } = useSupabase();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
-    // Navigate to main app
-    navigation.navigate('MainApp');
+
+    setLoading(true);
+    
+    try {
+      const { data, error } = await signIn(email.trim(), password);
+      
+      if (error) {
+        Alert.alert('Login Error', error.message);
+      }
+      // If successful, the SupabaseContext will automatically update the user state
+      // and the app will navigate to MainApp
+    } catch (error) {
+      Alert.alert('Login Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSocialLogin = (provider) => {
-    Alert.alert('Coming Soon', `${provider} login will be available soon`);
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email address first');
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim());
+      if (error) {
+        Alert.alert('Error', error.message);
+      } else {
+        Alert.alert('Success', 'Password reset email sent! Check your inbox.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to send reset email. Please try again.');
+    }
   };
 
   return (
@@ -51,10 +84,10 @@ export default function LoginScreen({ navigation }) {
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}
               >
-                <Ionicons 
-                  name="arrow-back" 
-                  size={24} 
-                  color="#ffffff" 
+                <Ionicons
+                  name="arrow-back"
+                  size={24}
+                  color="#ffffff"
                 />
               </TouchableOpacity>
             </View>
@@ -84,6 +117,7 @@ export default function LoginScreen({ navigation }) {
                   onChangeText={setEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  editable={!loading}
                 />
               </View>
 
@@ -97,10 +131,12 @@ export default function LoginScreen({ navigation }) {
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry={!showPassword}
+                    editable={!loading}
                   />
                   <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
                     style={styles.eyeButton}
+                    disabled={loading}
                   >
                     <Ionicons
                       name={showPassword ? 'eye-off' : 'eye'}
@@ -111,19 +147,25 @@ export default function LoginScreen({ navigation }) {
                 </View>
               </View>
 
-              <TouchableOpacity style={styles.forgotPassword}>
+              <TouchableOpacity 
+                style={styles.forgotPassword}
+                onPress={handleForgotPassword}
+                disabled={loading}
+              >
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={[
                   styles.loginButton,
-                  (!email.trim() || !password.trim()) && styles.loginButtonDisabled
+                  (!email.trim() || !password.trim() || loading) && styles.loginButtonDisabled
                 ]}
                 onPress={handleLogin}
-                disabled={!email.trim() || !password.trim()}
+                disabled={!email.trim() || !password.trim() || loading}
               >
-                <Text style={styles.loginButtonText}>Sign In</Text>
+                <Text style={styles.loginButtonText}>
+                  {loading ? 'Signing In...' : 'Sign In'}
+                </Text>
               </TouchableOpacity>
 
               <View style={styles.divider}>
@@ -135,7 +177,8 @@ export default function LoginScreen({ navigation }) {
               <View style={styles.socialContainer}>
                 <TouchableOpacity
                   style={styles.socialButton}
-                  onPress={() => handleSocialLogin('Google')}
+                  onPress={() => Alert.alert('Coming Soon', `Google login will be available soon`)}
+                  disabled={loading}
                 >
                   <Ionicons name="logo-google" size={20} color="#ffffff" />
                   <Text style={styles.socialButtonText}>Google</Text>
@@ -143,7 +186,8 @@ export default function LoginScreen({ navigation }) {
 
                 <TouchableOpacity
                   style={styles.socialButton}
-                  onPress={() => handleSocialLogin('Apple')}
+                  onPress={() => Alert.alert('Coming Soon', `Apple login will be available soon`)}
+                  disabled={loading}
                 >
                   <Ionicons name="logo-apple" size={20} color="#ffffff" />
                   <Text style={styles.socialButtonText}>Apple</Text>
@@ -154,7 +198,7 @@ export default function LoginScreen({ navigation }) {
             {/* Register Link */}
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')} disabled={loading}>
                 <Text style={styles.registerLink}>Sign Up</Text>
               </TouchableOpacity>
             </View>

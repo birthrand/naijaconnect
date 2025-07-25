@@ -9,15 +9,18 @@ import {
   FlatList,
   SafeAreaView,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme/theme';
-import { DESIGN_SYSTEM, LAYOUT_PATTERNS, COMPONENT_STYLES } from '../theme/designSystem';
+import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
 import {
   Header,
   Card,
   Button,
   Badge,
+  Avatar,
   IconButton,
   HeadlineText,
   TitleText,
@@ -25,555 +28,646 @@ import {
   LabelText,
   Spacer,
   SectionHeader,
-  Avatar,
 } from '../components/DesignSystemComponents';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-// Enhanced mock data
-const discoverCategories = [
-  { 
-    id: '1', 
-    name: 'Restaurants', 
-    icon: 'restaurant', 
-    color: '#FF6B6B',
-    count: 45,
-    description: 'Authentic Nigerian cuisine'
-  },
-  { 
-    id: '2', 
-    name: 'Events', 
-    icon: 'calendar', 
-    color: '#4ECDC4',
-    count: 23,
-    description: 'Upcoming celebrations'
-  },
-  { 
-    id: '3', 
-    name: 'Businesses', 
-    icon: 'business', 
-    color: '#45B7D1',
-    count: 67,
-    description: 'Local entrepreneurs'
-  },
-  { 
-    id: '4', 
-    name: 'Groups', 
-    icon: 'people', 
-    color: '#96CEB4',
-    count: 34,
-    description: 'Community groups'
-  },
-  { 
-    id: '5', 
-    name: 'Culture', 
-    icon: 'flag', 
-    color: '#FFEAA7',
-    count: 28,
-    description: 'Heritage & traditions'
-  },
-  { 
-    id: '6', 
-    name: 'Jobs', 
-    icon: 'briefcase', 
-    color: '#DDA0DD',
-    count: 89,
-    description: 'Career opportunities'
-  },
+// Mock data for discover screen
+const categories = [
+  { id: '1', name: 'All', icon: 'grid', count: 1250 },
+  { id: '2', name: 'Food', icon: 'restaurant', count: 234 },
+  { id: '3', name: 'Beauty', icon: 'cut', count: 156 },
+  { id: '4', name: 'Entertainment', icon: 'musical-notes', count: 89 },
+  { id: '5', name: 'Health', icon: 'fitness', count: 67 },
+  { id: '6', name: 'Shopping', icon: 'bag', count: 445 },
 ];
 
 const featuredBusinesses = [
   {
     id: '1',
-    name: 'Naija Kitchen Express',
-    category: 'Restaurant',
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
-    rating: 4.8,
+    name: 'Debonair Lagos',
+    description: 'Premium hair salon and beauty services',
+    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=300&h=200&fit=crop',
+    rating: 4.9,
     reviews: 156,
-    distance: '0.5 km',
-    description: 'Authentic Nigerian cuisine in the heart of the city',
+    category: 'Beauty',
     verified: true,
     featured: true,
+    location: 'Victoria Island, Lagos',
   },
   {
     id: '2',
-    name: 'Yoruba Cultural Center',
-    category: 'Culture',
-    image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=300&h=200&fit=crop',
-    rating: 4.9,
+    name: 'TechHub Nigeria',
+    description: 'Coworking space for tech startups',
+    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&h=200&fit=crop',
+    rating: 4.8,
     reviews: 89,
-    distance: '1.2 km',
-    description: 'Preserving and promoting Yoruba culture and traditions',
+    category: 'Business',
     verified: true,
     featured: true,
+    location: 'Ikeja, Lagos',
   },
   {
     id: '3',
-    name: 'Tech Naija Hub',
-    category: 'Business',
-    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=300&h=200&fit=crop',
+    name: 'Naija Kitchen',
+    description: 'Authentic Nigerian cuisine',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
     rating: 4.7,
     reviews: 234,
-    distance: '2.1 km',
-    description: 'Innovation hub for Nigerian tech entrepreneurs',
-    verified: true,
+    category: 'Food',
+    verified: false,
     featured: true,
+    location: 'Abuja',
   },
 ];
 
 const upcomingEvents = [
   {
     id: '1',
-    title: 'Nigerian Independence Day Celebration',
-    date: 'Oct 1, 2024',
+    title: 'Tech Meetup Lagos',
+    description: 'Networking event for tech professionals',
+    image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=300&h=200&fit=crop',
+    date: 'Dec 15, 2024',
     time: '6:00 PM',
-    location: 'Central Park, Lagos',
-    image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=300&h=200&fit=crop',
-    attendees: 450,
-    category: 'Culture',
+    location: 'Victoria Island, Lagos',
+    attendees: 156,
+    category: 'Technology',
+    verified: true,
     featured: true,
   },
   {
     id: '2',
-    title: 'Naija Tech Meetup',
-    date: 'Oct 15, 2024',
+    title: 'Fashion Week Abuja',
+    description: 'Annual fashion showcase and networking',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop',
+    date: 'Dec 20, 2024',
     time: '7:00 PM',
-    location: 'Victoria Island Tech Hub',
-    image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=300&h=200&fit=crop',
-    attendees: 120,
-    category: 'Business',
-    featured: true,
+    location: 'Wuse Zone 2, Abuja',
+    attendees: 89,
+    category: 'Fashion',
+    verified: true,
+    featured: false,
   },
   {
     id: '3',
-    title: 'Traditional Nigerian Cooking Class',
-    date: 'Oct 22, 2024',
-    time: '2:00 PM',
-    location: 'Naija Kitchen',
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
-    attendees: 25,
-    category: 'Food',
+    title: 'Startup Pitch Night',
+    description: 'Pitch your startup to investors',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop',
+    date: 'Dec 25, 2024',
+    time: '5:00 PM',
+    location: 'Enugu',
+    attendees: 67,
+    category: 'Business',
+    verified: false,
     featured: true,
   },
 ];
 
 const trendingTopics = [
-  { id: '1', title: 'Jollof Rice Festival', participants: 234, category: 'Food' },
-  { id: '2', title: 'Nigerian Fashion Week', participants: 189, category: 'Culture' },
-  { id: '3', title: 'Tech Startup Pitch', participants: 67, category: 'Business' },
-  { id: '4', title: 'Traditional Dance Workshop', participants: 45, category: 'Culture' },
+  {
+    id: '1',
+    title: 'Best Nigerian Tech Startups 2024',
+    description: 'Discover the most promising startups',
+    image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=300&h=200&fit=crop',
+    views: 1250,
+    category: 'Technology',
+    isHot: true,
+  },
+  {
+    id: '2',
+    title: 'Traditional Nigerian Recipes',
+    description: 'Preserving our culinary heritage',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
+    views: 890,
+    category: 'Food',
+    isHot: false,
+  },
+  {
+    id: '3',
+    title: 'Remote Work Opportunities',
+    description: 'Companies hiring Nigerian talent',
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop',
+    views: 1567,
+    category: 'Career',
+    isHot: true,
+  },
 ];
+
+const PriorityIndicator = ({ type, size = 'small' }) => {
+  const getIndicatorStyle = () => {
+    switch (type) {
+      case 'hot': return { backgroundColor: '#ff4757', icon: 'flame' };
+      case 'new': return { backgroundColor: '#2ed573', icon: 'star' };
+      case 'verified': return { backgroundColor: '#667eea', icon: 'checkmark-circle' };
+      case 'pinned': return { backgroundColor: '#ffa502', icon: 'pin' };
+      default: return { backgroundColor: '#2A2A2A', icon: 'information-circle' };
+    }
+  };
+
+  const style = getIndicatorStyle();
+  const iconSize = size === 'large' ? 16 : 12;
+
+  return (
+    <View style={[styles.priorityIndicator, { backgroundColor: style.backgroundColor }]}>
+      <Ionicons name={style.icon} size={iconSize} color="#ffffff" />
+    </View>
+  );
+};
 
 export default function DiscoverScreen({ navigation }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const renderCategory = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.categoryCard}
+    <TouchableOpacity
+      style={[
+        styles.categoryItem,
+        selectedCategory === item.name && styles.categoryItemActive,
+      ]}
       onPress={() => setSelectedCategory(item.name)}
     >
-      <View style={[styles.categoryIcon, { backgroundColor: item.color }]}>
-        <Ionicons name={item.icon} size={24} color={theme.colors.white} />
-      </View>
-      <View style={styles.categoryContent}>
-        <TitleText variant="small" style={styles.categoryName}>
-          {item.name}
-        </TitleText>
-        <BodyText variant="small" style={styles.categoryCount}>
-          {item.count} places
-        </BodyText>
-        <BodyText variant="small" style={styles.categoryDescription}>
-          {item.description}
-        </BodyText>
-      </View>
+      <Ionicons 
+        name={item.icon} 
+        size={20} 
+        color={selectedCategory === item.name ? '#ffffff' : '#666666'} 
+      />
+      <Text style={[
+        styles.categoryText,
+        selectedCategory === item.name && styles.categoryTextActive,
+      ]}>
+        {item.name}
+      </Text>
+      <Text style={[
+        styles.categoryCount,
+        selectedCategory === item.name && styles.categoryCountActive,
+      ]}>
+        {item.count}
+      </Text>
     </TouchableOpacity>
   );
 
   const renderBusiness = ({ item }) => (
-    <Card variant="standard" style={styles.businessCard}>
+    <TouchableOpacity style={styles.businessCard}>
       <View style={styles.businessImageContainer}>
         <Image source={{ uri: item.image }} style={styles.businessImage} />
         {item.featured && (
           <View style={styles.featuredBadge}>
-            <Badge variant="primary">Featured</Badge>
-          </View>
-        )}
-        {item.verified && (
-          <View style={styles.verifiedBadge}>
-            <Ionicons name="checkmark-circle" size={16} color={theme.colors.primary} />
+            <Text style={styles.featuredText}>Featured</Text>
           </View>
         )}
       </View>
       <View style={styles.businessContent}>
         <View style={styles.businessHeader}>
-          <TitleText variant="medium" style={styles.businessName}>
-            {item.name}
-          </TitleText>
-          <View style={styles.businessRating}>
-            <Ionicons name="star" size={14} color={theme.colors.secondary} />
-            <BodyText variant="small" style={styles.ratingText}>
-              {item.rating} ({item.reviews})
-            </BodyText>
-          </View>
+          <Text style={styles.businessName}>{item.name}</Text>
+          {item.verified && <PriorityIndicator type="verified" />}
         </View>
-        <BodyText variant="small" style={styles.businessCategory}>
-          {item.category}
-        </BodyText>
-        <BodyText variant="small" style={styles.businessDescription}>
-          {item.description}
-        </BodyText>
+        <Text style={styles.businessDescription}>{item.description}</Text>
         <View style={styles.businessMeta}>
-          <View style={styles.metaItem}>
-            <Ionicons name="location" size={12} color={theme.colors.gray[500]} />
-            <BodyText variant="small" style={styles.metaText}>
-              {item.distance}
-            </BodyText>
+          <View style={styles.businessRating}>
+            <Ionicons name="star" size={14} color="#ffa502" />
+            <Text style={styles.ratingText}>{item.rating}</Text>
+            <Text style={styles.reviewsText}>({item.reviews} reviews)</Text>
+          </View>
+          <View style={styles.businessLocation}>
+            <Ionicons name="location" size={14} color="#666666" />
+            <Text style={styles.locationText}>{item.location}</Text>
           </View>
         </View>
       </View>
-    </Card>
+    </TouchableOpacity>
   );
 
   const renderEvent = ({ item }) => (
-    <Card variant="standard" style={styles.eventCard}>
+    <TouchableOpacity style={styles.eventCard}>
       <View style={styles.eventImageContainer}>
         <Image source={{ uri: item.image }} style={styles.eventImage} />
         {item.featured && (
           <View style={styles.featuredBadge}>
-            <Badge variant="primary">Featured</Badge>
+            <Text style={styles.featuredText}>Featured</Text>
           </View>
         )}
       </View>
       <View style={styles.eventContent}>
         <View style={styles.eventHeader}>
-          <TitleText variant="medium" style={styles.eventTitle}>
-            {item.title}
-          </TitleText>
-          <Badge variant="secondary" style={styles.eventCategory}>
-            {item.category}
-          </Badge>
+          <Text style={styles.eventTitle}>{item.title}</Text>
+          {item.verified && <PriorityIndicator type="verified" />}
         </View>
+        <Text style={styles.eventDescription}>{item.description}</Text>
         <View style={styles.eventMeta}>
-          <View style={styles.metaItem}>
-            <Ionicons name="calendar" size={12} color={theme.colors.gray[500]} />
-            <BodyText variant="small" style={styles.metaText}>
-              {item.date} • {item.time}
-            </BodyText>
+          <View style={styles.eventDateTime}>
+            <Ionicons name="calendar" size={14} color="#667eea" />
+            <Text style={styles.dateText}>{item.date} • {item.time}</Text>
           </View>
-          <View style={styles.metaItem}>
-            <Ionicons name="location" size={12} color={theme.colors.gray[500]} />
-            <BodyText variant="small" style={styles.metaText}>
-              {item.location}
-            </BodyText>
+          <View style={styles.eventLocation}>
+            <Ionicons name="location" size={14} color="#666666" />
+            <Text style={styles.locationText}>{item.location}</Text>
           </View>
-          <View style={styles.metaItem}>
-            <Ionicons name="people" size={12} color={theme.colors.gray[500]} />
-            <BodyText variant="small" style={styles.metaText}>
-              {item.attendees} attending
-            </BodyText>
+          <View style={styles.eventAttendees}>
+            <Ionicons name="people" size={14} color="#2ed573" />
+            <Text style={styles.attendeesText}>{item.attendees} attending</Text>
           </View>
         </View>
       </View>
-    </Card>
+    </TouchableOpacity>
   );
 
   const renderTrendingTopic = ({ item }) => (
-    <TouchableOpacity style={styles.trendingItem}>
-      <View style={styles.trendingContent}>
-        <TitleText variant="small" style={styles.trendingTitle}>
-          {item.title}
-        </TitleText>
-        <View style={styles.trendingMeta}>
-          <Badge variant="secondary" style={styles.trendingCategory}>
-            {item.category}
-          </Badge>
-          <View style={styles.trendingParticipants}>
-            <Ionicons name="people" size={12} color={theme.colors.gray[500]} />
-            <BodyText variant="small" style={styles.participantsText}>
-              {item.participants}
-            </BodyText>
+    <TouchableOpacity style={styles.topicCard}>
+      <View style={styles.topicImageContainer}>
+        <Image source={{ uri: item.image }} style={styles.topicImage} />
+        {item.isHot && <PriorityIndicator type="hot" />}
+      </View>
+      <View style={styles.topicContent}>
+        <Text style={styles.topicTitle}>{item.title}</Text>
+        <Text style={styles.topicDescription}>{item.description}</Text>
+        <View style={styles.topicMeta}>
+          <View style={styles.topicViews}>
+            <Ionicons name="eye" size={14} color="#666666" />
+            <Text style={styles.viewsText}>{item.views} views</Text>
+          </View>
+          <View style={styles.topicCategory}>
+            <Text style={styles.categoryText}>{item.category}</Text>
           </View>
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={16} color={theme.colors.gray[400]} />
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
-      <Header
-        title="Discover"
-        subtitle="Explore Nigerian culture & community"
-        rightComponent={
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['#121212', '#1E1E1E']}
+        style={styles.background}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Discover</Text>
+          <View style={styles.headerActions}>
             <TouchableOpacity
+              style={styles.headerAction}
               onPress={() => navigation.navigate('Post')}
-              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
             >
-              <Ionicons 
-                name="add-circle" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+              <Ionicons name="add-circle" size={24} color="#ffffff" />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+              style={styles.headerAction}
+              onPress={() => Alert.alert('Search', 'Search coming soon')}
             >
-              <Ionicons 
-                name="search" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+              <Ionicons name="search" size={24} color="#ffffff" />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons 
-                name="notifications-outline" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+            <TouchableOpacity
+              style={styles.headerAction}
+              onPress={() => Alert.alert('Notifications', 'Notifications coming soon')}
+            >
+              <Ionicons name="notifications" size={24} color="#ffffff" />
             </TouchableOpacity>
           </View>
-        }
-      />
-
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Categories Grid */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <SectionHeader title="Explore Categories" />
-          <FlatList
-            data={discoverCategories}
-            renderItem={renderCategory}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            scrollEnabled={false}
-            contentContainerStyle={LAYOUT_PATTERNS.grid.container}
-          />
         </View>
 
-        {/* Featured Businesses */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <SectionHeader 
-            title="Featured Businesses" 
-            rightAction={
-              <TouchableOpacity>
-                <BodyText variant="small" style={styles.seeAllText}>
-                  See all
-                </BodyText>
-              </TouchableOpacity>
-            }
-          />
-          <FlatList
-            data={featuredBusinesses}
-            renderItem={renderBusiness}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={LAYOUT_PATTERNS.list.container}
-          />
-        </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Categories */}
+          <View style={styles.categoriesContainer}>
+            <FlatList
+              data={categories}
+              renderItem={renderCategory}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesList}
+            />
+          </View>
 
-        {/* Upcoming Events */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <SectionHeader 
-            title="Upcoming Events" 
-            rightAction={
-              <TouchableOpacity>
-                <BodyText variant="small" style={styles.seeAllText}>
-                  See all
-                </BodyText>
-              </TouchableOpacity>
-            }
-          />
-          <FlatList
-            data={upcomingEvents}
-            renderItem={renderEvent}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={LAYOUT_PATTERNS.list.container}
-          />
-        </View>
+          {/* Featured Businesses */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Featured Businesses</Text>
+            <FlatList
+              data={featuredBusinesses}
+              renderItem={renderBusiness}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.businessesList}
+            />
+          </View>
 
-        {/* Trending Topics */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <SectionHeader title="Trending Topics" />
-          <FlatList
-            data={trendingTopics}
-            renderItem={renderTrendingTopic}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
-            contentContainerStyle={LAYOUT_PATTERNS.list.container}
-          />
-        </View>
+          {/* Upcoming Events */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Upcoming Events</Text>
+            <FlatList
+              data={upcomingEvents}
+              renderItem={renderEvent}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.eventsList}
+            />
+          </View>
 
-        <Spacer size="xl" />
-      </ScrollView>
+          {/* Trending Topics */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Trending Topics</Text>
+            <FlatList
+              data={trendingTopics}
+              renderItem={renderTrendingTopic}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.topicsList}
+            />
+          </View>
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#121212',
+  },
+  background: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    paddingTop: 16,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#ffffff',
+    letterSpacing: -0.5,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerAction: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
   scrollView: {
     flex: 1,
   },
-  categoryCard: {
-    flex: 1,
-    backgroundColor: theme.colors.white,
-    borderRadius: DESIGN_SYSTEM.borderRadius.lg,
-    padding: DESIGN_SYSTEM.layout.elementSpacing,
-    margin: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    alignItems: 'center',
-    ...DESIGN_SYSTEM.shadows.small,
+  categoriesContainer: {
+    marginBottom: 32,
   },
-  categoryIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing,
+  categoriesList: {
+    paddingHorizontal: 24,
   },
-  categoryContent: {
+  categoryItem: {
     alignItems: 'center',
+    backgroundColor: '#2A2A2A',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderRadius: 16,
+    marginRight: 16,
+    minWidth: 100,
   },
-  categoryName: {
+  categoryItemActive: {
+    backgroundColor: '#667eea',
+  },
+  categoryText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666666',
+    marginTop: 8,
     textAlign: 'center',
+  },
+  categoryTextActive: {
+    color: '#ffffff',
   },
   categoryCount: {
-    marginTop: DESIGN_SYSTEM.layout.elementSpacing / 2,
+    fontSize: 12,
+    color: '#666666',
+    marginTop: 4,
   },
-  categoryDescription: {
-    textAlign: 'center',
-    marginTop: DESIGN_SYSTEM.layout.elementSpacing / 2,
+  categoryCountActive: {
+    color: '#ffffff',
+  },
+  section: {
+    marginBottom: 32,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 16,
+    paddingHorizontal: 24,
+  },
+  businessesList: {
+    paddingHorizontal: 24,
   },
   businessCard: {
-    width: SCREEN_WIDTH * 0.8,
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    marginRight: 16,
+    width: 280,
+    overflow: 'hidden',
   },
   businessImageContainer: {
     position: 'relative',
-    width: '100%',
-    height: 120,
+    height: 160,
   },
   businessImage: {
     width: '100%',
     height: '100%',
-    borderRadius: DESIGN_SYSTEM.borderRadius.md,
   },
   featuredBadge: {
     position: 'absolute',
-    top: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    right: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    zIndex: 1,
+    top: 12,
+    left: 12,
+    backgroundColor: '#ffa502',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
-  verifiedBadge: {
-    position: 'absolute',
-    bottom: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    left: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    backgroundColor: theme.colors.white,
-    borderRadius: DESIGN_SYSTEM.borderRadius.sm,
-    padding: DESIGN_SYSTEM.layout.elementSpacing / 4,
-    zIndex: 1,
+  featuredText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ffffff',
   },
   businessContent: {
-    padding: DESIGN_SYSTEM.layout.elementSpacing,
+    padding: 16,
   },
   businessHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing / 2,
+    marginBottom: 8,
   },
   businessName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
     flex: 1,
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing,
+    marginRight: 8,
+  },
+  businessDescription: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  businessMeta: {
+    gap: 8,
   },
   businessRating: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   ratingText: {
-    marginLeft: DESIGN_SYSTEM.layout.elementSpacing / 2,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginLeft: 4,
   },
-  businessCategory: {
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing / 2,
+  reviewsText: {
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
   },
-  businessDescription: {
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing,
-  },
-  businessMeta: {
+  businessLocation: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  locationText: {
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
   },
-  metaText: {
-    marginLeft: DESIGN_SYSTEM.layout.elementSpacing / 2,
+  eventsList: {
+    paddingHorizontal: 24,
   },
   eventCard: {
-    width: SCREEN_WIDTH * 0.8,
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    marginRight: 16,
+    width: 280,
+    overflow: 'hidden',
   },
   eventImageContainer: {
     position: 'relative',
-    width: '100%',
-    height: 150,
+    height: 160,
   },
   eventImage: {
     width: '100%',
     height: '100%',
-    borderRadius: DESIGN_SYSTEM.borderRadius.md,
   },
   eventContent: {
-    padding: DESIGN_SYSTEM.layout.elementSpacing,
+    padding: 16,
   },
   eventHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing,
+    marginBottom: 8,
   },
   eventTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
     flex: 1,
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing,
+    marginRight: 8,
   },
-  eventCategory: {
-    alignSelf: 'flex-start',
+  eventDescription: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 12,
+    lineHeight: 20,
   },
   eventMeta: {
-    gap: DESIGN_SYSTEM.layout.elementSpacing / 2,
+    gap: 8,
   },
-  trendingItem: {
+  eventDateTime: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dateText: {
+    fontSize: 12,
+    color: '#ffffff',
+    marginLeft: 4,
+  },
+  eventLocation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  eventAttendees: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  attendeesText: {
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
+  },
+  topicsList: {
+    paddingHorizontal: 24,
+  },
+  topicCard: {
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    marginRight: 16,
+    width: 280,
+    overflow: 'hidden',
+  },
+  topicImageContainer: {
+    position: 'relative',
+    height: 160,
+  },
+  topicImage: {
+    width: '100%',
+    height: '100%',
+  },
+  topicContent: {
+    padding: 16,
+  },
+  topicTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 8,
+  },
+  topicDescription: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  topicMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: DESIGN_SYSTEM.layout.elementSpacing,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.gray[100],
   },
-  trendingContent: {
-    flex: 1,
-  },
-  trendingTitle: {
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing / 2,
-  },
-  trendingMeta: {
+  topicViews: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  trendingCategory: {
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing,
+  viewsText: {
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
   },
-  trendingParticipants: {
-    flexDirection: 'row',
+  topicCategory: {
+    backgroundColor: '#667eea20',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  priorityIndicator: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  participantsText: {
-    marginLeft: DESIGN_SYSTEM.layout.elementSpacing / 2,
-  },
-  seeAllText: {
-    color: theme.colors.primary,
   },
 }); 

@@ -5,11 +5,14 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
   FlatList,
   SafeAreaView,
   Dimensions,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { theme } from '../theme/theme';
 import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
 import {
@@ -17,6 +20,7 @@ import {
   Card,
   Button,
   Badge,
+  Avatar,
   IconButton,
   HeadlineText,
   TitleText,
@@ -24,509 +28,460 @@ import {
   LabelText,
   Spacer,
   SectionHeader,
-  Avatar,
 } from '../components/DesignSystemComponents';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-// Mock data for community discussions
+// Mock data for community topics
 const communityTopics = [
   {
     id: '1',
-    title: 'What\'s your favorite Nigerian dish and why?',
-    author: {
-      name: 'Chioma Okechukwu',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
-      verified: true,
-    },
-    category: 'Food & Culture',
-    upvotes: 127,
-    comments: 89,
+    title: 'Best Nigerian Tech Startups to Watch in 2024',
+    author: 'Sarah Johnson',
+    category: 'Technology',
+    upvotes: 156,
+    comments: 23,
     timeAgo: '2h ago',
     isHot: true,
     isPinned: false,
-    tags: ['food', 'culture', 'discussion'],
-    preview: 'I\'ve been thinking about this lately. For me, it\'s definitely jollof rice with plantains. The combination of flavors is just...',
+    tags: ['#Tech', '#Startups', '#Nigeria'],
+    preview: 'Discussing the most promising tech startups emerging from Nigeria this year...',
   },
   {
     id: '2',
-    title: 'Tech startups in Lagos: What challenges are you facing?',
-    author: {
-      name: 'Adebayo Tech',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
-      verified: true,
-    },
-    category: 'Business & Tech',
-    upvotes: 234,
-    comments: 156,
+    title: 'Traditional Nigerian Recipes That Need to Be Preserved',
+    author: 'Chioma Adebayo',
+    category: 'Food & Culture',
+    upvotes: 89,
+    comments: 45,
     timeAgo: '4h ago',
-    isHot: true,
+    isHot: false,
     isPinned: true,
-    tags: ['startup', 'tech', 'lagos'],
-    preview: 'Fellow entrepreneurs, let\'s discuss the real challenges of building tech startups in Lagos. From funding to infrastructure...',
+    tags: ['#Food', '#Culture', '#Traditional'],
+    preview: 'Let\'s share and preserve our traditional recipes before they\'re lost...',
   },
   {
     id: '3',
-    title: 'Traditional vs Modern parenting: What works for Nigerian families?',
-    author: {
-      name: 'Fatima Hassan',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
-      verified: false,
-    },
-    category: 'Family & Lifestyle',
-    upvotes: 89,
+    title: 'Remote Work Opportunities for Nigerian Developers',
+    author: 'David Okonkwo',
+    category: 'Professional',
+    upvotes: 234,
     comments: 67,
     timeAgo: '6h ago',
-    isHot: false,
+    isHot: true,
     isPinned: false,
-    tags: ['parenting', 'family', 'lifestyle'],
-    preview: 'As a mother of two, I\'m curious about how other Nigerian families balance traditional values with modern parenting approaches...',
+    tags: ['#RemoteWork', '#Developers', '#Jobs'],
+    preview: 'Compiling a list of companies hiring remote developers from Nigeria...',
   },
   {
     id: '4',
-    title: 'Best places to visit in Nigeria that tourists don\'t know about',
-    author: {
-      name: 'Travel Naija',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
-      verified: true,
-    },
-    category: 'Travel & Tourism',
-    upvotes: 156,
-    comments: 98,
+    title: 'Nollywood Movies That Deserve International Recognition',
+    author: 'Aisha Bello',
+    category: 'Entertainment',
+    upvotes: 123,
+    comments: 34,
     timeAgo: '8h ago',
     isHot: false,
     isPinned: false,
-    tags: ['travel', 'tourism', 'hidden-gems'],
-    preview: 'Let\'s share those hidden gems that make Nigeria special. I\'ll start with the Obudu Cattle Ranch in Cross River...',
+    tags: ['#Nollywood', '#Movies', '#Entertainment'],
+    preview: 'Which Nigerian movies do you think should get more global attention?',
   },
   {
     id: '5',
-    title: 'Remote work opportunities for Nigerians: Companies hiring globally',
-    author: {
-      name: 'Remote Worker NG',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face',
-      verified: false,
-    },
-    category: 'Career & Jobs',
-    upvotes: 312,
-    comments: 203,
+    title: 'Sustainable Business Ideas for Nigerian Entrepreneurs',
+    author: 'Michael Eze',
+    category: 'Business',
+    upvotes: 178,
+    comments: 56,
     timeAgo: '12h ago',
     isHot: true,
     isPinned: false,
-    tags: ['remote-work', 'jobs', 'career'],
-    preview: 'I\'ve been working remotely for 3 years now. Here are some companies that actively hire Nigerians for remote positions...',
-  },
-  {
-    id: '6',
-    title: 'Nigerian music evolution: From traditional to Afrobeats',
-    author: {
-      name: 'Music Historian',
-      avatar: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop&crop=face',
-      verified: true,
-    },
-    category: 'Arts & Entertainment',
-    upvotes: 178,
-    comments: 134,
-    timeAgo: '1d ago',
-    isHot: false,
-    isPinned: false,
-    tags: ['music', 'afrobeats', 'culture'],
-    preview: 'The journey of Nigerian music is fascinating. From traditional folk music to the global phenomenon of Afrobeats...',
+    tags: ['#Business', '#Entrepreneurship', '#Sustainability'],
+    preview: 'Exploring eco-friendly business opportunities in Nigeria...',
   },
 ];
 
 const categories = [
-  { id: 'all', name: 'All', icon: 'grid', active: true },
-  { id: 'tech', name: 'Tech', icon: 'laptop', active: false },
-  { id: 'culture', name: 'Culture', icon: 'flag', active: false },
-  { id: 'business', name: 'Business', icon: 'briefcase', active: false },
-  { id: 'lifestyle', name: 'Lifestyle', icon: 'heart', active: false },
-  { id: 'travel', name: 'Travel', icon: 'airplane', active: false },
+  { id: '1', name: 'All', icon: 'grid' },
+  { id: '2', name: 'Technology', icon: 'laptop' },
+  { id: '3', name: 'Business', icon: 'briefcase' },
+  { id: '4', name: 'Food & Culture', icon: 'restaurant' },
+  { id: '5', name: 'Entertainment', icon: 'musical-notes' },
+  { id: '6', name: 'Professional', icon: 'people' },
+  { id: '7', name: 'Lifestyle', icon: 'heart' },
 ];
 
+const PriorityIndicator = ({ type, size = 'small' }) => {
+  const getIndicatorStyle = () => {
+    switch (type) {
+      case 'hot': return { backgroundColor: '#ff4757', icon: 'flame' };
+      case 'new': return { backgroundColor: '#2ed573', icon: 'star' };
+      case 'verified': return { backgroundColor: '#667eea', icon: 'checkmark-circle' };
+      case 'pinned': return { backgroundColor: '#ffa502', icon: 'pin' };
+      default: return { backgroundColor: '#2A2A2A', icon: 'information-circle' };
+    }
+  };
+
+  const style = getIndicatorStyle();
+  const iconSize = size === 'large' ? 16 : 12;
+
+  return (
+    <View style={[styles.priorityIndicator, { backgroundColor: style.backgroundColor }]}>
+      <Ionicons name={style.icon} size={iconSize} color="#ffffff" />
+    </View>
+  );
+};
+
 export default function CommunityScreen({ navigation }) {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('hot'); // hot, new, top
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [sortBy, setSortBy] = useState('hot');
 
   const renderCategory = ({ item }) => (
     <TouchableOpacity
       style={[
         styles.categoryItem,
-        selectedCategory === item.id && styles.categoryItemActive,
+        selectedCategory === item.name && styles.categoryItemActive,
       ]}
-      onPress={() => setSelectedCategory(item.id)}
+      onPress={() => setSelectedCategory(item.name)}
     >
-      <Ionicons
-        name={item.icon}
-        size={DESIGN_SYSTEM.iconSizes.sm}
-        color={selectedCategory === item.id ? theme.colors.white : theme.colors.gray[600]}
+      <Ionicons 
+        name={item.icon} 
+        size={16} 
+        color={selectedCategory === item.name ? '#ffffff' : '#666666'} 
       />
-      <LabelText
-        variant="small"
-        style={[
-          styles.categoryText,
-          selectedCategory === item.id && styles.categoryTextActive,
-        ]}
-      >
+      <Text style={[
+        styles.categoryText,
+        selectedCategory === item.name && styles.categoryTextActive,
+      ]}>
         {item.name}
-      </LabelText>
+      </Text>
     </TouchableOpacity>
   );
 
   const renderTopic = ({ item }) => (
-    <Card variant="standard" style={styles.topicCard}>
+    <TouchableOpacity style={styles.topicCard}>
       <View style={styles.topicHeader}>
-        <View style={styles.authorInfo}>
-          <Avatar size="small" source={{ uri: item.author.avatar }} />
-          <View style={styles.authorDetails}>
-            <View style={styles.authorRow}>
-              <BodyText variant="small" style={styles.authorName}>
-                {item.author.name}
-              </BodyText>
-                          {item.author.verified && (
-              <Ionicons name="checkmark-circle" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.primary} />
-            )}
-            </View>
-            <LabelText variant="small" style={styles.timeAgo}>
-              {item.timeAgo} • {item.category}
-            </LabelText>
+        <View style={styles.topicMeta}>
+          <View style={styles.topicIndicators}>
+            {item.isHot && <PriorityIndicator type="hot" />}
+            {item.isPinned && <PriorityIndicator type="pinned" />}
           </View>
+          <Text style={styles.topicCategory}>{item.category}</Text>
         </View>
-        {item.isPinned && (
-          <View style={styles.pinnedBadge}>
-            <Ionicons name="pin" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.white} />
-          </View>
-        )}
-      </View>
-
-      <View style={styles.topicContent}>
-        <TitleText variant="medium" style={styles.topicTitle}>
-          {item.title}
-        </TitleText>
-        <BodyText variant="small" style={styles.topicPreview} numberOfLines={2}>
-          {item.preview}
-        </BodyText>
-        
-        <View style={styles.topicTags}>
-          {item.tags.slice(0, 3).map((tag, index) => (
-            <Badge key={index} variant="secondary" style={styles.tag}>
-              {tag}
-            </Badge>
-          ))}
-        </View>
+        <Text style={styles.topicTitle}>{item.title}</Text>
+        <Text style={styles.topicPreview}>{item.preview}</Text>
       </View>
 
       <View style={styles.topicFooter}>
-        <View style={styles.engagementStats}>
-          <TouchableOpacity style={styles.statItem}>
-            <Ionicons name="arrow-up" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray[600]} />
-            <LabelText variant="small" style={styles.statText}>
-              {item.upvotes}
-            </LabelText>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.statItem}>
-            <Ionicons name="chatbubble-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray[600]} />
-            <LabelText variant="small" style={styles.statText}>
-              {item.comments}
-            </LabelText>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.statItem}>
-            <Ionicons name="share-outline" size={DESIGN_SYSTEM.iconSizes.sm} color={theme.colors.gray[600]} />
-            <LabelText variant="small" style={styles.statText}>
-              Share
-            </LabelText>
-          </TouchableOpacity>
+        <View style={styles.topicAuthor}>
+          <Text style={styles.authorText}>by {item.author}</Text>
+          <Text style={styles.timeText}>{item.timeAgo}</Text>
         </View>
 
-        {item.isHot && (
-          <View style={styles.hotIndicator}>
-            <Ionicons name="flame" size={DESIGN_SYSTEM.iconSizes.xs} color={theme.colors.accent} />
-            <LabelText variant="small" style={styles.hotText}>
-              Hot
-            </LabelText>
+        <View style={styles.topicStats}>
+          <View style={styles.statItem}>
+            <Ionicons name="arrow-up" size={16} color="#2ed573" />
+            <Text style={styles.statText}>{item.upvotes}</Text>
           </View>
-        )}
+          <View style={styles.statItem}>
+            <Ionicons name="chatbubble-outline" size={16} color="#667eea" />
+            <Text style={styles.statText}>{item.comments}</Text>
+          </View>
+        </View>
       </View>
-    </Card>
+
+      <View style={styles.topicTags}>
+        {item.tags.map((tag, index) => (
+          <View key={index} style={styles.tag}>
+            <Text style={styles.tagText}>{tag}</Text>
+          </View>
+        ))}
+      </View>
+    </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
-      <Header
-        title="Community"
-        subtitle="Join the conversation"
-        rightComponent={
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['#121212', '#1E1E1E']}
+        style={styles.background}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerContent}>
+            <Text style={styles.headerTitle}>Community</Text>
+            <Text style={styles.headerSubtitle}>Join the conversation</Text>
+          </View>
+          <View style={styles.headerActions}>
             <TouchableOpacity
+              style={styles.headerAction}
               onPress={() => navigation.navigate('Post')}
-              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
             >
-              <Ionicons 
-                name="add-circle" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+              <Ionicons name="add-circle" size={24} color="#ffffff" />
             </TouchableOpacity>
             <TouchableOpacity
-              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+              style={styles.headerAction}
+              onPress={() => Alert.alert('Search', 'Search coming soon')}
             >
-              <Ionicons 
-                name="search" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+              <Ionicons name="search" size={24} color="#ffffff" />
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Ionicons 
-                name="notifications-outline" 
-                size={DESIGN_SYSTEM.iconSizes.lg} 
-                color={theme.colors.gray[800]} 
-              />
+            <TouchableOpacity
+              style={styles.headerAction}
+              onPress={() => Alert.alert('Notifications', 'Notifications coming soon')}
+            >
+              <Ionicons name="notifications" size={24} color="#ffffff" />
             </TouchableOpacity>
           </View>
-        }
-      />
-
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        {/* Categories Filter */}
-        <View style={styles.categoriesContainer}>
-          <FlatList
-            data={categories}
-            renderItem={renderCategory}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoriesList}
-          />
         </View>
 
-        {/* Sort Options */}
-        <View style={styles.sortContainer}>
-          <View style={styles.sortButtons}>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Categories */}
+          <View style={styles.categoriesContainer}>
+            <FlatList
+              data={categories}
+              renderItem={renderCategory}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesList}
+            />
+          </View>
+
+          {/* Sort Options */}
+          <View style={styles.sortContainer}>
             <TouchableOpacity
-              style={[
-                styles.sortButton,
-                sortBy === 'hot' && styles.sortButtonActive,
-              ]}
+              style={[styles.sortButton, sortBy === 'hot' && styles.sortButtonActive]}
               onPress={() => setSortBy('hot')}
             >
-              <LabelText
-                variant="small"
-                style={[
-                  styles.sortButtonText,
-                  sortBy === 'hot' && styles.sortButtonTextActive,
-                ]}
-              >
-                Hot
-              </LabelText>
+              <Ionicons name="flame" size={16} color={sortBy === 'hot' ? '#ffffff' : '#666666'} />
+              <Text style={[styles.sortText, sortBy === 'hot' && styles.sortTextActive]}>Hot</Text>
             </TouchableOpacity>
-            
             <TouchableOpacity
-              style={[
-                styles.sortButton,
-                sortBy === 'new' && styles.sortButtonActive,
-              ]}
+              style={[styles.sortButton, sortBy === 'new' && styles.sortButtonActive]}
               onPress={() => setSortBy('new')}
             >
-              <LabelText
-                variant="small"
-                style={[
-                  styles.sortButtonText,
-                  sortBy === 'new' && styles.sortButtonTextActive,
-                ]}
-              >
-                New
-              </LabelText>
+              <Ionicons name="time" size={16} color={sortBy === 'new' ? '#ffffff' : '#666666'} />
+              <Text style={[styles.sortText, sortBy === 'new' && styles.sortTextActive]}>New</Text>
             </TouchableOpacity>
-            
             <TouchableOpacity
-              style={[
-                styles.sortButton,
-                sortBy === 'top' && styles.sortButtonActive,
-              ]}
+              style={[styles.sortButton, sortBy === 'top' && styles.sortButtonActive]}
               onPress={() => setSortBy('top')}
             >
-              <LabelText
-                variant="small"
-                style={[
-                  styles.sortButtonText,
-                  sortBy === 'top' && styles.sortButtonTextActive,
-                ]}
-              >
-                Top
-              </LabelText>
+              <Ionicons name="trending-up" size={16} color={sortBy === 'top' ? '#ffffff' : '#666666'} />
+              <Text style={[styles.sortText, sortBy === 'top' && styles.sortTextActive]}>Top</Text>
             </TouchableOpacity>
           </View>
-        </View>
 
-        {/* Topics List */}
-        <View style={LAYOUT_PATTERNS.section.container}>
-          <FlatList
-            data={communityTopics}
-            renderItem={renderTopic}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={false}
-            contentContainerStyle={LAYOUT_PATTERNS.list.container}
-          />
-        </View>
-
-        <Spacer size="xl" />
-      </ScrollView>
-
-
+          {/* Topics */}
+          <View style={styles.topicsContainer}>
+            <FlatList
+              data={communityTopics}
+              renderItem={renderTopic}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              scrollEnabled={false}
+            />
+          </View>
+        </ScrollView>
+      </LinearGradient>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#121212',
+  },
+  background: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 20,
+    paddingTop: 16,
+  },
+  headerContent: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#ffffff',
+    letterSpacing: -0.5,
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: 4,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerAction: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
   scrollView: {
     flex: 1,
   },
   categoriesContainer: {
-    paddingVertical: DESIGN_SYSTEM.layout.elementSpacing,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.gray[200],
+    marginBottom: 24,
   },
   categoriesList: {
-    paddingHorizontal: DESIGN_SYSTEM.layout.screenPadding,
+    paddingHorizontal: 24,
   },
   categoryItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: DESIGN_SYSTEM.layout.elementSpacing,
-    paddingVertical: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    borderRadius: DESIGN_SYSTEM.borderRadius.round,
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing,
-    backgroundColor: theme.colors.gray[100],
+    backgroundColor: '#2A2A2A',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 12,
   },
   categoryItemActive: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: '#667eea',
   },
   categoryText: {
-    marginLeft: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    color: theme.colors.gray[600],
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666666',
+    marginLeft: 8,
   },
   categoryTextActive: {
-    color: theme.colors.white,
+    color: '#ffffff',
   },
   sortContainer: {
-    paddingVertical: DESIGN_SYSTEM.layout.elementSpacing,
-    paddingHorizontal: DESIGN_SYSTEM.layout.screenPadding,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.gray[200],
-  },
-  sortButtons: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.gray[100],
-    borderRadius: DESIGN_SYSTEM.borderRadius.md,
-    padding: DESIGN_SYSTEM.layout.elementSpacing / 4,
+    paddingHorizontal: 24,
+    marginBottom: 24,
   },
   sortButton: {
-    flex: 1,
-    paddingVertical: DESIGN_SYSTEM.layout.elementSpacing / 2,
+    flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: DESIGN_SYSTEM.borderRadius.sm,
+    backgroundColor: '#2A2A2A',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 12,
   },
   sortButtonActive: {
-    backgroundColor: theme.colors.white,
-    ...DESIGN_SYSTEM.shadows.small,
+    backgroundColor: '#667eea',
   },
-  sortButtonText: {
-    color: theme.colors.gray[600],
+  sortText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666666',
+    marginLeft: 6,
   },
-  sortButtonTextActive: {
-    color: theme.colors.primary,
-    fontWeight: '600',
+  sortTextActive: {
+    color: '#ffffff',
+  },
+  topicsContainer: {
+    paddingHorizontal: 24,
   },
   topicCard: {
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
   },
   topicHeader: {
+    marginBottom: 16,
+  },
+  topicMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing,
-  },
-  authorInfo: {
-    flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    marginBottom: 8,
   },
-  authorDetails: {
-    marginLeft: DESIGN_SYSTEM.layout.elementSpacing,
-    flex: 1,
-  },
-  authorRow: {
+  topicIndicators: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  authorName: {
-    fontWeight: '600',
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing / 2,
-  },
-  timeAgo: {
-    color: theme.colors.gray[500],
-  },
-  pinnedBadge: {
-    backgroundColor: theme.colors.accent,
-    borderRadius: DESIGN_SYSTEM.borderRadius.round,
-    padding: DESIGN_SYSTEM.layout.elementSpacing / 4,
-  },
-  topicContent: {
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing,
+  topicCategory: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#667eea',
+    backgroundColor: '#667eea20',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   topicTitle: {
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    lineHeight: 22,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    lineHeight: 24,
+    marginBottom: 8,
   },
   topicPreview: {
-    color: theme.colors.gray[600],
-    lineHeight: 18,
-    marginBottom: DESIGN_SYSTEM.layout.elementSpacing,
-  },
-  topicTags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: DESIGN_SYSTEM.layout.elementSpacing / 2,
-  },
-  tag: {
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing / 2,
+    fontSize: 14,
+    color: '#666666',
+    lineHeight: 20,
   },
   topicFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: DESIGN_SYSTEM.layout.elementSpacing,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.gray[100],
+    marginBottom: 12,
   },
-  engagementStats: {
+  topicAuthor: {
+    flex: 1,
+  },
+  authorText: {
+    fontSize: 14,
+    color: '#ffffff',
+    fontWeight: '500',
+  },
+  timeText: {
+    fontSize: 12,
+    color: '#666666',
+    marginTop: 2,
+  },
+  topicStats: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: DESIGN_SYSTEM.layout.elementSpacing * 1.5,
+    marginLeft: 16,
   },
   statText: {
-    marginLeft: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    color: theme.colors.gray[600],
+    fontSize: 14,
+    color: '#666666',
+    marginLeft: 4,
   },
-  hotIndicator: {
+  topicTags: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  tag: {
+    backgroundColor: '#404040',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 4,
+  },
+  tagText: {
+    fontSize: 12,
+    color: '#ffffff',
+  },
+  priorityIndicator: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.accent + '20',
-    paddingHorizontal: DESIGN_SYSTEM.layout.elementSpacing / 2,
-    paddingVertical: DESIGN_SYSTEM.layout.elementSpacing / 4,
-    borderRadius: DESIGN_SYSTEM.borderRadius.sm,
+    marginRight: 4,
   },
-  hotText: {
-    color: theme.colors.accent,
-    marginLeft: DESIGN_SYSTEM.layout.elementSpacing / 4,
-    fontWeight: '600',
-  },
-
 }); 
