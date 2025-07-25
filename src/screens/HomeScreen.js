@@ -15,6 +15,22 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
+import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
+import {
+  Header,
+  Card,
+  Button,
+  Badge,
+  Avatar,
+  IconButton,
+  HeadlineText,
+  TitleText,
+  BodyText,
+  LabelText,
+  Spacer,
+  SectionHeader,
+} from '../components/DesignSystemComponents';
+import { ExpandedSearch } from '../components/SearchComponents';
 
 const { width, height } = Dimensions.get('window');
 
@@ -306,6 +322,7 @@ export default function HomeScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState([]);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const filters = ['All', 'Lagos', 'Abuja', 'Enugu', 'Port Harcourt', 'Kano', 'Ibadan'];
@@ -329,81 +346,47 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.dealImageContainer}>
         <Image source={{ uri: item.image }} style={styles.dealImage} />
         
-        {/* Minimalist Status Indicators - Combined */}
-        <View style={styles.statusIndicators}>
-          {/* Discount - Only show if significant */}
-          {item.discount && item.discount !== '10% Off' && (
-            <View style={styles.cornerRibbon}>
-              <Text style={styles.ribbonText}>{item.discount}</Text>
-            </View>
-          )}
-          
-          {/* Pinned - Only show icon, no text */}
-          {item.isPinned && (
-            <View style={styles.pinnedIcon}>
-              <Ionicons name="pin" size={12} color={theme.colors.white} />
-            </View>
-          )}
-          
-          {/* Critical urgency indicator */}
-          {item.urgency === 'critical' && (
-            <View style={styles.urgencyIndicator}>
-              <Ionicons name="flash" size={12} color="#FF4444" />
-            </View>
-          )}
-        </View>
+        {/* Discount Ribbon - Only show significant discounts */}
+        {item.discount && item.discount !== '10% Off' && (
+          <View style={styles.cornerRibbon}>
+            <Text style={styles.ribbonText}>{item.discount}</Text>
+          </View>
+        )}
         
-        {/* Bookmark - Hidden by default, show on long press */}
-        <TouchableOpacity style={styles.bookmarkIcon}>
-          <Ionicons name="bookmark-outline" size={18} color={theme.colors.white} />
-        </TouchableOpacity>
+        {/* Urgency indicator - Only for critical items */}
+        {item.urgency === 'critical' && (
+          <View style={styles.urgencyIndicator}>
+            <Ionicons name="flash" size={12} color="#FF4444" />
+          </View>
+        )}
       </View>
       
       <View style={styles.dealContent}>
-        <View style={styles.dealHeader}>
-          <Text style={styles.dealTitle} numberOfLines={1}>{item.title}</Text>
-          {/* Rating - Only show if exceptional */}
-          {item.rating >= 4.8 && (
-            <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={14} color={theme.colors.secondary} />
-              <Text style={styles.ratingText}>{item.rating}</Text>
-            </View>
-          )}
-        </View>
+        {/* Simplified header - Title only */}
+        <Text style={styles.dealTitle} numberOfLines={1}>{item.title}</Text>
         
-        {/* Combined location and category */}
+        {/* Combined location and category - Single line */}
         <View style={styles.locationRow}>
-          <Ionicons name="location" size={14} color={theme.colors.gray} />
+          <Ionicons name="location" size={12} color={theme.colors.gray} />
           <Text style={styles.locationText}>{item.location}</Text>
           <Text style={styles.categoryText}> • {item.category}</Text>
         </View>
         
-        {/* Description - Hidden by default, show on tap */}
-        <Text style={styles.dealDescription} numberOfLines={1}>
-          {item.description}
-        </Text>
-        
-        {/* Simplified metrics - Combined into one row */}
+        {/* Essential metrics only */}
         <View style={styles.dealMetrics}>
           <View style={styles.metricRow}>
             <View style={styles.metricItem}>
-              <Ionicons name="people" size={14} color={theme.colors.gray} />
+              <Ionicons name="people" size={12} color={theme.colors.gray} />
               <Text style={styles.metricText}>{item.neighbors}</Text>
             </View>
             <View style={styles.metricItem}>
-              <Ionicons name="time" size={14} color={theme.colors.gray} />
+              <Ionicons name="time" size={12} color={theme.colors.gray} />
               <Text style={styles.metricText}>{item.timeLeft}</Text>
             </View>
-            {/* Progress bar - Only for high urgency */}
-            {item.urgency === 'critical' && (
-              <View style={styles.progressContainer}>
-                <ProgressBar progress={item.popularity} urgency={item.urgency} />
-              </View>
-            )}
           </View>
         </View>
         
-        {/* Simplified CTA */}
+        {/* Minimal CTA */}
         <TouchableOpacity style={styles.ctaButton}>
           <Text style={styles.ctaText}>Book</Text>
         </TouchableOpacity>
@@ -501,37 +484,50 @@ export default function HomeScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Minimalist Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <TouchableOpacity style={styles.brandContainer}>
-            <Text style={styles.brandText}>🇳🇬 NaijaConnect</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerIcon}>
-            <Ionicons name="notifications-outline" size={20} color={theme.colors.black} />
-          </TouchableOpacity>
-        </View>
-      </View>
+    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
+      {/* Header */}
+      <Header
+        title="🇳🇬 NaijaConnect"
+        rightComponent={
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              onPress={() => setIsSearchExpanded(true)}
+              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+            >
+              <Ionicons 
+                name="search" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons 
+                name="notifications-outline" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+          </View>
+        }
+      />
 
-      {/* Enhanced Search Bar */}
-      <SearchBar activeFilters={activeFilters} onFilterPress={handleFilterPress} />
+      {/* Expanded Search */}
+      <ExpandedSearch
+        visible={isSearchExpanded}
+        onClose={() => setIsSearchExpanded(false)}
+      />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Local Deals Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Local Deals</Text>
-          </View>
+        <View style={LAYOUT_PATTERNS.section.container}>
+          <SectionHeader title="Local Deals" />
           <FlatList
             data={localDeals}
             renderItem={renderDealCard}
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.dealsList}
+            contentContainerStyle={LAYOUT_PATTERNS.list.container}
           />
         </View>
 
@@ -563,10 +559,8 @@ export default function HomeScreen({ navigation }) {
         )}
 
         {/* Community Feed */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Community</Text>
-          </View>
+        <View style={LAYOUT_PATTERNS.section.container}>
+          <SectionHeader title="Community" />
           
           {/* Feed Categories - Hidden by default */}
           <View style={styles.categoriesContainer}>
@@ -677,8 +671,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg, // 24pt
+    paddingVertical: theme.spacing.md, // 16pt
     backgroundColor: theme.colors.white,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.lightGray,
@@ -700,21 +694,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerIcon: {
-    padding: theme.spacing.sm,
-    marginLeft: theme.spacing.sm,
+    padding: theme.spacing.sm, // 8pt
+    marginLeft: theme.spacing.sm, // 8pt
   },
   scrollView: {
     flex: 1,
   },
   section: {
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.lg, // 24pt - Sufficient vertical spacing between sections
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg, // 24pt
+    marginBottom: theme.spacing.md, // 16pt - Adequate spacing before content
   },
   sectionTitle: {
     fontSize: 20,
@@ -724,19 +718,19 @@ const styles = StyleSheet.create({
   sectionSubtitle: {
     fontSize: 14,
     color: theme.colors.gray,
-    marginTop: theme.spacing.xs,
+    marginTop: theme.spacing.xs, // 4pt
   },
   closeButton: {
-    padding: theme.spacing.sm,
+    padding: theme.spacing.sm, // 8pt
   },
   dealsList: {
-    paddingHorizontal: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg, // 24pt
   },
   dealCard: {
     width: width * 0.8, // Adjust width for horizontal scroll
     backgroundColor: theme.colors.white,
     borderRadius: theme.borderRadius.lg,
-    marginRight: theme.spacing.md,
+    marginRight: theme.spacing.md, // 16pt - Consistent margins between cards
     ...theme.shadows.medium,
   },
   dealImageContainer: {
@@ -761,12 +755,12 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     alignItems: 'flex-start',
-    padding: theme.spacing.md,
+    padding: theme.spacing.md, // 16pt - Adequate padding within components
   },
   discountBadge: {
     backgroundColor: theme.colors.accent,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
     borderRadius: theme.borderRadius.sm,
   },
   discountText: {
@@ -777,15 +771,15 @@ const styles = StyleSheet.create({
   bookmarkIcon: {
     backgroundColor: theme.colors.white,
     borderRadius: theme.borderRadius.round,
-    padding: theme.spacing.xs,
+    padding: theme.spacing.xs, // 4pt
   },
   categoryTag: {
     position: 'absolute',
-    top: theme.spacing.sm,
-    left: theme.spacing.sm,
+    top: theme.spacing.sm, // 8pt
+    left: theme.spacing.sm, // 8pt
     backgroundColor: theme.colors.primary + '80',
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
     borderRadius: theme.borderRadius.sm,
   },
   categoryText: {
@@ -794,26 +788,26 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   dealContent: {
-    padding: theme.spacing.md,
+    padding: theme.spacing.md, // 16pt - Adequate padding within components
   },
   dealHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.sm, // 8pt - Consistent margins between text elements
   },
   dealTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.black,
-    flex: 1,
+    marginBottom: theme.spacing.xs, // 4pt - Consistent margins between text elements
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
     borderRadius: theme.borderRadius.round,
   },
   ratingText: {
@@ -829,38 +823,38 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   dealMetrics: {
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
   },
   metricRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.sm, // 8pt - Consistent margins between elements
   },
   metricItem: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   metricText: {
-    fontSize: 12,
+    fontSize: 11,
     color: theme.colors.gray,
-    marginLeft: theme.spacing.xs,
+    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
   },
   timeContainer: {
-    marginTop: theme.spacing.sm,
+    marginTop: theme.spacing.sm, // 8pt - Consistent margins between elements
   },
   timeText: {
     fontSize: 12,
     color: theme.colors.gray,
-    marginBottom: theme.spacing.xs,
+    marginBottom: theme.spacing.xs, // 4pt - Consistent margins between text elements
   },
   seeMoreButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: theme.colors.lightGray,
-    paddingVertical: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm, // 8pt
     borderRadius: theme.borderRadius.md,
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: theme.spacing.md, // 16pt - Adequate padding within components
   },
   seeMoreText: {
     color: theme.colors.black,
@@ -868,13 +862,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   filterContainer: {
-    paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg, // 24pt
+    marginBottom: theme.spacing.lg, // 24pt - Sufficient vertical spacing between sections
   },
   filterTab: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.sm,
-    marginRight: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.lg, // 24pt
+    paddingVertical: theme.spacing.sm, // 8pt
+    marginRight: theme.spacing.sm, // 8pt - Consistent margins between filter tabs
     borderRadius: theme.borderRadius.round,
     backgroundColor: theme.colors.lightGray,
   },
@@ -891,17 +885,17 @@ const styles = StyleSheet.create({
   },
   postCard: {
     backgroundColor: theme.colors.white,
-    marginHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg, // 24pt
+    marginBottom: theme.spacing.md, // 16pt - Consistent margins between cards
     borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
+    padding: theme.spacing.md, // 16pt - Adequate padding within components
     ...theme.shadows.small,
   },
   postHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
   },
   userInfo: {
     flexDirection: 'row',
@@ -915,7 +909,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: theme.spacing.sm,
+    marginRight: theme.spacing.sm, // 8pt - Consistent margins between elements
   },
   verifiedBadge: {
     position: 'absolute',
@@ -923,7 +917,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: theme.colors.white,
     borderRadius: theme.borderRadius.round,
-    padding: theme.spacing.xs,
+    padding: theme.spacing.xs, // 4pt
   },
   userDetails: {
     flex: 1,
@@ -942,21 +936,21 @@ const styles = StyleSheet.create({
     color: theme.colors.gray,
   },
   timeSeparator: {
-    marginHorizontal: theme.spacing.xs,
+    marginHorizontal: theme.spacing.xs, // 4pt - Consistent margins between text elements
   },
   userTime: {
     fontSize: 14,
     color: theme.colors.gray,
   },
   postOptions: {
-    padding: theme.spacing.sm,
+    padding: theme.spacing.sm, // 8pt
   },
   categoryContainer: {
     backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
     borderRadius: theme.borderRadius.sm,
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
   },
   categoryLabel: {
     fontSize: 12,
@@ -967,34 +961,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors.black,
     lineHeight: 24,
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.md, // 16pt - Sufficient vertical spacing
   },
   locationText: {
-    fontSize: 14,
-    color: theme.colors.primary,
-    marginLeft: theme.spacing.xs,
+    fontSize: 12,
+    color: theme.colors.gray,
+    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
   },
   postActions: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     borderTopWidth: 1,
     borderTopColor: theme.colors.lightGray,
-    paddingTop: theme.spacing.md,
+    paddingTop: theme.spacing.md, // 16pt - Adequate padding within components
   },
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: theme.spacing.sm,
+    padding: theme.spacing.sm, // 8pt
   },
   actionText: {
     fontSize: 14,
     color: theme.colors.gray,
-    marginLeft: theme.spacing.xs,
+    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
   },
   progressContainer: {
     width: '100%',
@@ -1089,8 +1083,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   searchContainer: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg, // 24pt
+    paddingVertical: theme.spacing.md, // 16pt - Adequate padding within components
     backgroundColor: theme.colors.white,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.lightGray,
@@ -1100,38 +1094,38 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.colors.lightGray,
     borderRadius: theme.borderRadius.md,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
     color: theme.colors.black,
-    marginLeft: theme.spacing.sm,
+    marginLeft: theme.spacing.sm, // 8pt - Consistent margins between elements
     paddingVertical: 0,
   },
   filterButton: {
-    padding: theme.spacing.xs,
+    padding: theme.spacing.xs, // 4pt
   },
   ctaButton: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: theme.colors.primary,
-    paddingVertical: theme.spacing.sm,
+    paddingVertical: theme.spacing.sm, // 8pt
     borderRadius: theme.borderRadius.md,
-    marginTop: theme.spacing.md,
+    marginTop: theme.spacing.md, // 16pt - Sufficient vertical spacing
   },
   ctaText: {
     color: theme.colors.white,
     fontSize: 16,
     fontWeight: 'bold',
-    marginRight: theme.spacing.xs,
+    marginRight: theme.spacing.xs, // 4pt - Consistent margins between text and icons
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.sm, // 8pt - Consistent margins between elements
   },
   activeIndicator: {
     position: 'absolute',
@@ -1144,8 +1138,8 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    bottom: theme.spacing.lg,
-    right: theme.spacing.lg,
+    bottom: theme.spacing.lg, // 24pt - Sufficient spacing from bottom
+    right: theme.spacing.lg, // 24pt - Sufficient spacing from right edge
     backgroundColor: theme.colors.primary,
     width: 56,
     height: 56,
@@ -1158,22 +1152,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
     borderRadius: theme.borderRadius.md,
   },
   brandText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.primary,
-    marginRight: theme.spacing.xs,
+    marginRight: theme.spacing.xs, // 4pt - Consistent margins between text and icons
   },
   replyButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.lightGray,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
     borderRadius: theme.borderRadius.round,
     marginLeft: 'auto',
   },
@@ -1181,15 +1175,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.primary,
     fontWeight: '500',
-    marginLeft: theme.spacing.xs,
+    marginLeft: theme.spacing.xs, // 4pt - Consistent margins between text and icons
   },
   cornerRibbon: {
     position: 'absolute',
     top: 0,
     left: 0,
     backgroundColor: theme.colors.accent,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm, // 8pt
+    paddingVertical: theme.spacing.xs, // 4pt
     borderTopLeftRadius: theme.borderRadius.md,
     borderBottomRightRadius: theme.borderRadius.md,
   },
@@ -1306,6 +1300,9 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   urgencyIndicator: {
+    position: 'absolute',
+    top: theme.spacing.sm,
+    right: theme.spacing.sm,
     backgroundColor: 'rgba(255,68,68,0.8)',
     borderRadius: theme.borderRadius.round,
     padding: 4,

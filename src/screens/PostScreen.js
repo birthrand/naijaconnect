@@ -12,6 +12,21 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
+import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
+import {
+  Header,
+  SearchInput,
+  Card,
+  Button,
+  Badge,
+  IconButton,
+  HeadlineText,
+  TitleText,
+  BodyText,
+  LabelText,
+  Spacer,
+  Input,
+} from '../components/DesignSystemComponents';
 
 const postTypes = [
   {
@@ -25,7 +40,7 @@ const postTypes = [
     id: 'business',
     title: 'Business Listing',
     subtitle: 'Promote your business',
-    icon: 'briefcase',
+    icon: 'briefcase-outline',
     color: theme.colors.secondary,
   },
   {
@@ -39,7 +54,7 @@ const postTypes = [
     id: 'job',
     title: 'Job Posting',
     subtitle: 'Hire or find work',
-    icon: 'briefcase',
+    icon: 'briefcase-outline',
     color: theme.colors.info,
   },
   {
@@ -213,17 +228,15 @@ export default function PostScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="close" size={24} color={theme.colors.black} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Create Post</Text>
-        <TouchableOpacity onPress={handlePost}>
-          <Text style={styles.postButton}>Post</Text>
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="Create Post"
+        leftIcon="close"
+        rightIcon="checkmark"
+        onLeftPress={() => navigation.goBack()}
+        onRightPress={handlePost}
+      />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Post Type Selection */}

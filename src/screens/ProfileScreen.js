@@ -10,6 +10,21 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
+import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
+import {
+  Header,
+  SearchInput,
+  Card,
+  Button,
+  Badge,
+  IconButton,
+  HeadlineText,
+  TitleText,
+  BodyText,
+  LabelText,
+  Spacer,
+  Avatar,
+} from '../components/DesignSystemComponents';
 
 const profileStats = [
   { label: 'Posts', value: '24' },
@@ -70,7 +85,7 @@ const profileMenuItems = [
 
 export default function ProfileScreen({ navigation }) {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Profile Header */}
         <View style={styles.profileHeader}>

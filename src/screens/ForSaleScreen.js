@@ -15,6 +15,21 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
+import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
+import {
+  Header,
+  Card,
+  Button,
+  Badge,
+  IconButton,
+  HeadlineText,
+  TitleText,
+  BodyText,
+  LabelText,
+  Spacer,
+  SectionHeader,
+} from '../components/DesignSystemComponents';
+import { ModalSearch } from '../components/SearchComponents';
 
 const { width, height } = Dimensions.get('window');
 
@@ -233,12 +248,13 @@ const StatusBadge = ({ type, text }) => {
   );
 };
 
-export default function ForSaleScreen({ navigation }) {
+export default function NetworkScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [layoutMode, setLayoutMode] = useState('list'); // 'list' or 'grid'
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
 
   const handleFilterPress = () => {
     Alert.alert(
@@ -266,27 +282,16 @@ export default function ForSaleScreen({ navigation }) {
       ]}>
         <Image source={{ uri: item.image }} style={styles.listingImage} />
         
-        {/* Status Badges */}
-        <View style={[
-          styles.badgeContainer,
-          layoutMode === 'grid' && styles.badgeContainerGrid
-        ]}>
-          {item.isHot && <StatusBadge type="hot" text="🔥 Hot" />}
-          {item.isNew && <StatusBadge type="new" text="🆕 New" />}
-          <StatusBadge type={item.condition.toLowerCase()} text={item.condition} />
-        </View>
+        {/* Status indicators removed for cleaner design */}
         
-        {/* Discount Badge */}
-        {item.discount && (
-          <View style={[
-            styles.discountBadge,
-            layoutMode === 'grid' && styles.discountBadgeGrid
-          ]}>
-            <Text style={styles.discountText}>{item.discount}</Text>
+        {/* Discount Ribbon - Only show significant discounts */}
+        {item.discount && item.discount !== '17% Off' && (
+          <View style={styles.cornerRibbon}>
+            <Text style={styles.ribbonText}>{item.discount}</Text>
           </View>
         )}
         
-        {/* Bookmark Icon */}
+        {/* Bookmark - Hidden by default, show on long press */}
         <TouchableOpacity style={[
           styles.bookmarkIcon,
           layoutMode === 'grid' && styles.bookmarkIconGrid
@@ -299,109 +304,63 @@ export default function ForSaleScreen({ navigation }) {
         styles.listingContent,
         layoutMode === 'grid' && styles.listingContentGrid
       ]}>
-        <View style={[
-          styles.listingHeader,
-          layoutMode === 'grid' && styles.listingHeaderGrid
-        ]}>
-          <Text style={[
-            styles.listingTitle,
-            layoutMode === 'grid' && styles.listingTitleGrid
-          ]} numberOfLines={layoutMode === 'grid' ? 1 : 1}>
-            {item.title}
-          </Text>
-          {layoutMode === 'list' && (
-            <View style={styles.sellerInfo}>
-              <Text style={styles.sellerName}>{item.seller.name}</Text>
-              {item.seller.verified && (
-                <Ionicons name="checkmark-circle" size={14} color={theme.colors.primary} />
-              )}
-            </View>
-          )}
-        </View>
+        {/* Simplified header - Title only */}
+        <Text style={[
+          styles.listingTitle,
+          layoutMode === 'grid' && styles.listingTitleGrid
+        ]} numberOfLines={layoutMode === 'grid' ? 1 : 1}>
+          {item.title}
+        </Text>
         
+        {/* Description - Hidden by default, show on tap */}
         {layoutMode === 'list' && (
-          <Text style={styles.listingDescription} numberOfLines={2}>
+          <Text style={styles.listingDescription} numberOfLines={1}>
             {item.description}
           </Text>
         )}
         
-        {/* Location with icon */}
+        {/* Combined location and category - Single line */}
         <View style={[
           styles.locationRow,
           layoutMode === 'grid' && styles.locationRowGrid
         ]}>
-          <Ionicons name="location" size={14} color={theme.colors.gray} />
+          <Ionicons name="location" size={12} color={theme.colors.gray} />
           <Text style={[
             styles.locationText,
             layoutMode === 'grid' && styles.locationTextGrid
           ]}>{item.location}</Text>
-          {layoutMode === 'list' && (
-            <Text style={styles.distanceText}> · {item.distance}</Text>
-          )}
+          <Text style={styles.categoryText}> • {item.category}</Text>
         </View>
         
-        {/* Price Section */}
-        <View style={[
-          styles.priceSection,
-          layoutMode === 'grid' && styles.priceSectionGrid
-        ]}>
-          <View style={styles.priceContainer}>
-            <Text style={[
-              styles.price,
-              layoutMode === 'grid' && styles.priceGrid
-            ]}>{item.price}</Text>
-            {item.originalPrice && layoutMode === 'list' && (
-              <Text style={styles.originalPrice}>{item.originalPrice}</Text>
-            )}
-          </View>
-          {layoutMode === 'list' && (
-            <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={14} color={theme.colors.secondary} />
-              <Text style={styles.ratingText}>{item.seller.rating}</Text>
+        {/* Essential metrics only */}
+        <View style={styles.listingMetrics}>
+          <View style={styles.metricRow}>
+            <View style={styles.metricItem}>
+              <Ionicons name="eye" size={12} color={theme.colors.gray} />
+              <Text style={styles.metricText}>{item.views}</Text>
             </View>
-          )}
+            <View style={styles.metricItem}>
+              <Ionicons name="time" size={12} color={theme.colors.gray} />
+              <Text style={styles.metricText}>{item.timeLeft}</Text>
+            </View>
+          </View>
         </View>
         
-        {/* Stats Row - Only in list mode */}
-        {layoutMode === 'list' && (
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Ionicons name="eye" size={14} color={theme.colors.gray} />
-              <Text style={styles.statText}>{item.views} views</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Ionicons name="time" size={14} color={theme.colors.gray} />
-              <Text style={styles.statText}>{item.timeLeft} left</Text>
-            </View>
-          </View>
-        )}
+        {/* Price - Essential information only */}
+        <Text style={styles.price}>{item.price}</Text>
         
-        {/* CTA Buttons */}
-        <View style={[
-          styles.ctaContainer,
-          layoutMode === 'grid' && styles.ctaContainerGrid
+        {/* Minimal CTA */}
+        <TouchableOpacity style={[
+          styles.primaryCta,
+          layoutMode === 'grid' && styles.primaryCtaGrid
         ]}>
-          <TouchableOpacity style={[
-            styles.primaryCta,
-            layoutMode === 'grid' && styles.primaryCtaGrid
+          <Text style={[
+            styles.primaryCtaText,
+            layoutMode === 'grid' && styles.primaryCtaTextGrid
           ]}>
-            <Text style={[
-              styles.primaryCtaText,
-              layoutMode === 'grid' && styles.primaryCtaTextGrid
-            ]}>
-              {item.condition === 'Job' ? 'Apply Now' : 'Buy Now'}
-            </Text>
-            {layoutMode === 'list' && (
-              <Ionicons name="arrow-forward" size={16} color={theme.colors.white} />
-            )}
-          </TouchableOpacity>
-          {layoutMode === 'list' && (
-            <TouchableOpacity style={styles.secondaryCta}>
-              <Ionicons name="chatbubble-outline" size={16} color={theme.colors.primary} />
-              <Text style={styles.secondaryCtaText}>Message</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+            {item.condition === 'Job' ? 'Apply' : 'Buy'}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -429,28 +388,41 @@ export default function ForSaleScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Network</Text>
-          <Text style={styles.headerSubtitle}>Buy, sell & discover trusted deals</Text>
-        </View>
-        <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.headerIcon}>
-            <Ionicons name="notifications-outline" size={24} color={theme.colors.black} />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.headerIcon}
-            onPress={() => navigation.navigate('Messages')}
-          >
-            <Ionicons name="chatbubble-outline" size={24} color={theme.colors.black} />
-          </TouchableOpacity>
-        </View>
-      </View>
+    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
+      <Header
+        title="Network"
+        rightComponent={
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <TouchableOpacity
+              onPress={() => setIsSearchVisible(true)}
+              style={{ marginRight: DESIGN_SYSTEM.layout.elementSpacing }}
+            >
+              <Ionicons 
+                name="search" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Ionicons 
+                name="notifications-outline" 
+                size={DESIGN_SYSTEM.iconSizes.lg} 
+                color={theme.colors.gray[800]} 
+              />
+            </TouchableOpacity>
+          </View>
+        }
+      />
 
-      {/* Search Bar */}
-      <SearchBar activeFilters={activeFilters} onFilterPress={handleFilterPress} />
+      {/* Modal Search */}
+      <ModalSearch
+        visible={isSearchVisible}
+        onClose={() => setIsSearchVisible(false)}
+        onSearch={(query) => {
+          setSearchQuery(query);
+          setIsSearchVisible(false);
+        }}
+      />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Filter Tabs */}
@@ -465,9 +437,8 @@ export default function ForSaleScreen({ navigation }) {
           />
         </View>
 
-        {/* Layout Toggle */}
+        {/* Layout Toggle - Hidden by default, show on long press */}
         <View style={styles.layoutToggleContainer}>
-          <Text style={styles.layoutToggleLabel}>View:</Text>
           <TouchableOpacity
             style={[
               styles.layoutToggleButton,
@@ -477,7 +448,7 @@ export default function ForSaleScreen({ navigation }) {
           >
             <Ionicons 
               name="list" 
-              size={20} 
+              size={18} 
               color={layoutMode === 'list' ? theme.colors.white : theme.colors.gray} 
             />
           </TouchableOpacity>
@@ -490,7 +461,7 @@ export default function ForSaleScreen({ navigation }) {
           >
             <Ionicons 
               name="grid" 
-              size={20} 
+              size={18} 
               color={layoutMode === 'grid' ? theme.colors.white : theme.colors.gray} 
             />
           </TouchableOpacity>
@@ -766,10 +737,10 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.xs,
   },
   listingTitle: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
     color: theme.colors.black,
-    flex: 1,
+    marginBottom: theme.spacing.xs,
   },
   listingTitleGrid: {
     fontSize: 16,
@@ -801,7 +772,7 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.xs,
   },
   locationText: {
-    fontSize: 14,
+    fontSize: 12,
     color: theme.colors.gray,
     marginLeft: theme.spacing.xs,
   },
@@ -829,9 +800,10 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
   },
   price: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.primary,
+    marginBottom: theme.spacing.xs,
   },
   priceGrid: {
     fontSize: 18,
@@ -865,6 +837,44 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.gray,
     marginLeft: theme.spacing.xs,
+  },
+  // Minimalist styles
+  listingMetrics: {
+    marginBottom: theme.spacing.sm,
+  },
+  metricRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  metricItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  metricText: {
+    fontSize: 11,
+    color: theme.colors.gray,
+    marginLeft: theme.spacing.xs,
+  },
+  categoryText: {
+    fontSize: 12,
+    color: theme.colors.gray,
+    marginLeft: theme.spacing.xs,
+  },
+  // Corner ribbon styles (matching feed view)
+  cornerRibbon: {
+    position: 'absolute',
+    top: theme.spacing.sm,
+    left: theme.spacing.sm,
+    backgroundColor: theme.colors.accent,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    zIndex: 1,
+  },
+  ribbonText: {
+    color: theme.colors.white,
+    fontSize: 12,
+    fontWeight: 'bold',
   },
   ctaContainer: {
     flexDirection: 'row',

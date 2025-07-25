@@ -12,6 +12,21 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
+import { DESIGN_SYSTEM, LAYOUT_PATTERNS } from '../theme/designSystem';
+import {
+  Header,
+  SearchInput,
+  Card,
+  Button,
+  Badge,
+  IconButton,
+  HeadlineText,
+  TitleText,
+  BodyText,
+  LabelText,
+  Spacer,
+  SectionHeader,
+} from '../components/DesignSystemComponents';
 
 // Mock data
 const categories = [
@@ -155,28 +170,20 @@ export default function DiscoverScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[LAYOUT_PATTERNS.screen.container, { paddingTop: 0 }]}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Discover</Text>
-        <TouchableOpacity style={styles.headerIcon}>
-          <Ionicons name="filter" size={24} color={theme.colors.black} />
-        </TouchableOpacity>
-      </View>
+      <Header
+        title="Discover"
+        rightIcon="filter"
+        onRightPress={() => {}}
+      />
 
       {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={20} color={theme.colors.gray} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search businesses, events, or people..."
-            placeholderTextColor={theme.colors.gray}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-      </View>
+      <SearchInput
+        placeholder="Search businesses, events, or people..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Categories */}

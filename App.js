@@ -26,6 +26,7 @@ import SettingsScreen from './src/screens/SettingsScreen';
 
 // Import theme
 import { theme } from './src/theme/theme';
+import { DESIGN_SYSTEM } from './src/theme/designSystem';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,27 +44,27 @@ function TabNavigator() {
             iconName = focused ? 'compass' : 'compass-outline';
           } else if (route.name === 'Post') {
             iconName = focused ? 'add-circle' : 'add-circle-outline';
-          } else if (route.name === 'ForSale') {
-            iconName = focused ? 'bag' : 'bag-outline';
+                  } else if (route.name === 'Network') {
+          iconName = focused ? 'bag' : 'bag-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.gray,
+        tabBarActiveTintColor: DESIGN_SYSTEM.navigation.tabBar.activeColor,
+        tabBarInactiveTintColor: DESIGN_SYSTEM.navigation.tabBar.inactiveColor,
         tabBarStyle: {
-          backgroundColor: theme.colors.white,
-          borderTopWidth: 1,
-          borderTopColor: theme.colors.lightGray,
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 70,
+          backgroundColor: DESIGN_SYSTEM.navigation.tabBar.backgroundColor,
+          borderTopWidth: DESIGN_SYSTEM.navigation.tabBar.borderTopWidth,
+          borderTopColor: DESIGN_SYSTEM.navigation.tabBar.borderTopColor,
+          paddingBottom: DESIGN_SYSTEM.navigation.tabBar.paddingBottom,
+          paddingTop: DESIGN_SYSTEM.navigation.tabBar.paddingTop,
+          height: DESIGN_SYSTEM.navigation.tabBar.height,
         },
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
+          fontSize: DESIGN_SYSTEM.navigation.tabBar.labelFontSize,
+          fontWeight: DESIGN_SYSTEM.navigation.tabBar.labelFontWeight,
           marginTop: 2,
         },
         headerShown: false,
@@ -84,11 +85,11 @@ function TabNavigator() {
         component={PostScreen}
         options={{ tabBarLabel: 'Post' }}
       />
-      <Tab.Screen 
-        name="ForSale" 
-        component={ForSaleScreen}
-        options={{ tabBarLabel: 'For Sale' }}
-      />
+              <Tab.Screen
+          name="Network"
+          component={ForSaleScreen}
+          options={{ tabBarLabel: 'Network' }}
+        />
       <Tab.Screen 
         name="Profile" 
         component={ProfileScreen}
@@ -103,7 +104,12 @@ export default function App() {
     <SafeAreaProvider>
       <PaperProvider theme={theme}>
         <NavigationContainer>
-          <StatusBar style="light" backgroundColor={theme.colors.primary} />
+          <StatusBar 
+            style="dark" 
+            backgroundColor="transparent" 
+            translucent={true}
+            barStyle="dark-content"
+          />
           <Stack.Navigator
             initialRouteName="Onboarding"
             screenOptions={{
