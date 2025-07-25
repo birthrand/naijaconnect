@@ -17,11 +17,9 @@ import TrendingScreen from './src/screens/TrendingScreen';
 import CommunityScreen from './src/screens/CommunityScreen';
 import DiscoverScreen from './src/screens/DiscoverScreen';
 import PostScreen from './src/screens/PostScreen';
-import ForSaleScreen from './src/screens/ForSaleScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
-import EditProfileScreen from './src/screens/EditProfileScreen';
 import HelpSupportScreen from './src/screens/HelpSupportScreen';
 import UserProfileScreen from './src/screens/UserProfileScreen';
+import EditProfileScreen from './src/screens/EditProfileScreen';
 import SideHustleScreen from './src/screens/SideHustleScreen';
 
 // Import theme and context

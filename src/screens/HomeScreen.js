@@ -19,12 +19,66 @@ import { seedSampleData } from '../utils/seedData';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 
+// Sample data for events
+const sampleEvents = [
+  {
+    id: 'event-1',
+    type: 'event',
+    title: 'Lagos Tech Meetup 2024',
+    description: 'Join us for the biggest tech gathering in Lagos',
+    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=200&fit=crop',
+    date: '2024-02-15',
+    time: '6:00 PM',
+    location: 'Victoria Island, Lagos',
+    attendees: 234,
+    price: 'Free',
+  },
+  {
+    id: 'event-2',
+    type: 'event',
+    title: 'Abuja Business Summit',
+    description: 'Network with top business leaders in Abuja',
+    image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=200&fit=crop',
+    date: '2024-02-20',
+    time: '9:00 AM',
+    location: 'Wuse Zone 2, Abuja',
+    attendees: 156,
+    price: '₦5,000',
+  },
+  {
+    id: 'event-3',
+    type: 'event',
+    title: 'Lagos Fashion Week',
+    description: 'The most stylish event of the year is back!',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=200&fit=crop',
+    date: '2024-02-25',
+    time: '7:00 PM',
+    location: 'Eko Hotel, Lagos',
+    attendees: 450,
+    price: '₦15,000',
+  },
+  {
+    id: 'event-4',
+    type: 'event',
+    title: 'Nigerian Food Festival',
+    description: 'Celebrate the best of Nigerian cuisine',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop',
+    date: '2024-02-28',
+    time: '12:00 PM',
+    location: 'Terra Kulture, Lagos',
+    attendees: 320,
+    price: '₦3,000',
+  },
+];
+
 export default function HomeScreen({ navigation }) {
   const { user, supabase } = useSupabase();
   const [posts, setPosts] = useState([]);
+  const [spaces, setSpaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('posts'); // 'posts', 'spaces', 'events'
 
   const { translateX, onGestureEvent, onHandlerStateChange } = useSwipeGesture(() => {
     setIsSidebarVisible(true);
@@ -35,7 +89,7 @@ export default function HomeScreen({ navigation }) {
       setLoading(true);
       
       // Fetch latest posts with user information
-      const { data, error } = await supabase
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select(`
           *,
@@ -49,11 +103,29 @@ export default function HomeScreen({ navigation }) {
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      if (postsError) throw postsError;
       
-      setPosts(data || []);
+      // Fetch spaces with host information
+      const { data: spacesData, error: spacesError } = await supabase
+        .from('spaces')
+        .select(`
+          *,
+          users!spaces_host_id_fkey (
+            id,
+            full_name,
+            username,
+            avatar_url
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (spacesError) throw spacesError;
+      
+      setPosts(postsData || []);
+      setSpaces(spacesData || []);
     } catch (error) {
-      console.error('Error loading posts:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
@@ -144,10 +216,7 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.postCard}>
         {/* Post Header */}
         <View style={styles.postHeader}>
-          <TouchableOpacity 
-            style={styles.postUserInfo}
-            onPress={() => navigation.navigate('UserProfile', { userId: postUser?.id })}
-          >
+          <View style={styles.postUserInfo}>
             <Image 
               source={{ 
                 uri: postUser?.avatar_url || `https://ui-avatars.com/api/?name=${postUser?.full_name || 'User'}&background=667eea&color=ffffff&size=100` 
@@ -155,98 +224,101 @@ export default function HomeScreen({ navigation }) {
               style={styles.postAvatar} 
             />
             <View style={styles.postUserDetails}>
-              <Text style={styles.postUserName}>
-                {postUser?.full_name || 'Anonymous User'}
-              </Text>
-              <Text style={styles.postTime}>
-                {formatTimeAgo(item.created_at)}
+              <View style={styles.postUserName}>
+                <Text style={styles.postUserNameText}>
+                  {postUser?.full_name || 'Anonymous User'}
+                </Text>
+              </View>
+              <Text style={styles.postLocation}>
+                {item.location || 'Lagos'} • {formatTimeAgo(item.created_at)}
               </Text>
             </View>
-          </TouchableOpacity>
-          
-          <View style={styles.postTypeBadge}>
-            <Ionicons name={postTypeIcon} size={16} color={postTypeColor} />
-            <Text style={[styles.postTypeText, { color: postTypeColor }]}>
-              {item.type}
-            </Text>
+          </View>
+          <View style={styles.postActions}>
+            <View style={styles.postTypeBadge}>
+              <Ionicons name={postTypeIcon} size={16} color={postTypeColor} />
+              <Text style={[styles.postTypeText, { color: postTypeColor }]}>
+                {item.type}
+              </Text>
+            </View>
           </View>
         </View>
 
         {/* Post Content */}
-        <View style={styles.postContent}>
+        <Text style={styles.postContent}>
           {item.title && (
-            <Text style={styles.postTitle}>{item.title}</Text>
+            <Text style={styles.postTitle}>{item.title}{'\n'}</Text>
           )}
-          <Text style={styles.postText}>{item.content}</Text>
-          
-          {/* Post Images */}
-          {item.images && item.images.length > 0 && (
-            <View style={styles.postImages}>
-              {item.images.slice(0, 3).map((image, index) => (
-                <Image 
-                  key={index} 
-                  source={{ uri: image }} 
-                  style={[
-                    styles.postImage, 
-                    item.images.length === 1 ? styles.singleImage : styles.multipleImage
-                  ]} 
-                  resizeMode="cover"
-                />
-              ))}
-              {item.images.length > 3 && (
-                <View style={styles.moreImagesOverlay}>
-                  <Text style={styles.moreImagesText}>+{item.images.length - 3}</Text>
-                </View>
-              )}
-            </View>
-          )}
+          {item.content}
+        </Text>
+        
+        {/* Post Images */}
+        {item.images && item.images.length > 0 && (
+          <View style={styles.postImages}>
+            {item.images.slice(0, 3).map((image, index) => (
+              <Image 
+                key={index} 
+                source={{ uri: image }} 
+                style={[
+                  styles.postImage, 
+                  item.images.length === 1 ? styles.singleImage : styles.multipleImage
+                ]} 
+                resizeMode="cover"
+              />
+            ))}
+            {item.images.length > 3 && (
+              <View style={styles.moreImagesOverlay}>
+                <Text style={styles.moreImagesText}>+{item.images.length - 3}</Text>
+              </View>
+            )}
+          </View>
+        )}
 
-          {/* Post Metadata */}
-          {(item.location || item.price || item.event_date) && (
-            <View style={styles.postMetadata}>
-              {item.location && (
-                <View style={styles.metadataItem}>
-                  <Ionicons name="location" size={14} color="#666666" />
-                  <Text style={styles.metadataText}>{item.location}</Text>
-                </View>
-              )}
-              {item.price && (
-                <View style={styles.metadataItem}>
-                  <Ionicons name="pricetag" size={14} color="#666666" />
-                  <Text style={styles.metadataText}>₦{item.price.toLocaleString()}</Text>
-                </View>
-              )}
-              {item.event_date && (
-                <View style={styles.metadataItem}>
-                  <Ionicons name="calendar" size={14} color="#666666" />
-                  <Text style={styles.metadataText}>
-                    {new Date(item.event_date).toLocaleDateString()}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
-        </View>
+        {/* Post Metadata */}
+        {(item.location || item.price || item.event_date) && (
+          <View style={styles.postMetadata}>
+            {item.location && (
+              <View style={styles.metadataItem}>
+                <Ionicons name="location" size={14} color="#666666" />
+                <Text style={styles.metadataText}>{item.location}</Text>
+              </View>
+            )}
+            {item.price && (
+              <View style={styles.metadataItem}>
+                <Ionicons name="pricetag" size={14} color="#666666" />
+                <Text style={styles.metadataText}>₦{item.price.toLocaleString()}</Text>
+              </View>
+            )}
+            {item.event_date && (
+              <View style={styles.metadataItem}>
+                <Ionicons name="calendar" size={14} color="#666666" />
+                <Text style={styles.metadataText}>
+                  {new Date(item.event_date).toLocaleDateString()}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Post Actions */}
         <View style={styles.postActions}>
           <TouchableOpacity style={styles.postAction}>
             <Ionicons name="heart-outline" size={20} color="#666666" />
-            <Text style={styles.actionText}>
+            <Text style={styles.postActionText}>
               {item.likes_count || 0}
             </Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.postAction}>
             <Ionicons name="chatbubble-outline" size={20} color="#666666" />
-            <Text style={styles.actionText}>
+            <Text style={styles.postActionText}>
               {item.comments_count || 0}
             </Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.postAction}>
             <Ionicons name="share-outline" size={20} color="#666666" />
-            <Text style={styles.actionText}>
+            <Text style={styles.postActionText}>
               {item.shares_count || 0}
             </Text>
           </TouchableOpacity>
@@ -255,10 +327,107 @@ export default function HomeScreen({ navigation }) {
     );
   };
 
+  const renderSpaceCard = ({ item }) => {
+    const spaceHost = item.users;
+    
+    return (
+      <View style={styles.spaceCard}>
+        <View style={styles.spaceHeader}>
+          <View style={styles.spaceInfo}>
+            <Text style={styles.spaceTitle}>{item.name}</Text>
+            <Text style={styles.spaceHost}>Hosted by {spaceHost?.full_name || 'Anonymous'}</Text>
+          </View>
+          {item.is_live && (
+            <View style={styles.liveIndicator}>
+              <View style={styles.liveDot} />
+              <Text style={styles.liveText}>LIVE</Text>
+            </View>
+          )}
+        </View>
+        
+        <Text style={styles.spaceTopic}>{item.description}</Text>
+        
+        <View style={styles.spaceStats}>
+          <View style={styles.spaceStat}>
+            <Ionicons name="people" size={14} color="#666666" />
+            <Text style={styles.spaceStatText}>{item.participant_count} listening</Text>
+          </View>
+          <View style={styles.spaceStat}>
+            <Ionicons name="time" size={14} color="#666666" />
+            <Text style={styles.spaceStatText}>
+              {item.started_at ? formatTimeAgo(item.started_at) : 'Not started'}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const renderEventCard = ({ item }) => (
+    <View style={styles.eventCard}>
+      <Image source={{ uri: item.image }} style={styles.eventImage} />
+      <View style={styles.eventContent}>
+        <Text style={styles.eventTitle}>{item.title}</Text>
+        <Text style={styles.eventDescription}>{item.description}</Text>
+        
+        <View style={styles.eventDetails}>
+          <View style={styles.eventDetail}>
+            <Ionicons name="calendar" size={14} color="#667eea" />
+            <Text style={styles.eventDetailText}>
+              {new Date(item.date).toLocaleDateString()} at {item.time}
+            </Text>
+          </View>
+          <View style={styles.eventDetail}>
+            <Ionicons name="location" size={14} color="#667eea" />
+            <Text style={styles.eventDetailText}>{item.location}</Text>
+          </View>
+          <View style={styles.eventDetail}>
+            <Ionicons name="people" size={14} color="#667eea" />
+            <Text style={styles.eventDetailText}>{item.attendees} attending</Text>
+          </View>
+        </View>
+        
+        <View style={styles.eventFooter}>
+          <Text style={styles.eventPrice}>{item.price}</Text>
+          <TouchableOpacity style={styles.eventButton}>
+            <Text style={styles.eventButtonText}>Join Event</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderTopicCard = ({ item }) => (
+    <View style={styles.topicCard}>
+      <View style={styles.topicHeader}>
+        <View style={styles.topicInfo}>
+          <Text style={styles.topicTitle}>{item.title}</Text>
+          <Text style={styles.topicDescription}>{item.description}</Text>
+        </View>
+        {item.isHot && (
+          <View style={styles.hotIndicator}>
+            <Ionicons name="flame" size={16} color="#ff4757" />
+            <Text style={styles.hotText}>HOT</Text>
+          </View>
+        )}
+      </View>
+      
+      <View style={styles.topicStats}>
+        <View style={styles.topicStat}>
+          <Ionicons name="people" size={14} color="#667eea" />
+          <Text style={styles.topicStatText}>{item.participants} participants</Text>
+        </View>
+        <TouchableOpacity style={styles.joinTopicButton}>
+          <Text style={styles.joinTopicButtonText}>Join Discussion</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Ionicons name="newspaper-outline" size={64} color="#666666" />
-      <Text style={styles.emptyStateTitle}>No posts yet</Text>
+      <Ionicons name="newspaper-outline" size={64} color="#667eea" />
+      <Text style={styles.emptyStateTitle}>No Posts Yet</Text>
       <Text style={styles.emptyStateSubtitle}>
         Be the first to share something with your community!
       </Text>
@@ -280,6 +449,104 @@ export default function HomeScreen({ navigation }) {
     </View>
   );
 
+  const renderTabNavigation = () => (
+    <View style={styles.tabContainer}>
+      <TouchableOpacity
+        style={[styles.tab, activeTab === 'posts' && styles.activeTab]}
+        onPress={() => setActiveTab('posts')}
+      >
+        <Text style={[styles.tabText, activeTab === 'posts' && styles.activeTabText]}>
+          Posts
+        </Text>
+        {activeTab === 'posts' && <View style={styles.tabIndicator} />}
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={[styles.tab, activeTab === 'spaces' && styles.activeTab]}
+        onPress={() => setActiveTab('spaces')}
+      >
+        <Text style={[styles.tabText, activeTab === 'spaces' && styles.activeTabText]}>
+          Spaces
+        </Text>
+        {activeTab === 'spaces' && <View style={styles.tabIndicator} />}
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={[styles.tab, activeTab === 'events' && styles.activeTab]}
+        onPress={() => setActiveTab('events')}
+      >
+        <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>
+          Events
+        </Text>
+        {activeTab === 'events' && <View style={styles.tabIndicator} />}
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'posts':
+        return (
+          <FlatList
+            data={posts}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderPost}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#667eea"
+                colors={["#667eea"]}
+              />
+            }
+            ListEmptyComponent={renderEmptyState}
+          />
+        );
+      case 'spaces':
+        return (
+          <FlatList
+            data={spaces}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderSpaceCard}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#667eea"
+                colors={["#667eea"]}
+              />
+            }
+            ListEmptyComponent={renderEmptyState}
+          />
+        );
+      case 'events':
+        return (
+          <FlatList
+            data={sampleEvents}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderEventCard}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContainer}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor="#667eea"
+                colors={["#667eea"]}
+              />
+            }
+            ListEmptyComponent={renderEmptyState}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -288,62 +555,37 @@ export default function HomeScreen({ navigation }) {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <TouchableOpacity 
-              style={styles.profileButton}
-              onPress={() => setIsSidebarVisible(true)}
-            >
-              <Image 
-                source={{ 
-                  uri: `https://ui-avatars.com/api/?name=${user?.email?.split('@')[0] || 'User'}&background=667eea&color=ffffff&size=100` 
-                }} 
-                style={styles.profileAvatar} 
-              />
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => setIsSidebarVisible(true)}
+          >
+            <Image
+              source={{
+                uri: user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user?.user_metadata?.full_name || 'User'}&background=667eea&color=ffffff&size=100`
+              }}
+              style={styles.profileAvatar}
+            />
+          </TouchableOpacity>
+          
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>Jappa</Text>
           </View>
           
-          <View style={styles.headerActions}>
-            <TouchableOpacity 
-              style={styles.searchButton}
-              onPress={() => alert('Search coming soon!')}
-            >
-              <Ionicons name="search" size={20} color="#ffffff" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.headerAction}
-              onPress={() => navigation.navigate('Post')}
-            >
-              <Ionicons name="add" size={24} color="#667eea" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.postButton}
+            onPress={() => navigation.navigate('Post')}
+          >
+            <Ionicons name="add" size={24} color="#ffffff" />
+          </TouchableOpacity>
         </View>
 
-        {/* Posts Feed with Swipe Gesture */}
-        <PanGestureHandler
-          onGestureEvent={onGestureEvent}
-          onHandlerStateChange={onHandlerStateChange}
-        >
-          <View style={styles.feedContainer}>
-            <FlatList
-              style={styles.feed}
-              data={posts}
-              renderItem={renderPost}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  tintColor="#667eea"
-                  colors={['#667eea']}
-                />
-              }
-              ListEmptyComponent={renderEmptyState}
-              contentContainerStyle={posts.length === 0 ? styles.emptyContainer : null}
-            />
-          </View>
-        </PanGestureHandler>
+        {/* Tab Navigation */}
+        {renderTabNavigation()}
+
+        {/* Content */}
+        <View style={styles.content}>
+          {renderContent()}
+        </View>
 
         {/* Profile Sidebar */}
         <ProfileSidebar
@@ -423,21 +665,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   postCard: {
-    backgroundColor: '#1E1E1E',
-    marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 16,
+    backgroundColor: '#2A2A2A',
+    borderRadius: 12,
     padding: 16,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    marginHorizontal: 24,
+    marginBottom: 16,
   },
   postHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
   postUserInfo: {
@@ -455,15 +692,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   postUserName: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  postUserNameText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
-    marginBottom: 2,
+    marginRight: 8,
   },
-  postTime: {
-    fontSize: 12,
-    color: '#ffffff',
-    opacity: 0.6,
+  postLocation: {
+    fontSize: 14,
+    color: '#666666',
+  },
+  postActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   postTypeBadge: {
     flexDirection: 'row',
@@ -479,19 +724,16 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   postContent: {
-    marginBottom: 16,
+    fontSize: 16,
+    color: '#ffffff',
+    lineHeight: 24,
+    marginBottom: 12,
   },
   postTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#ffffff',
     marginBottom: 8,
-  },
-  postText: {
-    fontSize: 16,
-    color: '#ffffff',
-    lineHeight: 24,
-    marginBottom: 12,
   },
   postImages: {
     flexDirection: 'row',
@@ -538,23 +780,212 @@ const styles = StyleSheet.create({
     color: '#666666',
     marginLeft: 4,
   },
-  postActions: {
+  postAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 24,
+  },
+  postActionText: {
+    fontSize: 14,
+    color: '#666666',
+    marginLeft: 6,
+  },
+  spaceCard: {
+    backgroundColor: '#2A2A2A',
+    marginHorizontal: 24,
+    marginBottom: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  spaceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  spaceInfo: {
+    flex: 1,
+  },
+  spaceTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  spaceHost: {
+    fontSize: 14,
+    color: '#666666',
+  },
+  liveIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ff4757',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#ffffff',
+    marginRight: 4,
+  },
+  liveText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  spaceTopic: {
+    fontSize: 14,
+    color: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  spaceStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
     paddingTop: 12,
   },
-  postAction: {
+  spaceStat: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
   },
-  actionText: {
+  spaceStatText: {
+    fontSize: 12,
+    color: '#666666',
+    marginLeft: 4,
+  },
+  eventCard: {
+    backgroundColor: '#2A2A2A',
+    marginHorizontal: 24,
+    marginBottom: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  eventImage: {
+    width: '100%',
+    height: 160,
+  },
+  eventContent: {
+    padding: 16,
+  },
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 8,
+  },
+  eventDescription: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  eventDetails: {
+    marginBottom: 16,
+  },
+  eventDetail: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  eventDetailText: {
+    fontSize: 14,
+    color: '#666666',
+    marginLeft: 8,
+  },
+  eventFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  eventPrice: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#43e97b',
+  },
+  eventButton: {
+    backgroundColor: '#667eea',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  eventButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  topicCard: {
+    backgroundColor: '#2A2A2A',
+    marginHorizontal: 24,
+    marginBottom: 16,
+    borderRadius: 12,
+    padding: 16,
+  },
+  topicHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  topicInfo: {
+    flex: 1,
+  },
+  topicTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  topicDescription: {
+    fontSize: 14,
+    color: '#666666',
+    lineHeight: 20,
+  },
+  hotIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 71, 87, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  hotText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ff4757',
+    marginLeft: 4,
+  },
+  topicStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  topicStat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  topicStatText: {
     fontSize: 14,
     color: '#666666',
     marginLeft: 4,
+  },
+  joinTopicButton: {
+    backgroundColor: '#667eea',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  joinTopicButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
   },
   emptyState: {
     flex: 1,
@@ -607,5 +1038,57 @@ const styles = StyleSheet.create({
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    marginHorizontal: 24,
+    marginBottom: 16,
+    borderRadius: 12,
+    padding: 4,
+  },
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    position: 'relative',
+  },
+  activeTab: {
+    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#666666',
+  },
+  activeTabText: {
+    color: '#667eea',
+  },
+  tabIndicator: {
+    position: 'absolute',
+    bottom: 4,
+    left: '50%',
+    marginLeft: -8,
+    width: 16,
+    height: 2,
+    backgroundColor: '#667eea',
+    borderRadius: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  listContainer: {
+    paddingBottom: 100,
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  postButton: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
 }); 

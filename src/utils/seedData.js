@@ -275,6 +275,7 @@ export const useSeedData = () => {
 
 // Sample posts with media
 const samplePosts = [
+  // Posts with both text and media
   {
     type: 'community',
     title: null,
@@ -290,39 +291,149 @@ const samplePosts = [
     ],
   },
   {
-    type: 'business',
-    title: 'Tech Solutions Nigeria',
-    content: 'We\'re excited to announce our new office opening in Lagos! We\'re hiring talented developers to join our growing team. Check out our new workspace!',
+    type: 'community',
+    title: null,
+    content: 'Lagos traffic today is something else! 😅 At least I got to enjoy this beautiful sunset from the bridge.',
+    location: 'Third Mainland Bridge, Lagos',
+    price: null,
+    event_date: null,
+    category: 'Lifestyle',
+    images: [
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'community',
+    title: null,
+    content: 'Finally finished my coding bootcamp! 🎉 Here\'s a screenshot of my final project. What do you think?',
     location: 'Lagos, Nigeria',
     price: null,
     event_date: null,
     category: 'Technology',
     images: [
-      'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop'
+      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1555066931-489689fd1ca8?w=800&h=600&fit=crop'
+    ],
+  },
+  
+  // Posts with media only (no text)
+  {
+    type: 'community',
+    title: null,
+    content: null,
+    location: 'Lekki, Lagos',
+    price: null,
+    event_date: null,
+    category: 'Photography',
+    images: [
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
     ],
   },
   {
-    type: 'event',
-    title: 'Nigerian Tech Meetup 2024',
-    content: 'Join us for the biggest tech meetup in Nigeria! Network with industry leaders, learn about the latest trends, and discover amazing opportunities.',
-    location: 'Eko Hotel, Lagos',
+    type: 'community',
+    title: null,
+    content: null,
+    location: 'Victoria Island, Lagos',
     price: null,
-    event_date: '2024-02-15 18:00:00',
+    event_date: null,
+    category: 'Art',
+    images: [
+      'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop'
+    ],
+  },
+  {
+    type: 'community',
+    title: null,
+    content: null,
+    location: 'Ikeja, Lagos',
+    price: null,
+    event_date: null,
+    category: 'Food',
+    images: [
+      'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop'
+    ],
+  },
+  
+  // Posts with text only (no media)
+  {
+    type: 'community',
+    title: null,
+    content: 'Anyone know a good mechanic in Ikeja? My car is making weird noises and I need someone reliable. Recommendations please! 🙏',
+    location: 'Ikeja, Lagos',
+    price: null,
+    event_date: null,
+    category: 'Services',
+    images: [],
+  },
+  {
+    type: 'community',
+    title: null,
+    content: 'Just finished reading "The Psychology of Money" by Morgan Housel. Highly recommend for anyone interested in personal finance! The insights on wealth building are eye-opening. What finance books have you read recently?',
+    location: 'Lagos, Nigeria',
+    price: null,
+    event_date: null,
+    category: 'Books & Learning',
+    images: [],
+  },
+  {
+    type: 'community',
+    title: null,
+    content: 'Lagos weather is so unpredictable! One minute it\'s sunny, next minute it\'s pouring rain. 🌦️ How do you guys plan your day around this weather?',
+    location: 'Lagos, Nigeria',
+    price: null,
+    event_date: null,
+    category: 'Lifestyle',
+    images: [],
+  },
+  {
+    type: 'community',
+    title: null,
+    content: 'Looking for a good gym in Victoria Island. Preferably one with good trainers and reasonable prices. Any suggestions? 💪',
+    location: 'Victoria Island, Lagos',
+    price: null,
+    event_date: null,
+    category: 'Fitness',
+    images: [],
+  },
+  
+  // Event posts with media
+  {
+    type: 'event',
+    title: 'Lagos Tech Meetup 2024',
+    content: 'Join us for the biggest tech gathering in Lagos! Network with developers, entrepreneurs, and tech enthusiasts. Free entry with registration.',
+    location: 'Victoria Island, Lagos',
+    price: 'Free',
+    event_date: '2024-02-15',
     category: 'Technology',
     images: [
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop'
     ],
   },
   {
-    type: 'listing',
-    title: 'iPhone 14 Pro Max - Like New',
-    content: 'Selling my iPhone 14 Pro Max in perfect condition. Only used for 6 months, comes with original box and accessories.',
-    location: 'Abuja, Nigeria',
-    price: 850000,
+    type: 'event',
+    title: 'Lagos Fashion Week',
+    content: 'The most stylish event of the year is back! Showcasing the best of Nigerian fashion and international designers.',
+    location: 'Eko Hotel, Lagos',
+    price: '₦15,000',
+    event_date: '2024-02-25',
+    category: 'Fashion',
+    images: [
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop'
+    ],
+  },
+  
+  // Deal posts with media
+  {
+    type: 'deal',
+    title: 'iPhone 14 Pro - Great Condition',
+    content: 'Selling my iPhone 14 Pro, 256GB, Space Black. Perfect condition, comes with original box and accessories. Reason for selling: upgraded to 15 Pro.',
+    location: 'Lekki, Lagos',
+    price: '₦450,000',
     event_date: null,
     category: 'Electronics',
     images: [
@@ -331,56 +442,63 @@ const samplePosts = [
     ],
   },
   {
-    type: 'job',
-    title: 'Senior React Developer',
-    content: 'We\'re looking for a talented React developer to join our remote team. Must have 3+ years experience and be passionate about building great products.',
-    location: 'Remote',
+    type: 'deal',
+    title: 'MacBook Air M2 - Like New',
+    content: 'MacBook Air M2, 8GB RAM, 256GB SSD. Only 6 months old, still under warranty. Perfect for work and study.',
+    location: 'Ikeja, Lagos',
+    price: '₦850,000',
+    event_date: null,
+    category: 'Electronics',
+    images: [
+      'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=600&fit=crop'
+    ],
+  },
+  
+  // More community posts with variety
+  {
+    type: 'community',
+    title: null,
+    content: 'Just got my first job as a software developer! 🎉 After months of learning and applying, finally landed a role at a startup. To everyone still job hunting - keep pushing, your breakthrough is coming! 💪',
+    location: 'Lagos, Nigeria',
     price: null,
     event_date: null,
-    category: 'Technology',
-    images: [
-      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop'
-    ],
+    category: 'Career',
+    images: [],
   },
   {
     type: 'community',
     title: null,
-    content: 'Beautiful sunset in Kano today! The weather has been perfect for evening walks. #KanoLife #Nigeria',
-    location: 'Kano, Nigeria',
+    content: 'This view from my balcony this morning was just perfect. Sometimes you need to stop and appreciate the little moments. ☀️',
+    location: 'Lekki, Lagos',
     price: null,
     event_date: null,
-    category: 'Lifestyle',
+    category: 'Photography',
     images: [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
       'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
     ],
   },
   {
-    type: 'business',
-    title: 'Fashion Boutique Opening',
-    content: 'Excited to announce the opening of our new fashion boutique! We\'ll be featuring the latest trends from local and international designers.',
-    location: 'Port Harcourt, Nigeria',
+    type: 'community',
+    title: null,
+    content: 'Best pizza in Lagos? I\'m on a mission to find it! 🍕 So far, I\'ve tried Domino\'s, Pizza Hut, and a few local spots. Any hidden gems I should know about?',
+    location: 'Lagos, Nigeria',
     price: null,
     event_date: null,
-    category: 'Fashion',
-    images: [
-      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=600&fit=crop'
-    ],
+    category: 'Food & Dining',
+    images: [],
   },
   {
     type: 'community',
     title: null,
-    content: 'Looking for a reliable web developer for a startup project. Must be based in Abuja or willing to relocate. DM me if interested!',
-    location: 'Abuja, Nigeria',
+    content: 'Just finished this painting! Took me 3 weeks but I\'m really happy with how it turned out. Art is therapy. 🎨',
+    location: 'Victoria Island, Lagos',
     price: null,
     event_date: null,
-    category: 'Professional',
-    images: null, // No images for this post
+    category: 'Art',
+    images: [
+      'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'
+    ],
   },
 ];
 
@@ -398,29 +516,47 @@ const sampleUsers = [
   {
     id: 'sample-user-2',
     full_name: 'David Okonkwo',
-    username: 'david_okonkwo',
+    username: 'david_ok',
     email: 'david@example.com',
-    bio: 'Tech entrepreneur and startup founder. Passionate about building solutions that make a difference.',
-    location: 'Abuja, Nigeria',
+    bio: 'Software developer and tech enthusiast. Building the future one line of code at a time.',
+    location: 'Lagos, Nigeria',
     avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face',
   },
   {
     id: 'sample-user-3',
     full_name: 'Aisha Bello',
-    username: 'aisha_bello',
+    username: 'aisha_b',
     email: 'aisha@example.com',
-    bio: 'Photographer and content creator. Capturing life\'s beautiful moments one frame at a time.',
-    location: 'Kano, Nigeria',
+    bio: 'Photographer and art lover. Capturing life\'s beautiful moments through my lens.',
+    location: 'Lagos, Nigeria',
     avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face',
   },
   {
     id: 'sample-user-4',
-    full_name: 'Michael Eze',
-    username: 'michael_eze',
-    email: 'michael@example.com',
-    bio: 'Software engineer and tech enthusiast. Always learning and building something new.',
-    location: 'Port Harcourt, Nigeria',
+    full_name: 'Emeka Nwosu',
+    username: 'emeka_n',
+    email: 'emeka@example.com',
+    bio: 'Fitness trainer and wellness coach. Helping people achieve their health goals.',
+    location: 'Lagos, Nigeria',
     avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face',
+  },
+  {
+    id: 'sample-user-5',
+    full_name: 'Fatima Hassan',
+    username: 'fatima_h',
+    email: 'fatima@example.com',
+    bio: 'Artist and creative designer. Expressing emotions through colors and shapes.',
+    location: 'Lagos, Nigeria',
+    avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop&crop=face',
+  },
+  {
+    id: 'sample-user-6',
+    full_name: 'Kemi Adebayo',
+    username: 'kemi_a',
+    email: 'kemi@example.com',
+    bio: 'Business consultant and entrepreneur. Sharing insights on building successful businesses.',
+    location: 'Lagos, Nigeria',
+    avatar_url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop&crop=face',
   },
 ];
 
