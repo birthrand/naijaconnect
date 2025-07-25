@@ -9,6 +9,7 @@ import {
   FlatList,
   SafeAreaView,
   Dimensions,
+  TextInput,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
@@ -28,6 +29,9 @@ const localDeals = [
     distance: '4.9 mi',
     category: 'Beauty',
     timeLeft: '2d',
+    urgency: 'high',
+    popularity: 85,
+    location: 'Bronx, NY',
   },
   {
     id: '2',
@@ -40,6 +44,9 @@ const localDeals = [
     distance: '2.1 mi',
     category: 'Entertainment',
     timeLeft: '1d',
+    urgency: 'critical',
+    popularity: 92,
+    location: 'Manhattan, NY',
   },
   {
     id: '3',
@@ -52,6 +59,9 @@ const localDeals = [
     distance: '1.5 mi',
     category: 'Food',
     timeLeft: '3d',
+    urgency: 'medium',
+    popularity: 78,
+    location: 'Brooklyn, NY',
   },
 ];
 
@@ -71,6 +81,8 @@ const communityPosts = [
     comments: 8,
     shares: 3,
     category: 'Services',
+    engagement: 'high',
+    trending: true,
   },
   {
     id: '2',
@@ -86,6 +98,8 @@ const communityPosts = [
     comments: 15,
     shares: 7,
     category: 'Technology',
+    engagement: 'very-high',
+    trending: true,
   },
   {
     id: '3',
@@ -101,48 +115,141 @@ const communityPosts = [
     comments: 23,
     shares: 12,
     category: 'Culture',
+    engagement: 'medium',
+    trending: false,
   },
 ];
 
-// Progress Bar Component
-const ProgressBar = ({ progress, color = theme.colors.primary }) => (
-  <View style={styles.progressContainer}>
-    <View style={[styles.progressBar, { backgroundColor: theme.colors.lightGray }]}>
-      <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: color }]} />
-    </View>
-  </View>
-);
+// Enhanced Progress Bar with visual priority
+const ProgressBar = ({ progress, color = theme.colors.primary, urgency = 'normal' }) => {
+  const getUrgencyColor = () => {
+    switch (urgency) {
+      case 'critical': return '#FF4444';
+      case 'high': return '#FF8800';
+      case 'medium': return '#FFAA00';
+      default: return color;
+    }
+  };
 
-// Metric Card Component
-const MetricCard = ({ icon, value, label, color = theme.colors.primary }) => (
-  <View style={styles.metricCard}>
-    <View style={[styles.metricIcon, { backgroundColor: color + '15' }]}>
-      <Ionicons name={icon} size={16} color={color} />
+  return (
+    <View style={styles.progressContainer}>
+      <View style={[styles.progressBar, { backgroundColor: theme.colors.lightGray }]}>
+        <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: getUrgencyColor() }]} />
+      </View>
     </View>
-    <Text style={styles.metricValue}>{value}</Text>
-    <Text style={styles.metricLabel}>{label}</Text>
+  );
+};
+
+// Enhanced Metric Card with visual indicators
+const MetricCard = ({ icon, value, label, color = theme.colors.primary, priority = 'normal' }) => {
+  const getPriorityStyle = () => {
+    switch (priority) {
+      case 'high': return { backgroundColor: color + '20', borderColor: color, borderWidth: 2 };
+      case 'critical': return { backgroundColor: '#FF444420', borderColor: '#FF4444', borderWidth: 2 };
+      default: return { backgroundColor: color + '15' };
+    }
+  };
+
+  return (
+    <View style={styles.metricCard}>
+      <View style={[styles.metricIcon, getPriorityStyle()]}>
+        <Ionicons name={icon} size={16} color={color} />
+      </View>
+      <Text style={styles.metricValue}>{value}</Text>
+      <Text style={styles.metricLabel}>{label}</Text>
+    </View>
+  );
+};
+
+// Visual Priority Indicator Component
+const PriorityIndicator = ({ type, size = 'small' }) => {
+  const getIndicatorStyle = () => {
+    const baseStyle = {
+      width: size === 'small' ? 8 : 12,
+      height: size === 'small' ? 8 : 12,
+      borderRadius: size === 'small' ? 4 : 6,
+    };
+
+    switch (type) {
+      case 'trending':
+        return { ...baseStyle, backgroundColor: '#FF6B35' };
+      case 'urgent':
+        return { ...baseStyle, backgroundColor: '#FF4444' };
+      case 'popular':
+        return { ...baseStyle, backgroundColor: '#4CAF50' };
+      case 'verified':
+        return { ...baseStyle, backgroundColor: '#2196F3' };
+      default:
+        return { ...baseStyle, backgroundColor: theme.colors.gray };
+    }
+  };
+
+  return <View style={getIndicatorStyle()} />;
+};
+
+// Engagement Visualizer Component
+const EngagementVisualizer = ({ likes, comments, shares }) => {
+  const total = likes + comments + shares;
+  const likePercentage = (likes / total) * 100;
+  const commentPercentage = (comments / total) * 100;
+  const sharePercentage = (shares / total) * 100;
+
+  return (
+    <View style={styles.engagementVisualizer}>
+      <View style={[styles.engagementBar, { width: `${likePercentage}%`, backgroundColor: '#FF6B6B' }]} />
+      <View style={[styles.engagementBar, { width: `${commentPercentage}%`, backgroundColor: '#4ECDC4' }]} />
+      <View style={[styles.engagementBar, { width: `${sharePercentage}%`, backgroundColor: '#45B7D1' }]} />
+    </View>
+  );
+};
+
+// Search Bar Component
+const SearchBar = () => (
+  <View style={styles.searchContainer}>
+    <View style={styles.searchBar}>
+      <Ionicons name="search" size={20} color={theme.colors.gray} />
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search deals, posts, people..."
+        placeholderTextColor={theme.colors.gray}
+      />
+      <TouchableOpacity style={styles.filterButton}>
+        <Ionicons name="options" size={20} color={theme.colors.primary} />
+      </TouchableOpacity>
+    </View>
   </View>
 );
 
 export default function HomeScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const filters = ['All', 'Lagos', 'Abuja', 'Enugu', 'Diaspora'];
+  const filters = ['All', 'Lagos', 'Abuja', 'Enugu', 'Diaspora', 'Toronto', 'New York'];
 
   const renderDealCard = ({ item }) => (
     <View style={styles.dealCard}>
       <View style={styles.dealImageContainer}>
         <Image source={{ uri: item.image }} style={styles.dealImage} />
-        <View style={styles.dealOverlay}>
-          <View style={styles.discountBadge}>
-            <Text style={styles.discountText}>{item.discount}</Text>
-          </View>
-          <TouchableOpacity style={styles.bookmarkIcon}>
-            <Ionicons name="bookmark-outline" size={18} color={theme.colors.white} />
-          </TouchableOpacity>
+        
+        {/* Discount Badge - Moved to top-left corner */}
+        <View style={styles.discountBadge}>
+          <Text style={styles.discountText}>{item.discount}</Text>
         </View>
+        
+        {/* Bookmark Icon */}
+        <TouchableOpacity style={styles.bookmarkIcon}>
+          <Ionicons name="bookmark-outline" size={18} color={theme.colors.white} />
+        </TouchableOpacity>
+        
+        {/* Category Tag */}
         <View style={styles.categoryTag}>
           <Text style={styles.categoryText}>{item.category}</Text>
+        </View>
+        
+        {/* Visual Priority Indicators */}
+        <View style={styles.priorityIndicators}>
+          {item.urgency === 'critical' && <PriorityIndicator type="urgent" />}
+          {item.popularity > 80 && <PriorityIndicator type="popular" />}
         </View>
       </View>
       
@@ -155,6 +262,12 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
         
+        {/* Location with icon */}
+        <View style={styles.locationRow}>
+          <Ionicons name="location" size={14} color={theme.colors.gray} />
+          <Text style={styles.locationText}>{item.location}</Text>
+        </View>
+        
         <Text style={styles.dealDescription} numberOfLines={2}>
           {item.description}
         </Text>
@@ -163,7 +276,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.metricRow}>
             <View style={styles.metricItem}>
               <Ionicons name="people" size={14} color={theme.colors.gray} />
-              <Text style={styles.metricText}>{item.neighbors} saved</Text>
+              <Text style={styles.metricText}>{item.neighbors}</Text>
             </View>
             <View style={styles.metricItem}>
               <Ionicons name="location" size={14} color={theme.colors.gray} />
@@ -172,14 +285,20 @@ export default function HomeScreen({ navigation }) {
           </View>
           
           <View style={styles.timeContainer}>
-            <Text style={styles.timeText}>{item.timeLeft}</Text>
-            <ProgressBar progress={70} color={theme.colors.accent} />
+            <View style={styles.timeHeader}>
+              <Text style={styles.timeText}>{item.timeLeft}</Text>
+              {item.urgency === 'critical' && (
+                <Ionicons name="flash" size={12} color="#FF4444" />
+              )}
+            </View>
+            <ProgressBar progress={item.popularity} urgency={item.urgency} />
           </View>
         </View>
         
-        <TouchableOpacity style={styles.seeMoreButton}>
-          <Text style={styles.seeMoreText}>View</Text>
-          <Ionicons name="arrow-forward" size={16} color={theme.colors.primary} />
+        {/* Enhanced CTA Button */}
+        <TouchableOpacity style={styles.ctaButton}>
+          <Text style={styles.ctaText}>Book Now</Text>
+          <Ionicons name="arrow-forward" size={16} color={theme.colors.white} />
         </TouchableOpacity>
       </View>
     </View>
@@ -200,8 +319,10 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.userDetails}>
             <Text style={styles.userName}>{item.user.name}</Text>
             <View style={styles.userMeta}>
+              <Ionicons name="location" size={12} color={theme.colors.gray} />
               <Text style={styles.userLocation}>{item.user.location}</Text>
               <Text style={styles.timeSeparator}>•</Text>
+              <Ionicons name="time" size={12} color={theme.colors.gray} />
               <Text style={styles.userTime}>{item.user.time}</Text>
             </View>
           </View>
@@ -209,6 +330,13 @@ export default function HomeScreen({ navigation }) {
         <TouchableOpacity style={styles.postOptions}>
           <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.gray} />
         </TouchableOpacity>
+      </View>
+      
+      {/* Visual Priority Indicators */}
+      <View style={styles.postPriorityIndicators}>
+        {item.trending && <PriorityIndicator type="trending" />}
+        {item.engagement === 'very-high' && <PriorityIndicator type="popular" />}
+        {item.user.verified && <PriorityIndicator type="verified" />}
       </View>
       
       {item.category && (
@@ -226,6 +354,11 @@ export default function HomeScreen({ navigation }) {
         </View>
       )}
       
+      {/* Visual Engagement Display */}
+      <View style={styles.engagementContainer}>
+        <EngagementVisualizer likes={item.likes} comments={item.comments} shares={item.shares} />
+      </View>
+      
       <View style={styles.postActions}>
         <TouchableOpacity style={styles.actionButton}>
           <Ionicons name="heart-outline" size={20} color={theme.colors.gray} />
@@ -239,17 +372,24 @@ export default function HomeScreen({ navigation }) {
           <Ionicons name="share-outline" size={20} color={theme.colors.gray} />
           <Text style={styles.actionText}>{item.shares}</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.replyButton}>
+          <Ionicons name="send" size={16} color={theme.colors.primary} />
+          <Text style={styles.replyText}>Reply</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      {/* Enhanced Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.greeting}>Good Morning!</Text>
-          <Text style={styles.welcomeText}>🇳🇬 NaijaConnect</Text>
+          <TouchableOpacity style={styles.brandContainer}>
+            <Text style={styles.brandText}>🇳🇬 NaijaConnect</Text>
+            <Ionicons name="chevron-down" size={16} color={theme.colors.primary} />
+          </TouchableOpacity>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIcon}>
@@ -263,6 +403,9 @@ export default function HomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Search Bar */}
+      <SearchBar />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Local Deals Section */}
@@ -286,7 +429,7 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
 
-        {/* Filter Tabs */}
+        {/* Enhanced Filter Tabs */}
         <View style={styles.filterContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {filters.map((filter) => (
@@ -306,6 +449,9 @@ export default function HomeScreen({ navigation }) {
                 >
                   {filter}
                 </Text>
+                {selectedFilter === filter && (
+                  <View style={styles.activeIndicator} />
+                )}
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -334,8 +480,10 @@ export default function HomeScreen({ navigation }) {
                   <View style={styles.userDetails}>
                     <Text style={styles.userName}>{post.user.name}</Text>
                     <View style={styles.userMeta}>
+                      <Ionicons name="location" size={12} color={theme.colors.gray} />
                       <Text style={styles.userLocation}>{post.user.location}</Text>
                       <Text style={styles.timeSeparator}>•</Text>
+                      <Ionicons name="time" size={12} color={theme.colors.gray} />
                       <Text style={styles.userTime}>{post.user.time}</Text>
                     </View>
                   </View>
@@ -343,6 +491,13 @@ export default function HomeScreen({ navigation }) {
                 <TouchableOpacity style={styles.postOptions}>
                   <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.gray} />
                 </TouchableOpacity>
+              </View>
+              
+              {/* Visual Priority Indicators */}
+              <View style={styles.postPriorityIndicators}>
+                {post.trending && <PriorityIndicator type="trending" />}
+                {post.engagement === 'very-high' && <PriorityIndicator type="popular" />}
+                {post.user.verified && <PriorityIndicator type="verified" />}
               </View>
               
               {post.category && (
@@ -360,6 +515,11 @@ export default function HomeScreen({ navigation }) {
                 </View>
               )}
               
+              {/* Visual Engagement Display */}
+              <View style={styles.engagementContainer}>
+                <EngagementVisualizer likes={post.likes} comments={post.comments} shares={post.shares} />
+              </View>
+              
               <View style={styles.postActions}>
                 <TouchableOpacity style={styles.actionButton}>
                   <Ionicons name="heart-outline" size={20} color={theme.colors.gray} />
@@ -373,11 +533,20 @@ export default function HomeScreen({ navigation }) {
                   <Ionicons name="share-outline" size={20} color={theme.colors.gray} />
                   <Text style={styles.actionText}>{post.shares}</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.replyButton}>
+                  <Ionicons name="send" size={16} color={theme.colors.primary} />
+                  <Text style={styles.replyText}>Reply</Text>
+                </TouchableOpacity>
               </View>
             </View>
           ))}
         </View>
       </ScrollView>
+
+      {/* Floating Action Button */}
+      <TouchableOpacity style={styles.fab}>
+        <Ionicons name="add" size={24} color={theme.colors.white} />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -745,5 +914,156 @@ const styles = StyleSheet.create({
   metricLabel: {
     fontSize: 12,
     color: theme.colors.gray,
+  },
+  priorityIndicators: {
+    position: 'absolute',
+    top: theme.spacing.sm,
+    right: theme.spacing.sm,
+    flexDirection: 'row',
+  },
+  postPriorityIndicators: {
+    position: 'absolute',
+    top: theme.spacing.sm,
+    right: theme.spacing.sm,
+    flexDirection: 'row',
+  },
+  engagementVisualizer: {
+    flexDirection: 'row',
+    height: 8,
+    backgroundColor: theme.colors.lightGray,
+    borderRadius: 4,
+    marginTop: theme.spacing.sm,
+    overflow: 'hidden',
+  },
+  engagementBar: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  timeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.xs,
+  },
+  engagementContainer: {
+    marginBottom: theme.spacing.md,
+  },
+  priorityIndicators: {
+    position: 'absolute',
+    top: theme.spacing.sm,
+    right: theme.spacing.sm,
+    flexDirection: 'row',
+    gap: theme.spacing.xs,
+  },
+  postPriorityIndicators: {
+    flexDirection: 'row',
+    gap: theme.spacing.xs,
+    marginBottom: theme.spacing.sm,
+  },
+  engagementVisualizer: {
+    flexDirection: 'row',
+    height: 8,
+    backgroundColor: theme.colors.lightGray,
+    borderRadius: 4,
+    marginTop: theme.spacing.sm,
+    overflow: 'hidden',
+  },
+  engagementBar: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  searchContainer: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    backgroundColor: theme.colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.lightGray,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.lightGray,
+    borderRadius: theme.borderRadius.md,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: theme.colors.black,
+    marginLeft: theme.spacing.sm,
+    paddingVertical: 0,
+  },
+  filterButton: {
+    padding: theme.spacing.xs,
+  },
+  ctaButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    marginTop: theme.spacing.md,
+  },
+  ctaText: {
+    color: theme.colors.white,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: theme.spacing.xs,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.sm,
+  },
+  activeIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: theme.colors.white,
+    borderRadius: 1,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: theme.spacing.lg,
+    right: theme.spacing.lg,
+    backgroundColor: theme.colors.primary,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...theme.shadows.large,
+  },
+  brandContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.lightGray,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.md,
+  },
+  brandText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: theme.colors.primary,
+    marginRight: theme.spacing.xs,
+  },
+  replyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.lightGray,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.round,
+    marginLeft: 'auto',
+  },
+  replyText: {
+    fontSize: 14,
+    color: theme.colors.primary,
+    fontWeight: '500',
+    marginLeft: theme.spacing.xs,
   },
 }); 
