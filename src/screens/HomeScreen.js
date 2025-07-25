@@ -20,38 +20,38 @@ const localDeals = [
   {
     id: '1',
     title: 'Debonair New York',
-    description: 'Consultation, Hair Wash, Professional Styling Tips and Techniques, and Complimentary Amenities.',
+    description: 'Hair consultation, styling & amenities',
     image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=300&h=200&fit=crop',
     discount: '10% Off',
     rating: 4.9,
     neighbors: 45,
     distance: '4.9 mi',
     category: 'Beauty',
-    timeLeft: '2 days left',
+    timeLeft: '2d',
   },
   {
     id: '2',
     title: 'Love Co',
-    description: 'Special Be Karaoke, Live Music, and Entertainment.',
+    description: 'Karaoke, live music & entertainment',
     image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=300&h=200&fit=crop',
     discount: '15% Off',
     rating: 4.9,
     neighbors: 32,
     distance: '2.1 mi',
     category: 'Entertainment',
-    timeLeft: '1 day left',
+    timeLeft: '1d',
   },
   {
     id: '3',
     title: 'Naija Kitchen',
-    description: 'Authentic Nigerian Cuisine, Jollof Rice, Pounded Yam, and More.',
+    description: 'Authentic Nigerian cuisine & jollof rice',
     image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
     discount: '20% Off',
     rating: 4.8,
     neighbors: 67,
     distance: '1.5 mi',
     category: 'Food',
-    timeLeft: '3 days left',
+    timeLeft: '3d',
   },
 ];
 
@@ -65,7 +65,7 @@ const communityPosts = [
       time: 'Now',
       verified: true,
     },
-    content: 'Hello! Does anyone have a recommendation for a skilled woodworker? I\'m looking to create a minibar for my house. Thanks!',
+    content: 'Looking for a skilled woodworker to build a minibar. Any recommendations?',
     location: '910 Grand Concourse, Bronx, NY 10451',
     likes: 12,
     comments: 8,
@@ -78,10 +78,10 @@ const communityPosts = [
       name: 'Adebayo Johnson',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
       location: 'Lagos',
-      time: '2 hours ago',
+      time: '2h',
       verified: false,
     },
-    content: 'Just finished my latest tech project! Building a mobile app for local businesses. Anyone interested in collaboration? #Tech #NaijaTech',
+    content: 'Just finished my mobile app for local businesses. Anyone interested in collaboration? #Tech #NaijaTech',
     likes: 24,
     comments: 15,
     shares: 7,
@@ -93,10 +93,10 @@ const communityPosts = [
       name: 'Chioma Okechukwu',
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
       location: 'Toronto',
-      time: '4 hours ago',
+      time: '4h',
       verified: true,
     },
-    content: 'Missing home so much! Made some authentic Nigerian pepper soup today. The aroma brought back so many memories. Who else is cooking traditional dishes this weekend? 🇳🇬',
+    content: 'Made Nigerian pepper soup today. Missing home! Who else is cooking traditional dishes this weekend? 🇳🇬',
     likes: 89,
     comments: 23,
     shares: 12,
@@ -178,7 +178,7 @@ export default function HomeScreen({ navigation }) {
         </View>
         
         <TouchableOpacity style={styles.seeMoreButton}>
-          <Text style={styles.seeMoreText}>View Deal</Text>
+          <Text style={styles.seeMoreText}>View</Text>
           <Ionicons name="arrow-forward" size={16} color={theme.colors.primary} />
         </TouchableOpacity>
       </View>
@@ -249,7 +249,7 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.greeting}>Good Morning!</Text>
-          <Text style={styles.welcomeText}>🇳🇬 Welcome to NaijaConnect</Text>
+          <Text style={styles.welcomeText}>🇳🇬 NaijaConnect</Text>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity style={styles.headerIcon}>
@@ -270,7 +270,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.sectionTitle}>Local Deals</Text>
-              <Text style={styles.sectionSubtitle}>Save money with your neighbors</Text>
+              <Text style={styles.sectionSubtitle}>Save with neighbors</Text>
             </View>
             <TouchableOpacity style={styles.closeButton}>
               <Ionicons name="close" size={20} color={theme.colors.gray} />
@@ -316,7 +316,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.sectionTitle}>Community Feed</Text>
-              <Text style={styles.sectionSubtitle}>Connect with Nigerians worldwide</Text>
+              <Text style={styles.sectionSubtitle}>Connect worldwide</Text>
             </View>
           </View>
           {communityPosts.map((post) => (
