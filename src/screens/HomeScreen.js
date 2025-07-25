@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,58 +10,66 @@ import {
   SafeAreaView,
   Dimensions,
   TextInput,
+  Animated,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../theme/theme';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
-// Mock data
+// Mock data with Nigerian-focused locations
 const localDeals = [
   {
     id: '1',
-    title: 'Debonair New York',
+    title: 'Debonair Lagos',
     description: 'Hair consultation, styling & amenities',
     image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?w=300&h=200&fit=crop',
     discount: '10% Off',
     rating: 4.9,
     neighbors: 45,
-    distance: '4.9 mi',
+    distance: '2.1 km',
     category: 'Beauty',
     timeLeft: '2d',
     urgency: 'high',
     popularity: 85,
-    location: 'Bronx, NY',
+    location: 'Victoria Island, Lagos',
+    isPinned: true,
+    isVerified: true,
   },
   {
     id: '2',
-    title: 'Love Co',
+    title: 'Love Co Abuja',
     description: 'Karaoke, live music & entertainment',
     image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=300&h=200&fit=crop',
     discount: '15% Off',
     rating: 4.9,
     neighbors: 32,
-    distance: '2.1 mi',
+    distance: '1.5 km',
     category: 'Entertainment',
     timeLeft: '1d',
     urgency: 'critical',
     popularity: 92,
-    location: 'Manhattan, NY',
+    location: 'Wuse Zone 2, Abuja',
+    isPinned: false,
+    isVerified: false,
   },
   {
     id: '3',
-    title: 'Naija Kitchen',
+    title: 'Naija Kitchen Enugu',
     description: 'Authentic Nigerian cuisine & jollof rice',
     image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=300&h=200&fit=crop',
     discount: '20% Off',
     rating: 4.8,
     neighbors: 67,
-    distance: '1.5 mi',
+    distance: '0.8 km',
     category: 'Food',
     timeLeft: '3d',
     urgency: 'medium',
     popularity: 78,
-    location: 'Brooklyn, NY',
+    location: 'New Haven, Enugu',
+    isPinned: false,
+    isVerified: true,
   },
 ];
 
@@ -71,12 +79,12 @@ const communityPosts = [
     user: {
       name: 'Veronica Margareth',
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
-      location: 'The Bronx',
+      location: 'Lagos',
       time: 'Now',
       verified: true,
     },
     content: 'Looking for a skilled woodworker to build a minibar. Any recommendations?',
-    location: '910 Grand Concourse, Bronx, NY 10451',
+    location: 'Victoria Island, Lagos',
     likes: 12,
     comments: 8,
     shares: 3,
@@ -89,7 +97,7 @@ const communityPosts = [
     user: {
       name: 'Adebayo Johnson',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
-      location: 'Lagos',
+      location: 'Abuja',
       time: '2h',
       verified: false,
     },
@@ -106,7 +114,7 @@ const communityPosts = [
     user: {
       name: 'Chioma Okechukwu',
       avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face',
-      location: 'Toronto',
+      location: 'Enugu',
       time: '4h',
       verified: true,
     },
@@ -120,8 +128,27 @@ const communityPosts = [
   },
 ];
 
-// Enhanced Progress Bar with visual priority
+// Feed categories for horizontal scroll
+const feedCategories = [
+  { id: '1', name: 'Services', icon: 'construct', color: theme.colors.primary },
+  { id: '2', name: 'Requests', icon: 'help-circle', color: theme.colors.secondary },
+  { id: '3', name: 'For Sale', icon: 'bag', color: theme.colors.success },
+  { id: '4', name: 'Events', icon: 'calendar', color: theme.colors.warmOrange },
+  { id: '5', name: 'Jobs', icon: 'briefcase', color: theme.colors.info },
+];
+
+// Enhanced Progress Bar with animation
 const ProgressBar = ({ progress, color = theme.colors.primary, urgency = 'normal' }) => {
+  const animatedWidth = useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.timing(animatedWidth, {
+      toValue: progress,
+      duration: 1000,
+      useNativeDriver: false,
+    }).start();
+  }, [progress]);
+
   const getUrgencyColor = () => {
     switch (urgency) {
       case 'critical': return '#FF4444';
@@ -134,7 +161,18 @@ const ProgressBar = ({ progress, color = theme.colors.primary, urgency = 'normal
   return (
     <View style={styles.progressContainer}>
       <View style={[styles.progressBar, { backgroundColor: theme.colors.lightGray }]}>
-        <View style={[styles.progressFill, { width: `${progress}%`, backgroundColor: getUrgencyColor() }]} />
+        <Animated.View 
+          style={[
+            styles.progressFill, 
+            { 
+              width: animatedWidth.interpolate({
+                inputRange: [0, 100],
+                outputRange: ['0%', '100%'],
+              }),
+              backgroundColor: getUrgencyColor() 
+            }
+          ]} 
+        />
       </View>
     </View>
   );
@@ -179,6 +217,8 @@ const PriorityIndicator = ({ type, size = 'small' }) => {
         return { ...baseStyle, backgroundColor: '#4CAF50' };
       case 'verified':
         return { ...baseStyle, backgroundColor: '#2196F3' };
+      case 'pinned':
+        return { ...baseStyle, backgroundColor: '#FFD700' };
       default:
         return { ...baseStyle, backgroundColor: theme.colors.gray };
     }
@@ -203,8 +243,8 @@ const EngagementVisualizer = ({ likes, comments, shares }) => {
   );
 };
 
-// Search Bar Component
-const SearchBar = () => (
+// Enhanced Search Bar Component
+const SearchBar = ({ activeFilters, onFilterPress }) => (
   <View style={styles.searchContainer}>
     <View style={styles.searchBar}>
       <Ionicons name="search" size={20} color={theme.colors.gray} />
@@ -213,28 +253,94 @@ const SearchBar = () => (
         placeholder="Search deals, posts, people..."
         placeholderTextColor={theme.colors.gray}
       />
-      <TouchableOpacity style={styles.filterButton}>
+      <TouchableOpacity style={styles.micButton}>
+        <Ionicons name="mic" size={20} color={theme.colors.primary} />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.filterButton} onPress={onFilterPress}>
         <Ionicons name="options" size={20} color={theme.colors.primary} />
       </TouchableOpacity>
     </View>
+    {activeFilters.length > 0 && (
+      <View style={styles.filterSummary}>
+        <Text style={styles.filterSummaryText}>
+          {activeFilters.join(' · ')}
+        </Text>
+        <TouchableOpacity>
+          <Ionicons name="close-circle" size={16} color={theme.colors.gray} />
+        </TouchableOpacity>
+      </View>
+    )}
   </View>
 );
+
+// Enhanced FAB with tooltip
+const FloatingActionButton = ({ onPress, onLongPress }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const handleLongPress = () => {
+    setShowTooltip(true);
+    onLongPress?.();
+    setTimeout(() => setShowTooltip(false), 2000);
+  };
+
+  return (
+    <View style={styles.fabContainer}>
+      {showTooltip && (
+        <View style={styles.tooltip}>
+          <Text style={styles.tooltipText}>Create Post</Text>
+        </View>
+      )}
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={onPress}
+        onLongPress={handleLongPress}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="add" size={24} color={theme.colors.white} />
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 export default function HomeScreen({ navigation }) {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilters, setActiveFilters] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const filters = ['All', 'Lagos', 'Abuja', 'Enugu', 'Diaspora', 'Toronto', 'New York'];
+  const filters = ['All', 'Lagos', 'Abuja', 'Enugu', 'Port Harcourt', 'Kano', 'Ibadan'];
+
+  const handleFilterPress = () => {
+    Alert.alert(
+      'Filter Options',
+      'Choose your filters',
+      [
+        { text: 'Lagos', onPress: () => setActiveFilters(['Deals in Lagos']) },
+        { text: 'Beauty', onPress: () => setActiveFilters(['Beauty']) },
+        { text: 'Food', onPress: () => setActiveFilters(['Food']) },
+        { text: 'Clear All', onPress: () => setActiveFilters([]), style: 'destructive' },
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
+  };
 
   const renderDealCard = ({ item }) => (
     <View style={styles.dealCard}>
       <View style={styles.dealImageContainer}>
         <Image source={{ uri: item.image }} style={styles.dealImage} />
         
-        {/* Discount Badge - Moved to top-left corner */}
-        <View style={styles.discountBadge}>
-          <Text style={styles.discountText}>{item.discount}</Text>
+        {/* Corner Ribbon for Discount */}
+        <View style={styles.cornerRibbon}>
+          <Text style={styles.ribbonText}>{item.discount}</Text>
         </View>
+        
+        {/* Pinned Badge */}
+        {item.isPinned && (
+          <View style={styles.pinnedBadge}>
+            <Ionicons name="pin" size={12} color={theme.colors.white} />
+            <Text style={styles.pinnedText}>Pinned</Text>
+          </View>
+        )}
         
         {/* Bookmark Icon */}
         <TouchableOpacity style={styles.bookmarkIcon}>
@@ -250,6 +356,8 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.priorityIndicators}>
           {item.urgency === 'critical' && <PriorityIndicator type="urgent" />}
           {item.popularity > 80 && <PriorityIndicator type="popular" />}
+          {item.isPinned && <PriorityIndicator type="pinned" />}
+          {item.isVerified && <PriorityIndicator type="verified" />}
         </View>
       </View>
       
@@ -380,6 +488,28 @@ export default function HomeScreen({ navigation }) {
     </View>
   );
 
+  const renderCategoryItem = ({ item }) => (
+    <TouchableOpacity
+      style={[
+        styles.categoryItem,
+        selectedCategory === item.name && styles.categoryItemActive,
+      ]}
+      onPress={() => setSelectedCategory(item.name)}
+    >
+      <Ionicons 
+        name={item.icon} 
+        size={20} 
+        color={selectedCategory === item.name ? theme.colors.white : item.color} 
+      />
+      <Text style={[
+        styles.categoryItemText,
+        selectedCategory === item.name && styles.categoryItemTextActive,
+      ]}>
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Enhanced Header */}
@@ -404,8 +534,8 @@ export default function HomeScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Search Bar */}
-      <SearchBar />
+      {/* Enhanced Search Bar */}
+      <SearchBar activeFilters={activeFilters} onFilterPress={handleFilterPress} />
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         {/* Local Deals Section */}
@@ -457,15 +587,33 @@ export default function HomeScreen({ navigation }) {
           </ScrollView>
         </View>
 
-        {/* Community Posts */}
+        {/* Community Feed with Categories */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View>
               <Text style={styles.sectionTitle}>Community Feed</Text>
               <Text style={styles.sectionSubtitle}>Connect worldwide</Text>
             </View>
+            <TouchableOpacity style={styles.seeAllButton}>
+              <Text style={styles.seeAllText}>See all</Text>
+              <Ionicons name="arrow-forward" size={16} color={theme.colors.primary} />
+            </TouchableOpacity>
           </View>
-          {communityPosts.map((post) => (
+          
+          {/* Feed Categories */}
+          <View style={styles.categoriesContainer}>
+            <FlatList
+              data={feedCategories}
+              renderItem={renderCategoryItem}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesList}
+            />
+          </View>
+          
+          {/* Preview Posts */}
+          {communityPosts.slice(0, 2).map((post) => (
             <View key={post.id} style={styles.postCard}>
               <View style={styles.postHeader}>
                 <View style={styles.userInfo}>
@@ -543,10 +691,11 @@ export default function HomeScreen({ navigation }) {
         </View>
       </ScrollView>
 
-      {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab}>
-        <Ionicons name="add" size={24} color={theme.colors.white} />
-      </TouchableOpacity>
+      {/* Enhanced Floating Action Button */}
+      <FloatingActionButton 
+        onPress={() => navigation.navigate('Post')}
+        onLongPress={() => Alert.alert('Create Post', 'Choose what to create')}
+      />
     </SafeAreaView>
   );
 }
@@ -1065,5 +1214,113 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontWeight: '500',
     marginLeft: theme.spacing.xs,
+  },
+  cornerRibbon: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: theme.colors.accent,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderTopLeftRadius: theme.borderRadius.md,
+    borderBottomRightRadius: theme.borderRadius.md,
+  },
+  ribbonText: {
+    color: theme.colors.white,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  pinnedBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderTopRightRadius: theme.borderRadius.md,
+    borderBottomLeftRadius: theme.borderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pinnedText: {
+    color: theme.colors.white,
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: theme.spacing.xs,
+  },
+  fabContainer: {
+    position: 'relative',
+  },
+  tooltip: {
+    position: 'absolute',
+    bottom: 60, // Adjust as needed
+    right: 10, // Adjust as needed
+    backgroundColor: theme.colors.black,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.md,
+    zIndex: 10,
+  },
+  tooltipText: {
+    color: theme.colors.white,
+    fontSize: 12,
+  },
+  categoriesContainer: {
+    paddingHorizontal: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
+  },
+  categoriesList: {
+    paddingVertical: theme.spacing.sm,
+  },
+  categoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.round,
+    marginRight: theme.spacing.sm,
+  },
+  categoryItemActive: {
+    backgroundColor: theme.colors.primary,
+  },
+  categoryItemText: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: theme.spacing.sm,
+  },
+  categoryItemTextActive: {
+    color: theme.colors.white,
+  },
+  micButton: {
+    padding: theme.spacing.xs,
+  },
+  filterSummary: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: theme.colors.lightGray,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    marginTop: theme.spacing.xs,
+  },
+  filterSummaryText: {
+    fontSize: 12,
+    color: theme.colors.gray,
+    flex: 1,
+  },
+  seeAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    backgroundColor: theme.colors.lightGray,
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: theme.colors.primary,
+    fontWeight: '500',
+    marginRight: theme.spacing.xs,
   },
 }); 

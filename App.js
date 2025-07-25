@@ -44,7 +44,7 @@ function TabNavigator() {
           } else if (route.name === 'Post') {
             iconName = focused ? 'add-circle' : 'add-circle-outline';
           } else if (route.name === 'ForSale') {
-            iconName = focused ? 'pricetag' : 'pricetag-outline';
+            iconName = focused ? 'bag' : 'bag-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           }
@@ -57,18 +57,43 @@ function TabNavigator() {
           backgroundColor: theme.colors.white,
           borderTopWidth: 1,
           borderTopColor: theme.colors.lightGray,
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
+          paddingBottom: 8,
+          paddingTop: 8,
+          height: 70,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+          marginTop: 2,
         },
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Discover" component={DiscoverScreen} />
-      <Tab.Screen name="Post" component={PostScreen} />
-      <Tab.Screen name="ForSale" component={ForSaleScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen 
+        name="Home" 
+        component={HomeScreen}
+        options={{ tabBarLabel: 'Home' }}
+      />
+      <Tab.Screen 
+        name="Discover" 
+        component={DiscoverScreen}
+        options={{ tabBarLabel: 'Discover' }}
+      />
+      <Tab.Screen 
+        name="Post" 
+        component={PostScreen}
+        options={{ tabBarLabel: 'Post' }}
+      />
+      <Tab.Screen 
+        name="ForSale" 
+        component={ForSaleScreen}
+        options={{ tabBarLabel: 'For Sale' }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen}
+        options={{ tabBarLabel: 'Profile' }}
+      />
     </Tab.Navigator>
   );
 }
