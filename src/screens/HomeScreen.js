@@ -164,6 +164,36 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  const handleMediaTap = (post, postIndex) => {
+    if (post.images && post.images.length > 0) {
+      // Get all posts with media for the current tab
+      let mediaPosts = [];
+      switch (activeTab) {
+        case 'posts':
+          mediaPosts = posts.filter(p => p.images && p.images.length > 0);
+          break;
+        case 'spaces':
+          mediaPosts = spaces.filter(s => s.images && s.images.length > 0);
+          break;
+        case 'events':
+          mediaPosts = sampleEvents.filter(e => e.images && e.images.length > 0);
+          break;
+        default:
+          mediaPosts = posts.filter(p => p.images && p.images.length > 0);
+      }
+      
+      // Find the index of the tapped post in the media posts array
+      const mediaPostIndex = mediaPosts.findIndex(p => p.id === post.id);
+      
+      if (mediaPostIndex !== -1) {
+        navigation.navigate('MediaViewer', {
+          posts: mediaPosts,
+          initialPostIndex: mediaPostIndex,
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     loadPosts();
   }, []);
@@ -207,7 +237,7 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  const renderPost = ({ item }) => {
+  const renderPost = ({ item, index }) => {
     const postUser = item.users;
     const postTypeColor = getPostTypeColor(item.type);
     const postTypeIcon = getPostTypeIcon(item.type);
@@ -254,24 +284,28 @@ export default function HomeScreen({ navigation }) {
         
         {/* Post Images */}
         {item.images && item.images.length > 0 && (
-          <View style={styles.postImages}>
+          <TouchableOpacity
+            style={styles.postImages}
+            onPress={() => handleMediaTap(item, index)}
+            activeOpacity={0.9}
+          >
             {item.images.slice(0, 3).map((image, index) => (
-              <Image 
-                key={index} 
-                source={{ uri: image }} 
+              <Image
+                key={index}
+                source={{ uri: image }}
                 style={[
-                  styles.postImage, 
-                  item.images.length === 1 ? styles.singleImage : styles.multipleImage
-                ]} 
+                  styles.postImage,
+                  item.images.length === 1 ? styles.singleImage : styles.multipleImage,
+                ]}
                 resizeMode="cover"
               />
             ))}
             {item.images.length > 3 && (
-              <View style={styles.moreImagesOverlay}>
+              <View style={[styles.multipleImage, styles.moreImagesOverlay]}>
                 <Text style={styles.moreImagesText}>+{item.images.length - 3}</Text>
               </View>
             )}
-          </View>
+          </TouchableOpacity>
         )}
 
         {/* Post Metadata */}
@@ -327,15 +361,19 @@ export default function HomeScreen({ navigation }) {
     );
   };
 
-  const renderSpaceCard = ({ item }) => {
-    const spaceHost = item.users;
-    
-    return (
-      <View style={styles.spaceCard}>
+  const renderSpaceCard = ({ item }) => (
+    <View style={styles.spaceCard}>
+      <TouchableOpacity
+        onPress={() => handleMediaTap(item, 0)}
+        activeOpacity={0.9}
+      >
+        <Image source={{ uri: item.cover_image || 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400&h=200&fit=crop' }} style={styles.spaceImage} />
+      </TouchableOpacity>
+      <View style={styles.spaceContent}>
         <View style={styles.spaceHeader}>
           <View style={styles.spaceInfo}>
-            <Text style={styles.spaceTitle}>{item.name}</Text>
-            <Text style={styles.spaceHost}>Hosted by {spaceHost?.full_name || 'Anonymous'}</Text>
+            <Text style={styles.spaceTitle}>{item.title}</Text>
+            <Text style={styles.spaceDescription}>{item.description}</Text>
           </View>
           {item.is_live && (
             <View style={styles.liveIndicator}>
@@ -345,27 +383,27 @@ export default function HomeScreen({ navigation }) {
           )}
         </View>
         
-        <Text style={styles.spaceTopic}>{item.description}</Text>
-        
         <View style={styles.spaceStats}>
           <View style={styles.spaceStat}>
-            <Ionicons name="people" size={14} color="#666666" />
-            <Text style={styles.spaceStatText}>{item.participant_count} listening</Text>
+            <Ionicons name="people" size={14} color="#667eea" />
+            <Text style={styles.spaceStatText}>{item.participant_count || 0} participants</Text>
           </View>
-          <View style={styles.spaceStat}>
-            <Ionicons name="time" size={14} color="#666666" />
-            <Text style={styles.spaceStatText}>
-              {item.started_at ? formatTimeAgo(item.started_at) : 'Not started'}
-            </Text>
-          </View>
+          <TouchableOpacity style={styles.joinSpaceButton}>
+            <Text style={styles.joinSpaceButtonText}>Join Space</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    );
-  };
+    </View>
+  );
 
   const renderEventCard = ({ item }) => (
     <View style={styles.eventCard}>
-      <Image source={{ uri: item.image }} style={styles.eventImage} />
+      <TouchableOpacity
+        onPress={() => handleMediaTap(item, 0)}
+        activeOpacity={0.9}
+      >
+        <Image source={{ uri: item.image }} style={styles.eventImage} />
+      </TouchableOpacity>
       <View style={styles.eventContent}>
         <Text style={styles.eventTitle}>{item.title}</Text>
         <Text style={styles.eventDescription}>{item.description}</Text>
@@ -813,9 +851,18 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     marginBottom: 4,
   },
-  spaceHost: {
+  spaceDescription: {
     fontSize: 14,
     color: '#666666',
+    marginBottom: 4,
+  },
+  spaceImage: {
+    width: '100%',
+    height: 160,
+    borderRadius: 8,
+  },
+  spaceContent: {
+    padding: 16,
   },
   liveIndicator: {
     flexDirection: 'row',
@@ -837,20 +884,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#ffffff',
   },
-  spaceTopic: {
-    fontSize: 14,
-    color: '#ffffff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
   spaceStats: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingTop: 12,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 12,
   },
   spaceStat: {
     flexDirection: 'row',
@@ -860,6 +898,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666666',
     marginLeft: 4,
+  },
+  joinSpaceButton: {
+    backgroundColor: '#667eea',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  joinSpaceButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
   },
   eventCard: {
     backgroundColor: '#2A2A2A',

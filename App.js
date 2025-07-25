@@ -21,6 +21,7 @@ import HelpSupportScreen from './src/screens/HelpSupportScreen';
 import UserProfileScreen from './src/screens/UserProfileScreen';
 import EditProfileScreen from './src/screens/EditProfileScreen';
 import SideHustleScreen from './src/screens/SideHustleScreen';
+import MediaViewerScreen from './src/screens/MediaViewerScreen';
 
 // Import theme and context
 import { theme } from './src/theme/theme';
@@ -117,6 +118,7 @@ function AppContent() {
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+            <Stack.Screen name="MediaViewer" component={MediaViewerScreen} />
           </>
         ) : (
           <>
