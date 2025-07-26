@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '@env';
 
-const supabaseUrl = 'https://ktnseaxpqxpydhlybepl.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0bnNlYXhwcXhweWRobHliZXBsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM0MDQ2MDIsImV4cCI6MjA2ODk4MDYwMn0.5aFyHHj7CYeLOVf0DOlTSWsfoRZBLodR1dwO7aSGgNw';
+// Validate environment variables
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+}
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Database table names
 export const TABLES = {
@@ -342,4 +345,4 @@ export const supabaseHelpers = {
   },
 };
 
-export default supabase; 
+export default supabase;
